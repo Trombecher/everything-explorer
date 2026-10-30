@@ -27,16 +27,18 @@ mod routes_v1 {
         let mut out = Vec::new();
         out.push(b'[');
 
-        for atom in knowledge.known_atoms() {
+        for (i, atom) in knowledge.known_atoms().enumerate() {
+            if i != 0 {
+                out.push(b',');
+            }
+
             out.push(b'"');
 
             write!(out, "{}", atom.0).unwrap();
 
             out.push(b'"');
-            out.push(b',');
         }
 
-        out.pop();
         out.push(b']');
 
         (
@@ -70,7 +72,7 @@ pub struct PrivateKnowledgeServer {
 }
 
 impl PrivateKnowledgeServer {
-    pub async fn serve(persistant_knowledge: PersistantKnowledge) -> std::io::Result<Self> {
+    pub async fn serve(persistant_knowledge: PersistantKnowledge) -> std::io::Result<(Self, u16)> {
         let cors = CorsLayer::new()
             .allow_origin(TAURI_DEV_URL.parse::<HeaderValue>().unwrap())
             .allow_methods([Method::GET, Method::POST])
@@ -84,6 +86,7 @@ impl PrivateKnowledgeServer {
             .with_state(state);
 
         let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await?;
+        let bound_to_port = listener.local_addr()?.port();
 
         let (shutdown_trigger, shutdown_reader) = oneshot::channel();
 
@@ -95,10 +98,13 @@ impl PrivateKnowledgeServer {
                 .await
         });
 
-        Ok(Self {
-            shutdown_trigger: Some(shutdown_trigger),
-            task,
-        })
+        Ok((
+            Self {
+                shutdown_trigger: Some(shutdown_trigger),
+                task,
+            },
+            bound_to_port,
+        ))
     }
 
     pub async fn shutdown(mut self) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {

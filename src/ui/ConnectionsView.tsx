@@ -6,8 +6,13 @@ import MonitorPc from "lucide-solid/icons/monitor-pc";
 import PlusIcon from "lucide-solid/icons/plus";
 import {Index, Match, Switch} from "solid-js";
 
+import * as backend from "@/backend/api";
 import {useAppState} from "@/context";
-import {KBConnectionTypeLocal, KBConnectionTypeRemote} from "@/state/app";
+import {
+    KBConnection,
+    KBConnectionTypeLocal,
+    KBConnectionTypeRemote,
+} from "@/state/app";
 
 const AddConnectionButton = () => {
     const appState = useAppState();
@@ -15,7 +20,7 @@ const AddConnectionButton = () => {
     return (
         <DropdownMenu>
             <DropdownMenu.Trigger class="mb-4 flex rounded-xl bg-blue-500 py-1 pr-1 pl-3 font-medium text-white transition select-none data-expanded:bg-blue-600 dark:text-black">
-                <span>Add Connection</span>
+                <span>Add Knowledge Base</span>
                 <DropdownMenu.Icon class="origin-center transition-transform data-expanded:-scale-100">
                     <ChevronDownIcon />
                 </DropdownMenu.Icon>
@@ -24,12 +29,30 @@ const AddConnectionButton = () => {
                 <DropdownMenu.Content class="mt-2 rounded-3xl border border-neutral-200 bg-white p-2 shadow-lg select-none">
                     {[
                         {
-                            name: "Local Knowledge",
-                            handler: () => {
+                            name: "Create New Local",
+                            handler: async () => {
+                                const path =
+                                    await backend.pickPathForNewKnowledgeBaseFile();
+                                if (path === null) return;
+
                                 appState.addConnection({
                                     type: KBConnectionTypeLocal,
                                     name: "",
-                                    filePath: "",
+                                    filePath: path,
+                                });
+                            },
+                        },
+                        {
+                            name: "Existing Local",
+                            handler: async () => {
+                                const path =
+                                    await backend.pickKnowledgeBaseFile();
+                                if (path === null) return;
+
+                                appState.addConnection({
+                                    type: KBConnectionTypeLocal,
+                                    name: "",
+                                    filePath: path,
                                 });
                             },
                         },
@@ -92,6 +115,43 @@ export default () => {
                             <TextField.Label />
                             <TextField.Input />
                         </TextField>
+
+                        <Switch>
+                            <Match
+                                when={(() => {
+                                    const c = connection();
+
+                                    return (
+                                        c.type === KBConnectionTypeLocal && c
+                                    );
+                                })()}
+                            >
+                                {connection => (
+                                    <>
+                                        <TextField
+                                            value={connection().filePath}
+                                        >
+                                            <TextField.Label />
+                                            <TextField.Input />
+                                        </TextField>
+                                        <button
+                                            onClick={async () => {
+                                                const port =
+                                                    await backend.serveKnowledgeBase(
+                                                        connection().filePath,
+                                                    );
+
+                                                console.log(
+                                                    `server with port ${port}`,
+                                                );
+                                            }}
+                                        >
+                                            connect
+                                        </button>
+                                    </>
+                                )}
+                            </Match>
+                        </Switch>
                     </div>
                 )}
             </Index>

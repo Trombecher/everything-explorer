@@ -1,4 +1,7 @@
-use tauri::{Manager, Theme, WebviewWindow};
+use std::path::PathBuf;
+
+use rfd::AsyncFileDialog;
+use tauri::{Manager, State, Theme, WebviewWindow};
 
 use crate::state::AppState;
 
@@ -22,6 +25,33 @@ fn apply_theme_setting(theme_setting: FrontendThemeSetting, webview_window: Webv
     });
 }
 
+#[tauri::command]
+async fn pick_knowledge_base_file(window: WebviewWindow) -> Option<String> {
+    AsyncFileDialog::new()
+        .add_filter("Everything Knowledge Base", &["everythingkb"])
+        .set_directory("/")
+        .set_parent(&window)
+        .pick_file()
+        .await
+        .and_then(|x| PathBuf::from(x.path()).into_string().ok())
+}
+
+#[tauri::command]
+async fn pick_new_knowledge_base_file(window: WebviewWindow) -> Option<String> {
+    AsyncFileDialog::new()
+        .add_filter("Everything Knowledge Base", &["everythingkb"])
+        .set_directory("/")
+        .set_parent(&window)
+        .save_file()
+        .await
+        .and_then(|x| PathBuf::from(x.path()).into_string().ok())
+}
+
+#[tauri::command]
+async fn serve_knowledge_base(path: String, state: State<'_, AppState>) -> Result<u16, String> {
+    state.serve_knowledge_base(path.into()).await
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -30,7 +60,12 @@ pub fn run() {
             Ok(())
         })
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![apply_theme_setting])
+        .invoke_handler(tauri::generate_handler![
+            apply_theme_setting,
+            pick_new_knowledge_base_file,
+            pick_knowledge_base_file,
+            serve_knowledge_base
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

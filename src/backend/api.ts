@@ -17,3 +17,15 @@ export const applyThemeSetting = (themeSetting: ThemeSetting) => {
         themeSetting: themeSettingToString[themeSetting],
     });
 };
+
+export const pickKnowledgeBaseFile = () =>
+    invoke<string | null>("pick_knowledge_base_file");
+
+export const pickPathForNewKnowledgeBaseFile = () =>
+    invoke<string | null>("pick_new_knowledge_base_file");
+
+/**
+ * @returns the port
+ */
+export const serveKnowledgeBase = (path: string) =>
+    invoke<number>("serve_knowledge_base", {path});
