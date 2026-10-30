@@ -1,0 +1,19 @@
+import {invoke, isTauri} from "@tauri-apps/api/core";
+
+import {System} from "@/state/common";
+import type {ThemeSetting} from "@/state/theme";
+import {Theme} from "@/state/theme";
+
+export const isApp = () => isTauri();
+
+const themeSettingToString = {
+    [Theme.Dark]: "dark",
+    [Theme.Light]: "light",
+    [System]: "system",
+} as const satisfies Record<ThemeSetting, string>;
+
+export const applyThemeSetting = (themeSetting: ThemeSetting) => {
+    invoke("apply_theme_setting", {
+        themeSetting: themeSettingToString[themeSetting],
+    });
+};

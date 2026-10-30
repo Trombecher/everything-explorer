@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+@utility bg-lush {
+    background-image:
+        radial-gradient(72% 81% at -8% 4%, #000f6882 0%, #073aff00 100%),
+        radial-gradient(75% 75% at 113% 86%, #5d00b13d 0%, #9500ff00 104%);
+    background-size: 100vw 100vh;
+    background-attachment: fixed;
+}
+
+@theme {
+    --font-sans: "Inter", "Inter Variable", system-ui;
+    --color-warm-white: oklch(0.97 0.0066 40.59);
+}
+
+html[data-theme="dark"] {
+    --color-white: oklch(14.5% 0 none);
+
+    --color-neutral-50: oklch(20% 0 none);
+    --color-neutral-100: oklch(24.5% 0 none);
+    --color-neutral-200: oklch(26.9% 0 none);
+    --color-neutral-300: oklch(37.1% 0 none);
+    --color-neutral-400: oklch(43.9% 0 none);
+    --color-neutral-500: oklch(55.6% 0 none);
+    --color-neutral-600: oklch(70.8% 0 none);
+    --color-neutral-700: oklch(87% 0 none);
+    --color-neutral-800: oklch(92.2% 0 none);
+    --color-neutral-900: oklch(97% 0 none);
+    --color-neutral-950: oklch(98.5% 0 none);
+
+    --color-black: white;
+}
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+* {
+    @apply outline-offset-2 outline-blue-500 focus-visible:outline-2;
+}
