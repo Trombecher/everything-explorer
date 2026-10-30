@@ -1,4 +1,6 @@
-use tauri::{Theme, WebviewWindow};
+use tauri::{Manager, Theme, WebviewWindow};
+
+use crate::state::AppState;
 
 mod server;
 mod state;
@@ -23,9 +25,8 @@ fn apply_theme_setting(theme_setting: FrontendThemeSetting, webview_window: Webv
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
-        .setup(|_| {
-            tauri::async_runtime::spawn(server::start());
-
+        .setup(|app| {
+            app.manage(AppState::new());
             Ok(())
         })
         .plugin(tauri_plugin_opener::init())

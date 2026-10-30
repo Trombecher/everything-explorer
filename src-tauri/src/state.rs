@@ -1,7 +1,15 @@
 use std::sync::Mutex;
 
-use everything_db::PersistantKnowledge;
+use crate::server::PrivateKnowledgeServer;
 
 pub struct AppState {
-    pub knowledge: Mutex<Option<PersistantKnowledge>>,
+    pub server: Mutex<Option<PrivateKnowledgeServer>>,
+}
+
+impl AppState {
+    pub fn new() -> Self {
+        Self {
+            server: Mutex::new(None),
+        }
+    }
 }

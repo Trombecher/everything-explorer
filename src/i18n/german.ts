@@ -14,4 +14,5 @@ export const german = {
     [Phrase.Connections]: () => "Verbindungen",
     [Phrase.Dark]: () => "Dunkel",
     [Phrase.Light]: () => "Hell",
+    [Phrase.Theme]: () => "Farbschema",
 } as const satisfies TranslationTable;

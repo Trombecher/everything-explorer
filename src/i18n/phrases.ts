@@ -16,6 +16,7 @@ export namespace Phrase {
         [Connections]: undefined;
         [Light]: undefined;
         [Dark]: undefined;
+        [Theme]: undefined;
     }>;
 
     export const AppSettings = Symbol();
@@ -30,6 +31,7 @@ export namespace Phrase {
     export const Connections = Symbol();
     export const Dark = Symbol();
     export const Light = Symbol();
+    export const Theme = Symbol();
 }
 
 export type Phrase =
@@ -44,4 +46,5 @@ export type Phrase =
     | typeof Phrase.Version
     | typeof Phrase.Connections
     | typeof Phrase.Dark
-    | typeof Phrase.Light;
+    | typeof Phrase.Light
+    | typeof Phrase.Theme;

@@ -31,7 +31,7 @@ export default () => {
     return (
         <Select<ThemeSetting, ThemeSettingStringId>
             class="contents"
-            description={<>Theme</>}
+            description={<>{appState.translate(Phrase.Theme, undefined)}</>}
             value={appState.state.themeSetting}
             onChange={newTheme => {
                 appState.setThemeSetting(newTheme);
