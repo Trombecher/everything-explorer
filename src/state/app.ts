@@ -44,6 +44,13 @@ export const detectBrowserLanguage = (): BrowserLanguage => {
     }
 };
 
+const defaultAppStateData = (): AppStateData => ({
+    languageSetting: System,
+    currentTab: Tab.Connections,
+    connections: [],
+    themeSetting: System,
+});
+
 export class AppState {
     public readonly state: DeepReadonly<AppStateData>;
     private readonly setState: SetStoreFunction<AppStateData>;
@@ -51,12 +58,9 @@ export class AppState {
     public readonly browserLanguage: () => BrowserLanguage;
 
     constructor() {
-        const [state, setState] = createStore<AppStateData>({
-            languageSetting: System,
-            currentTab: Tab.AppSettings,
-            connections: [],
-            themeSetting: System,
-        });
+        const [state, setState] = createStore<AppStateData>(
+            defaultAppStateData(),
+        );
 
         this.state = state;
         this.setState = setState;
@@ -78,6 +82,10 @@ export class AppState {
         onCleanup(() => {
             window.removeEventListener("languagechange", updateBrowserLanguage);
         });
+    }
+
+    public reset() {
+        this.setState(defaultAppStateData());
     }
 
     public languageIsNotAvailable(): boolean {
@@ -121,5 +129,37 @@ export class AppState {
 
     public setThemeSetting(newTheme: ThemeSetting) {
         this.setState("themeSetting", newTheme);
+    }
+
+    public addConnection(connection: KBConnection) {
+        this.setState("connections", connections => [
+            connection,
+            ...connections,
+        ]);
+    }
+
+    public connection(connectionIndex: number) {
+        const connection = this.state.connections[connectionIndex];
+        if (connection === undefined)
+            throw new Error(`invalid connection index ${connectionIndex}`);
+
+        return connection;
+    }
+
+    private modifyConnection(
+        connectionIndex: number,
+        transform: (connection: KBConnection) => KBConnection,
+    ) {
+        this.connection(connectionIndex);
+
+        this.setState("connections", connections =>
+            connections.map((c, i) =>
+                i === connectionIndex ? transform(c) : c,
+            ),
+        );
+    }
+
+    public setConnectionName(connectionIndex: number, newName: string) {
+        this.modifyConnection(connectionIndex, c => ({...c, name: newName}));
     }
 }
