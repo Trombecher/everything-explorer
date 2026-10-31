@@ -16,6 +16,12 @@ The frontend app is also designed to be run without a tauri backend. The client 
 
 The local webserver is NOT exposed over LAN and always binds to localhost (with OS-assigned) port. So we can be a bit relaxive with authentication and stuff.
 
+### API Management
+
+Tauri IPC relies on `src\backend\api.ts` and `src-tauri\src\lib.rs` having a synched api surface. The client side does not need Zod because the communication is trusted, but all endpoint names and shapes must be synched.
+
+The general-purpose (remote) knowledge base adapter in `src\connect\index.ts` must also be synched with the backend in `src-tauri\src\server\mod.rs`. This is the HTTP(s) / WebSocket traffic and the TypeScript client must not trust the data it receives (since the client is also used with untrusted remote connections).
+
 ## TypeScript
 
 ### Enum Style
