@@ -25,6 +25,48 @@ fn apply_theme_setting(theme_setting: FrontendThemeSetting, webview_window: Webv
     });
 }
 
+fn app_settings_path(app: &tauri::AppHandle) -> Result<PathBuf, String> {
+    app.path()
+        .app_config_dir()
+        .map(|dir| dir.join("settings.json"))
+        .map_err(|error| error.to_string())
+}
+
+/// Returns the stored app settings as a JSON string, or `None` if nothing has been stored yet.
+#[tauri::command]
+async fn get_app_settings(app: tauri::AppHandle) -> Result<Option<String>, String> {
+    let path = app_settings_path(&app)?;
+
+    match tokio::fs::read_to_string(path).await {
+        Ok(settings) => Ok(Some(settings)),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(None),
+        Err(error) => Err(error.to_string()),
+    }
+}
+
+/// Stores app settings, which must be a JSON object, as a JSON string.
+#[tauri::command]
+async fn set_app_settings(app: tauri::AppHandle, settings: String) -> Result<(), String> {
+    let parsed: serde_json::Value = serde_json::from_str(&settings)
+        .map_err(|error| format!("app settings must be valid JSON: {error}"))?;
+
+    if !parsed.is_object() {
+        return Err("app settings must be a JSON object".to_owned());
+    }
+
+    let path = app_settings_path(&app)?;
+
+    if let Some(parent) = path.parent() {
+        tokio::fs::create_dir_all(parent)
+            .await
+            .map_err(|error| error.to_string())?;
+    }
+
+    tokio::fs::write(path, settings)
+        .await
+        .map_err(|error| error.to_string())
+}
+
 #[tauri::command]
 async fn pick_knowledge_base_file(window: WebviewWindow) -> Option<String> {
     AsyncFileDialog::new()
@@ -80,6 +122,8 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             apply_theme_setting,
+            get_app_settings,
+            set_app_settings,
             pick_new_knowledge_base_file,
             pick_knowledge_base_file,
             serve_knowledge_base,

@@ -18,6 +18,17 @@ export const applyThemeSetting = (themeSetting: ThemeSetting) => {
     });
 };
 
+/**
+ * Returns the stored app settings as a JSON string, or `null` if nothing has been stored yet.
+ */
+export const getAppSettings = () => invoke<string | null>("get_app_settings");
+
+/**
+ * Stores app settings, which must be a JSON object serialized as a string.
+ */
+export const setAppSettings = (settings: string) =>
+    invoke<void>("set_app_settings", {settings});
+
 export const pickKnowledgeBaseFile = () =>
     invoke<string | null>("pick_knowledge_base_file");
 
