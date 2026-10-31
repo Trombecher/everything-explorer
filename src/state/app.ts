@@ -54,7 +54,7 @@ export const detectBrowserLanguage = (): BrowserLanguage => {
     }
 };
 
-const defaultAppStateData = (): InternalAppState => ({
+export const defaultAppStateData = (): InternalAppState => ({
     languageSetting: System,
     currentTab: Tab.Connections,
     connections: [
