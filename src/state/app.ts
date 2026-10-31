@@ -14,24 +14,30 @@ import type {ThemeSetting} from "./theme";
 
 export type LanguageSetting = Language | typeof System;
 
-export const KBConnectionTypeLocal = Symbol();
-export const KBConnectionTypeRemote = Symbol();
+export namespace ConnectionType {
+    export const Local = Symbol();
+    export const Remote = Symbol();
+}
 
-export type KBConnection = (
+export type ConnectionType =
+    | typeof ConnectionType.Local
+    | typeof ConnectionType.Remote;
+
+export type Connection = (
     | {
-          type: typeof KBConnectionTypeLocal;
+          type: typeof ConnectionType.Local;
           filePath: string;
       }
     | {
-          type: typeof KBConnectionTypeRemote;
+          type: typeof ConnectionType.Remote;
           url: string;
       }
 ) & {name: string};
 
-export type AppStateData = {
+export type InternalAppState = {
     languageSetting: LanguageSetting;
     currentTab: Tab;
-    connections: KBConnection[];
+    connections: Connection[];
     themeSetting: ThemeSetting;
 };
 
@@ -48,12 +54,12 @@ export const detectBrowserLanguage = (): BrowserLanguage => {
     }
 };
 
-const defaultAppStateData = (): AppStateData => ({
+const defaultAppStateData = (): InternalAppState => ({
     languageSetting: System,
     currentTab: Tab.Connections,
     connections: [
         {
-            type: KBConnectionTypeLocal,
+            type: ConnectionType.Local,
             filePath: "D:\\Downloads\\test.everythingkb",
             name: "Testing...",
         },
@@ -62,8 +68,8 @@ const defaultAppStateData = (): AppStateData => ({
 });
 
 export class AppState {
-    public readonly state: DeepReadonly<AppStateData>;
-    private readonly setState: SetStoreFunction<AppStateData>;
+    public readonly state: DeepReadonly<InternalAppState>;
+    private readonly setState: SetStoreFunction<InternalAppState>;
 
     public readonly connectionClient: Accessor<undefined | ConnectionClient>;
     private readonly setConnectionClient: Setter<undefined | ConnectionClient>;
@@ -71,7 +77,7 @@ export class AppState {
     public readonly browserLanguage: () => BrowserLanguage;
 
     constructor() {
-        const [state, setState] = createStore<AppStateData>(
+        const [state, setState] = createStore<InternalAppState>(
             defaultAppStateData(),
         );
 
@@ -144,7 +150,7 @@ export class AppState {
             // Let's just add that to the connections.
 
             this.addConnection({
-                type: KBConnectionTypeLocal,
+                type: ConnectionType.Local,
                 filePath: servingPath,
                 name: "",
             });
@@ -156,7 +162,7 @@ export class AppState {
     public localConnectionIndexFromPath(filePath: string): number | undefined {
         const index = this.state.connections.findIndex(
             connection =>
-                connection.type === KBConnectionTypeLocal &&
+                connection.type === ConnectionType.Local &&
                 connection.filePath === filePath,
         );
 
@@ -168,7 +174,7 @@ export class AppState {
 
         const connection = this.connection(connectionIndex);
 
-        if (connection.type === KBConnectionTypeLocal) {
+        if (connection.type === ConnectionType.Local) {
             if (!backend.isApp()) {
                 console.warn(
                     "tried to connect to local without a backend, ignoring...",
@@ -236,7 +242,7 @@ export class AppState {
         this.setState("themeSetting", newTheme);
     }
 
-    public addConnection(connection: KBConnection) {
+    public addConnection(connection: Connection) {
         this.setState("connections", connections => [
             connection,
             ...connections,
@@ -253,7 +259,7 @@ export class AppState {
 
     private modifyConnection(
         connectionIndex: number,
-        transform: (connection: KBConnection) => KBConnection,
+        transform: (connection: Connection) => Connection,
     ) {
         this.connection(connectionIndex);
 

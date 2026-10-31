@@ -8,7 +8,7 @@ import {Index, Match, Show, Switch} from "solid-js";
 
 import * as backend from "@/backend/api";
 import {useAppState} from "@/context";
-import {KBConnectionTypeLocal, KBConnectionTypeRemote} from "@/state/app";
+import {ConnectionType} from "@/state/app";
 
 import Button, {ButtonSeverity} from "./reuse/Button";
 
@@ -34,7 +34,7 @@ const AddConnectionButton = () => {
                                 if (path === null) return;
 
                                 appState.addConnection({
-                                    type: KBConnectionTypeLocal,
+                                    type: ConnectionType.Local,
                                     name: "",
                                     filePath: path,
                                 });
@@ -48,7 +48,7 @@ const AddConnectionButton = () => {
                                 if (path === null) return;
 
                                 appState.addConnection({
-                                    type: KBConnectionTypeLocal,
+                                    type: ConnectionType.Local,
                                     name: "",
                                     filePath: path,
                                 });
@@ -99,7 +99,7 @@ export default () => {
                         <Switch>
                             <Match
                                 when={
-                                    connection().type === KBConnectionTypeLocal
+                                    connection().type === ConnectionType.Local
                                 }
                             >
                                 <MonitorPc />
@@ -107,7 +107,7 @@ export default () => {
                             </Match>
                             <Match
                                 when={
-                                    connection().type === KBConnectionTypeRemote
+                                    connection().type === ConnectionType.Remote
                                 }
                             >
                                 <Globe />
