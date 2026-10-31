@@ -28,6 +28,7 @@ axum = "0.8.9"
 tokio = { version = "1.54.1", features = ["fs"] }
 tower-http = { version = "0.7.1", features = ["cors"] }
 rfd = "0.17.2"
+tauri-plugin-single-instance = "2.5.5"
 
 # Read the optimization guideline for more details: https://tauri.app/concept/size/#cargo-configuration
 [profile.release]
