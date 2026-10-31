@@ -55,13 +55,13 @@ async fn serve_knowledge_base(path: String, state: State<'_, AppState>) -> Resul
 }
 
 #[tauri::command]
-fn serving_knowledge_base(state: State<'_, AppState>) -> bool {
-    state.server.lock().unwrap().is_some()
+async fn serving_knowledge_base(state: State<'_, AppState>) -> Result<bool, ()> {
+    Ok(state.server.lock().await.is_some())
 }
 
 #[tauri::command]
 async fn stop_serving_knowledge_base(state: State<'_, AppState>) -> Result<(), ()> {
-    let maybe_server = state.server.lock().unwrap().take();
+    let maybe_server = state.server.lock().await.take();
 
     if let Some(server) = maybe_server {
         server.shutdown().await.map_err(|_| ())?;

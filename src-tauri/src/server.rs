@@ -59,7 +59,7 @@ mod routes_v1 {
     }
 }
 
-struct WebServerState {
+pub(crate) struct WebServerState {
     pub persistant_knowledge: Mutex<PersistantKnowledge>,
 }
 
@@ -82,6 +82,10 @@ impl WebServerState {
 
     pub fn path(&self) -> PathBuf {
         self.persistant_knowledge.lock().unwrap().path().into()
+    }
+
+    pub fn set_knowledge(&self, knowledge: PersistantKnowledge) {
+        *self.persistant_knowledge.lock().unwrap() = knowledge;
     }
 }
 

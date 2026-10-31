@@ -1,6 +1,7 @@
-use std::{path::PathBuf, sync::Mutex};
+use std::path::PathBuf;
 
 use everything_db::PersistantKnowledge;
+use tokio::sync::Mutex;
 
 use crate::server::PrivateKnowledgeServer;
 
@@ -23,22 +24,20 @@ impl AppState {
     }
 
     pub async fn serve_knowledge_base(&self, path: PathBuf) -> Result<u16, String> {
-        let maybe_server = self.server.lock().unwrap();
+        // Hold the guard for the whole operation so concurrent calls cannot race
+        // (e.g. both deciding to start a server). `tokio::sync::Mutex` guards are
+        // `Send`, so they may be held across await points, unlike `std` ones.
+        let mut maybe_server = self.server.lock().await;
 
         if let Some(server) = maybe_server.as_ref() {
             // Server already running.
             let port = server.port;
 
-            let serving_path = server.state.path();
-
-            if path != serving_path {
+            if path != server.state.path() {
                 // Create new db.
-
                 let new_pk = Self::create_db(path).await?;
 
-                let mut pk = server.state.persistant_knowledge.lock().unwrap();
-
-                *pk = new_pk;
+                server.state.set_knowledge(new_pk);
             }
 
             Ok(port)
@@ -53,9 +52,8 @@ impl AppState {
 
             let port = server.port;
 
-            let mut no_server = self.server.lock().unwrap();
-
-            *no_server = Some(server);
+            // Reuse the guard we already hold; locking again here would deadlock.
+            *maybe_server = Some(server);
 
             Ok(port)
         }
