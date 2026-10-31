@@ -143,11 +143,16 @@ const connectionToStored = (
  */
 export const serializeAppState = (
     state: DeepReadonly<InternalAppState>,
-): StoredAppState => ({
-    languageSetting: languageSettingToStored(state.languageSetting),
-    themeSetting: themeSettingToStored(state.themeSetting),
-    connections: state.connections.map(connectionToStored),
-});
+): StoredAppState => {
+    const languageSetting = languageSettingToStored(state.languageSetting);
+    const themeSetting = themeSettingToStored(state.themeSetting);
+
+    return {
+        ...(languageSetting === undefined ? {} : {languageSetting}),
+        ...(themeSetting === undefined ? {} : {themeSetting}),
+        connections: state.connections.map(connectionToStored),
+    };
+};
 
 /**
  * Converts stored app state into the internal representation.
