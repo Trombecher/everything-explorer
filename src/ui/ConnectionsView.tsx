@@ -4,7 +4,7 @@ import ChevronDownIcon from "lucide-solid/icons/chevron-down";
 import Globe from "lucide-solid/icons/globe";
 import MonitorPc from "lucide-solid/icons/monitor-pc";
 import PlusIcon from "lucide-solid/icons/plus";
-import {Index, Match, Switch} from "solid-js";
+import {Index, Match, Show, Switch} from "solid-js";
 
 import * as backend from "@/backend/api";
 import {useAppState} from "@/context";
@@ -75,11 +75,20 @@ export default () => {
     const appState = useAppState();
 
     return (
-        <div class="mx-auto my-3 max-w-3xl grow rounded-3xl border border-neutral-200 bg-white p-4">
+        <div class="mx-auto my-2 max-w-3xl grow rounded-3xl border border-neutral-200 bg-white p-4">
             <h2 class="mb-4 text-2xl font-semibold tracking-tight text-black">
                 Manage Knowledge Base Connections
             </h2>
             <AddConnectionButton />
+            <Show when={appState.isConnected()}>
+                <button
+                    onClick={() => {
+                        appState.disconnect();
+                    }}
+                >
+                    disconnect
+                </button>
+            </Show>
 
             <Index each={appState.state.connections}>
                 {(connection, connectionIndex) => (
@@ -116,42 +125,13 @@ export default () => {
                             <TextField.Input />
                         </TextField>
 
-                        <Switch>
-                            <Match
-                                when={(() => {
-                                    const c = connection();
-
-                                    return (
-                                        c.type === KBConnectionTypeLocal && c
-                                    );
-                                })()}
-                            >
-                                {connection => (
-                                    <>
-                                        <TextField
-                                            value={connection().filePath}
-                                        >
-                                            <TextField.Label />
-                                            <TextField.Input />
-                                        </TextField>
-                                        <button
-                                            onClick={async () => {
-                                                const port =
-                                                    await backend.serveKnowledgeBase(
-                                                        connection().filePath,
-                                                    );
-
-                                                console.log(
-                                                    `server with port ${port}`,
-                                                );
-                                            }}
-                                        >
-                                            connect
-                                        </button>
-                                    </>
-                                )}
-                            </Match>
-                        </Switch>
+                        <button
+                            onClick={async () => {
+                                appState.connect(connectionIndex);
+                            }}
+                        >
+                            connect
+                        </button>
                     </div>
                 )}
             </Index>

@@ -13,7 +13,7 @@ export class ConnectionClient {
 
     public async knownAtoms(limit: number): Promise<Atom[]> {
         const response = await fetch(
-            `${this.url}api/v1/knownAtoms?limit=${limit}`,
+            `${this.url}/api/v1/knownAtoms?limit=${limit}`,
         );
 
         return knownAtomsEndpointResponse

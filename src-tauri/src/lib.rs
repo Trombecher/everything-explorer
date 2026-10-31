@@ -31,6 +31,7 @@ async fn pick_knowledge_base_file(window: WebviewWindow) -> Option<String> {
         .add_filter("Everything Knowledge Base", &["everythingkb"])
         .set_directory("/")
         .set_parent(&window)
+        .set_title("Select Everything Knowledge Base")
         .pick_file()
         .await
         .and_then(|x| PathBuf::from(x.path()).into_string().ok())
@@ -42,6 +43,7 @@ async fn pick_new_knowledge_base_file(window: WebviewWindow) -> Option<String> {
         .add_filter("Everything Knowledge Base", &["everythingkb"])
         .set_directory("/")
         .set_parent(&window)
+        .set_title("Select location of new Everything Knowledge Base")
         .save_file()
         .await
         .and_then(|x| PathBuf::from(x.path()).into_string().ok())
@@ -50,6 +52,22 @@ async fn pick_new_knowledge_base_file(window: WebviewWindow) -> Option<String> {
 #[tauri::command]
 async fn serve_knowledge_base(path: String, state: State<'_, AppState>) -> Result<u16, String> {
     state.serve_knowledge_base(path.into()).await
+}
+
+#[tauri::command]
+fn serving_knowledge_base(state: State<'_, AppState>) -> bool {
+    state.server.lock().unwrap().is_some()
+}
+
+#[tauri::command]
+async fn stop_serving_knowledge_base(state: State<'_, AppState>) -> Result<(), ()> {
+    let maybe_server = state.server.lock().unwrap().take();
+
+    if let Some(server) = maybe_server {
+        server.shutdown().await.map_err(|_| ())?;
+    }
+
+    Ok(())
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -64,7 +82,9 @@ pub fn run() {
             apply_theme_setting,
             pick_new_knowledge_base_file,
             pick_knowledge_base_file,
-            serve_knowledge_base
+            serve_knowledge_base,
+            serving_knowledge_base,
+            stop_serving_knowledge_base
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

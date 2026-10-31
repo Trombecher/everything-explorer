@@ -1,5 +1,9 @@
+import type {Setter, Accessor} from "solid-js";
 import {createSignal, onMount, onCleanup} from "solid-js";
 import {type SetStoreFunction, createStore} from "solid-js/store";
+
+import * as backend from "@/backend/api";
+import {ConnectionClient} from "@/connect";
 
 import {Language, translate} from "../i18n";
 import type {Phrase} from "../i18n/phrases";
@@ -55,6 +59,9 @@ export class AppState {
     public readonly state: DeepReadonly<AppStateData>;
     private readonly setState: SetStoreFunction<AppStateData>;
 
+    public readonly connectionClient: Accessor<undefined | ConnectionClient>;
+    private readonly setConnectionClient: Setter<undefined | ConnectionClient>;
+
     public readonly browserLanguage: () => BrowserLanguage;
 
     constructor() {
@@ -82,6 +89,43 @@ export class AppState {
         onCleanup(() => {
             window.removeEventListener("languagechange", updateBrowserLanguage);
         });
+
+        // Connection client
+
+        const [connectionClient, setConnectionClient] = createSignal<
+            undefined | ConnectionClient
+        >(undefined);
+
+        this.connectionClient = connectionClient;
+        this.setConnectionClient = setConnectionClient;
+    }
+
+    public async disconnect() {
+        await backend.stopServer();
+        this.setConnectionClient(undefined);
+    }
+
+    public isConnected() {
+        return Boolean(this.connectionClient());
+    }
+
+    public async connect(connectionIndex: number) {
+        if (this.connectionClient()) throw new Error("already connected");
+
+        const connection = this.connection(connectionIndex);
+
+        if (connection.type === KBConnectionTypeLocal) {
+            // Spin up the server.
+            const port = await backend.startServer(connection.filePath);
+
+            this.setConnectionClient(
+                new ConnectionClient(`http://localhost:${port}`),
+            );
+        } else {
+            // Remote connection -> just connect directly.
+
+            this.setConnectionClient(new ConnectionClient(connection.url));
+        }
     }
 
     public reset() {

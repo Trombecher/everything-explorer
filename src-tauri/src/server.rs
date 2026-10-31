@@ -1,4 +1,7 @@
-use std::sync::Arc;
+use std::{
+    path::PathBuf,
+    sync::{Arc, Mutex},
+};
 
 use axum::{
     Router,
@@ -8,21 +11,29 @@ use axum::{
 use everything::knowledge::Knowledge;
 use everything_db::PersistantKnowledge;
 use tauri::async_runtime::JoinHandle;
-use tokio::sync::{Mutex, oneshot};
+use tokio::sync::oneshot;
 use tower_http::cors::CorsLayer;
 
 const TAURI_DEV_URL: &str = "http://localhost:1420";
 
 mod routes_v1 {
-    use std::io::Write;
     use std::sync::Arc;
+    use std::{io::Write, path::PathBuf};
 
     use axum::{body::Body, extract::State, http::header, response::IntoResponse};
 
     use crate::server::WebServerState;
 
+    pub async fn serving_knowledge_base_path(
+        State(state): State<Arc<WebServerState>>,
+    ) -> impl IntoResponse {
+        PathBuf::from(state.persistant_knowledge.lock().unwrap().path())
+            .into_string()
+            .expect("cannot convert pathbuf to string")
+    }
+
     pub async fn known_atoms(State(state): State<Arc<WebServerState>>) -> impl IntoResponse {
-        let knowledge = state.knowledge().await;
+        let knowledge = state.knowledge();
 
         let mut out = Vec::new();
         out.push(b'[');
@@ -49,7 +60,7 @@ mod routes_v1 {
 }
 
 struct WebServerState {
-    persistant_knowledge: Mutex<PersistantKnowledge>,
+    pub persistant_knowledge: Mutex<PersistantKnowledge>,
 }
 
 impl WebServerState {
@@ -61,18 +72,28 @@ impl WebServerState {
 }
 
 impl WebServerState {
-    pub async fn knowledge(&self) -> Knowledge {
-        self.persistant_knowledge.lock().await.knowledge().clone()
+    pub fn knowledge(&self) -> Knowledge {
+        self.persistant_knowledge
+            .lock()
+            .unwrap()
+            .knowledge()
+            .clone()
+    }
+
+    pub fn path(&self) -> PathBuf {
+        self.persistant_knowledge.lock().unwrap().path().into()
     }
 }
 
 pub struct PrivateKnowledgeServer {
     shutdown_trigger: Option<oneshot::Sender<()>>,
     task: JoinHandle<Result<(), std::io::Error>>,
+    pub state: Arc<WebServerState>,
+    pub port: u16,
 }
 
 impl PrivateKnowledgeServer {
-    pub async fn serve(persistant_knowledge: PersistantKnowledge) -> std::io::Result<(Self, u16)> {
+    pub async fn serve(persistant_knowledge: PersistantKnowledge) -> std::io::Result<Self> {
         let cors = CorsLayer::new()
             .allow_origin(TAURI_DEV_URL.parse::<HeaderValue>().unwrap())
             .allow_methods([Method::GET, Method::POST])
@@ -81,9 +102,13 @@ impl PrivateKnowledgeServer {
         let state = Arc::new(WebServerState::new(persistant_knowledge));
 
         let app = Router::new()
+            .route(
+                "/api/v1/servingPath",
+                get(routes_v1::serving_knowledge_base_path),
+            )
             .route("/api/v1/knownAtoms", get(routes_v1::known_atoms))
             .layer(cors)
-            .with_state(state);
+            .with_state(Arc::clone(&state));
 
         let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await?;
         let bound_to_port = listener.local_addr()?.port();
@@ -98,13 +123,12 @@ impl PrivateKnowledgeServer {
                 .await
         });
 
-        Ok((
-            Self {
-                shutdown_trigger: Some(shutdown_trigger),
-                task,
-            },
-            bound_to_port,
-        ))
+        Ok(Self {
+            shutdown_trigger: Some(shutdown_trigger),
+            task,
+            state,
+            port: bound_to_port,
+        })
     }
 
     pub async fn shutdown(mut self) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {

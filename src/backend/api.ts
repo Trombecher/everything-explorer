@@ -25,7 +25,19 @@ export const pickPathForNewKnowledgeBaseFile = () =>
     invoke<string | null>("pick_new_knowledge_base_file");
 
 /**
- * @returns the port
+ * Starts the server for serving a knowledge base at that path.
+ * @returns the port of the server on localhost.
  */
-export const serveKnowledgeBase = (path: string) =>
+export const startServer = (path: string) =>
     invoke<number>("serve_knowledge_base", {path});
+
+/**
+ * Returns whether the server is running.
+ */
+export const serverIsRunning = () => invoke<boolean>("serving_knowledge_base");
+
+/**
+ * Stops the server.
+ */
+export const stopServer = () =>
+    invoke<undefined>("stop_serving_knowledge_base");

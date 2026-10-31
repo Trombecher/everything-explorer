@@ -7,6 +7,7 @@ import {Theme} from "@/state/theme";
 
 import {useAppState} from "../context";
 import {Phrase} from "../i18n/phrases";
+import AllAtoms from "./AllAtoms";
 import ConnectionsView from "./ConnectionsView";
 import SettingsView from "./SettingsView";
 import SideBar from "./sidebar/SideBar";
@@ -53,13 +54,7 @@ export default () => {
             <SideBar />
             <Switch>
                 <Match when={appState.state.currentTab === Tab.AllAtoms}>
-                    <section class="flex flex-wrap gap-6 p-6">
-                        {Array.from({length: 100}, (_, i) => (
-                            <div class="min-h-48 w-48 rounded-2xl border border-neutral-800 bg-neutral-900 p-6">
-                                object @{(i * 823490458205) % 2349230423492}
-                            </div>
-                        ))}
-                    </section>
+                    <AllAtoms />
                 </Match>
                 <Match
                     when={appState.state.currentTab === Tab.InstanceProperties}
