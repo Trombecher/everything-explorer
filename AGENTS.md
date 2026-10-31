@@ -16,7 +16,9 @@ The frontend app is also designed to be run without a tauri backend. The client 
 
 The local webserver is NOT exposed over LAN and always binds to localhost (with OS-assigned) port. So we can be a bit relaxive with authentication and stuff.
 
-## TypeScript Specific Code Style
+## TypeScript
+
+### Enum Style
 
 Enums are declared by a namespace containing symbol constants in pascal case form. The namespace is also pascal case. Then the equally named type declaration is a union of all typeof's of the variants. Here an example:
 
@@ -34,6 +36,14 @@ export type SomeEnum =
 ```
 
 Please use this instead of inline string discriminants. This rule does not apply to wire objects, i.e. objects and enums that are serialized. The serialized objects are declared separately such that there is a translation layer between internal types and wire types.
+
+### I18n
+
+I18n lives in `src\i18n`. You can declare phrases for UI code and they must be translated to all declared languages (type-level enforcement).
+
+### Package Manager
+
+Nub is used as the package manager. It mirrors the Bun / pnpm CLI for common operations.
 
 ## TypeScript UI Code Style
 
