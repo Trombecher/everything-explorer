@@ -7,7 +7,6 @@ use crate::state::AppState;
 
 mod server;
 mod state;
-mod wire;
 
 #[derive(Copy, Clone, PartialEq, Eq, Debug, serde::Deserialize)]
 #[serde(rename_all = "lowercase")]
