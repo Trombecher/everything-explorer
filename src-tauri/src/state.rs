@@ -33,11 +33,11 @@ impl AppState {
             // Server already running.
             let port = server.port;
 
-            if path != server.state.path() {
+            if path != server.state.path().await {
                 // Create new db.
                 let new_pk = Self::create_db(path).await?;
 
-                server.state.set_knowledge(new_pk);
+                server.state.set_knowledge(new_pk).await;
             }
 
             Ok(port)

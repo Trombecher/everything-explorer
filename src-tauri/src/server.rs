@@ -1,7 +1,4 @@
-use std::{
-    path::PathBuf,
-    sync::{Arc, Mutex},
-};
+use std::{path::PathBuf, sync::Arc};
 
 use axum::{
     Router,
@@ -11,14 +8,14 @@ use axum::{
 use everything::knowledge::Knowledge;
 use everything_db::PersistantKnowledge;
 use tauri::async_runtime::JoinHandle;
-use tokio::sync::oneshot;
+use tokio::sync::{Mutex, oneshot};
 use tower_http::cors::CorsLayer;
 
 const TAURI_DEV_URL: &str = "http://localhost:1420";
 
 mod routes_v1 {
     use std::sync::Arc;
-    use std::{io::Write, path::PathBuf};
+    use std::io::Write;
 
     use axum::{body::Body, extract::State, http::header, response::IntoResponse};
 
@@ -27,13 +24,15 @@ mod routes_v1 {
     pub async fn serving_knowledge_base_path(
         State(state): State<Arc<WebServerState>>,
     ) -> impl IntoResponse {
-        PathBuf::from(state.persistant_knowledge.lock().unwrap().path())
+        state
+            .path()
+            .await
             .into_string()
             .expect("cannot convert pathbuf to string")
     }
 
     pub async fn known_atoms(State(state): State<Arc<WebServerState>>) -> impl IntoResponse {
-        let knowledge = state.knowledge();
+        let knowledge = state.knowledge().await;
 
         let mut out = Vec::new();
         out.push(b'[');
@@ -72,20 +71,16 @@ impl WebServerState {
 }
 
 impl WebServerState {
-    pub fn knowledge(&self) -> Knowledge {
-        self.persistant_knowledge
-            .lock()
-            .unwrap()
-            .knowledge()
-            .clone()
+    pub async fn knowledge(&self) -> Knowledge {
+        self.persistant_knowledge.lock().await.knowledge().clone()
     }
 
-    pub fn path(&self) -> PathBuf {
-        self.persistant_knowledge.lock().unwrap().path().into()
+    pub async fn path(&self) -> PathBuf {
+        self.persistant_knowledge.lock().await.path().to_path_buf()
     }
 
-    pub fn set_knowledge(&self, knowledge: PersistantKnowledge) {
-        *self.persistant_knowledge.lock().unwrap() = knowledge;
+    pub async fn set_knowledge(&self, knowledge: PersistantKnowledge) {
+        *self.persistant_knowledge.lock().await = knowledge;
     }
 }
 
