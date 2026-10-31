@@ -14,12 +14,13 @@ use tower_http::cors::CorsLayer;
 const TAURI_DEV_URL: &str = "http://localhost:1420";
 
 mod routes_v1 {
-    use std::sync::Arc;
     use std::io::Write;
+    use std::sync::Arc;
 
-    use axum::{body::Body, extract::State, http::header, response::IntoResponse};
+    use axum::{Json, body::Body, extract::State, http::header, response::IntoResponse};
+    use everything::model::Object;
 
-    use crate::server::WebServerState;
+    use crate::{server::WebServerState, wire::JsonObject};
 
     pub async fn serving_knowledge_base_path(
         State(state): State<Arc<WebServerState>>,
@@ -29,6 +30,17 @@ mod routes_v1 {
             .await
             .into_string()
             .expect("cannot convert pathbuf to string")
+    }
+
+    pub async fn values_of_object(
+        Json(json): Json<JsonObject>,
+        State(state): State<Arc<WebServerState>>,
+    ) -> JsonObject {
+        let knowledge = state.knowledge().await;
+        let object = json.into();
+        let values = knowledge.values_of(&object);
+
+        JsonObject::from(Object::Set(values))
     }
 
     pub async fn known_atoms(State(state): State<Arc<WebServerState>>) -> impl IntoResponse {
