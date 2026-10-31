@@ -43,6 +43,8 @@ export default () => {
         createEffect(() => {
             backend.applyThemeSetting(appState.state.themeSetting);
         });
+
+        appState.tryReconnectToLocalServer();
     }
 
     createEffect(() => {

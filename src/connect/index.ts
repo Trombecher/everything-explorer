@@ -23,4 +23,11 @@ export class ConnectionClient {
                 value: BigInt(atomString),
             }));
     }
+
+    /**
+     * Returns the path of the knowledge base file the server is serving.
+     */
+    public async servingPath(): Promise<string> {
+        return (await fetch(`${this.url}/api/v1/servingPath`)).text();
+    }
 }

@@ -51,7 +51,13 @@ export const detectBrowserLanguage = (): BrowserLanguage => {
 const defaultAppStateData = (): AppStateData => ({
     languageSetting: System,
     currentTab: Tab.Connections,
-    connections: [],
+    connections: [
+        {
+            type: KBConnectionTypeLocal,
+            filePath: "D:\\Downloads\\test.everythingkb",
+            name: "Testing...",
+        },
+    ],
     themeSetting: System,
 });
 
@@ -101,12 +107,60 @@ export class AppState {
     }
 
     public async disconnect() {
-        await backend.stopServer();
+        if (backend.isApp()) await backend.stopServer();
         this.setConnectionClient(undefined);
     }
 
     public isConnected() {
         return Boolean(this.connectionClient());
+    }
+
+    /**
+     * Reconnects to the
+     */
+    public async tryReconnectToLocalServer() {
+        if (!backend.isApp()) {
+            console.warn("`tryReconnect` called when not in app");
+            return;
+        }
+
+        const serverRunningOnPort = await backend.serverIsRunningOnPort();
+
+        if (serverRunningOnPort === null) {
+            // No need to reconnect because the server is not running.
+            return;
+        }
+
+        const connectionClient = new ConnectionClient(
+            `http://localhost:${serverRunningOnPort}`,
+        );
+
+        const servingPath = await connectionClient.servingPath();
+
+        const connectionIndex = this.localConnectionIndexFromPath(servingPath);
+
+        if (connectionIndex === undefined) {
+            // The server is serving an unknown file.
+            // Let's just add that to the connections.
+
+            this.addConnection({
+                type: KBConnectionTypeLocal,
+                filePath: servingPath,
+                name: "",
+            });
+        }
+
+        this.setConnectionClient(connectionClient);
+    }
+
+    public localConnectionIndexFromPath(filePath: string): number | undefined {
+        const index = this.state.connections.findIndex(
+            connection =>
+                connection.type === KBConnectionTypeLocal &&
+                connection.filePath === filePath,
+        );
+
+        return index === -1 ? undefined : index;
     }
 
     public async connect(connectionIndex: number) {
@@ -115,8 +169,15 @@ export class AppState {
         const connection = this.connection(connectionIndex);
 
         if (connection.type === KBConnectionTypeLocal) {
+            if (!backend.isApp()) {
+                console.warn(
+                    "tried to connect to local without a backend, ignoring...",
+                );
+                return;
+            }
+
             // Spin up the server.
-            const port = await backend.startServer(connection.filePath);
+            const port = await backend.servePath(connection.filePath);
 
             this.setConnectionClient(
                 new ConnectionClient(`http://localhost:${port}`),

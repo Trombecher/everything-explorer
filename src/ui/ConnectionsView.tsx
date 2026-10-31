@@ -8,18 +8,16 @@ import {Index, Match, Show, Switch} from "solid-js";
 
 import * as backend from "@/backend/api";
 import {useAppState} from "@/context";
-import {
-    KBConnection,
-    KBConnectionTypeLocal,
-    KBConnectionTypeRemote,
-} from "@/state/app";
+import {KBConnectionTypeLocal, KBConnectionTypeRemote} from "@/state/app";
+
+import Button, {ButtonSeverity} from "./reuse/Button";
 
 const AddConnectionButton = () => {
     const appState = useAppState();
 
     return (
         <DropdownMenu>
-            <DropdownMenu.Trigger class="mb-4 flex rounded-xl bg-blue-500 py-1 pr-1 pl-3 font-medium text-white transition select-none data-expanded:bg-blue-600 dark:text-black">
+            <DropdownMenu.Trigger class="flex rounded-xl bg-blue-500 py-1 pr-1 pl-3 font-medium text-white transition select-none data-expanded:bg-blue-600 dark:text-black">
                 <span>Add Knowledge Base</span>
                 <DropdownMenu.Icon class="origin-center transition-transform data-expanded:-scale-100">
                     <ChevronDownIcon />
@@ -79,20 +77,25 @@ export default () => {
             <h2 class="mb-4 text-2xl font-semibold tracking-tight text-black">
                 Manage Knowledge Base Connections
             </h2>
-            <AddConnectionButton />
-            <Show when={appState.isConnected()}>
-                <button
-                    onClick={() => {
-                        appState.disconnect();
-                    }}
-                >
-                    disconnect
-                </button>
-            </Show>
+
+            <div class="mb-4 flex">
+                <AddConnectionButton />
+                <Show when={appState.isConnected()}>
+                    <Button
+                        class="ml-auto"
+                        severity={ButtonSeverity.Danger}
+                        onClick={() => {
+                            appState.disconnect();
+                        }}
+                    >
+                        disconnect
+                    </Button>
+                </Show>
+            </div>
 
             <Index each={appState.state.connections}>
                 {(connection, connectionIndex) => (
-                    <div class="mb-2 flex gap-2 rounded-2xl border border-neutral-200 p-3">
+                    <div class="mb-2 flex items-center gap-2 rounded-2xl border border-neutral-200 p-3">
                         <Switch>
                             <Match
                                 when={
@@ -125,13 +128,14 @@ export default () => {
                             <TextField.Input />
                         </TextField>
 
-                        <button
+                        <Button
+                            class="ml-auto"
                             onClick={async () => {
                                 appState.connect(connectionIndex);
                             }}
                         >
-                            connect
-                        </button>
+                            Connect
+                        </Button>
                     </div>
                 )}
             </Index>

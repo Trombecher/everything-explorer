@@ -55,8 +55,8 @@ async fn serve_knowledge_base(path: String, state: State<'_, AppState>) -> Resul
 }
 
 #[tauri::command]
-async fn serving_knowledge_base(state: State<'_, AppState>) -> Result<bool, ()> {
-    Ok(state.server.lock().await.is_some())
+async fn server_is_running_on_port(state: State<'_, AppState>) -> Result<Option<u16>, ()> {
+    Ok(state.server.lock().await.as_ref().map(|server| server.port))
 }
 
 #[tauri::command]
@@ -83,7 +83,7 @@ pub fn run() {
             pick_new_knowledge_base_file,
             pick_knowledge_base_file,
             serve_knowledge_base,
-            serving_knowledge_base,
+            server_is_running_on_port,
             stop_serving_knowledge_base
         ])
         .run(tauri::generate_context!())
