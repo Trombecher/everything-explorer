@@ -3,7 +3,7 @@ use std::{path::PathBuf, sync::Arc};
 use axum::{
     Router,
     http::{HeaderValue, Method, header},
-    routing::get,
+    routing::{get, post},
 };
 use everything::knowledge::Knowledge;
 use everything_db::PersistantKnowledge;
@@ -14,10 +14,9 @@ use tower_http::cors::CorsLayer;
 const TAURI_DEV_URL: &str = "http://localhost:1420";
 
 mod routes_v1 {
-    use std::io::Write;
     use std::sync::Arc;
 
-    use axum::{Json, body::Body, extract::State, http::header, response::IntoResponse};
+    use axum::{Json, extract::State, http::StatusCode, response::IntoResponse};
     use everything::model::Object;
 
     use crate::{server::WebServerState, wire::JsonObject};
@@ -33,39 +32,25 @@ mod routes_v1 {
     }
 
     pub async fn values_of_object(
-        Json(json): Json<JsonObject>,
         State(state): State<Arc<WebServerState>>,
-    ) -> JsonObject {
+        Json(json): Json<JsonObject>,
+    ) -> Result<Json<JsonObject>, (StatusCode, String)> {
+        let object =
+            Object::try_from(json).map_err(|error| (StatusCode::BAD_REQUEST, error.to_string()))?;
         let knowledge = state.knowledge().await;
-        let object = json.into();
         let values = knowledge.values_of(&object);
 
-        JsonObject::from(Object::Set(values))
+        Ok(Json(JsonObject::from(Object::Set(values))))
     }
 
-    pub async fn known_atoms(State(state): State<Arc<WebServerState>>) -> impl IntoResponse {
+    pub async fn known_atoms(State(state): State<Arc<WebServerState>>) -> Json<Vec<String>> {
         let knowledge = state.knowledge().await;
 
-        let mut out = Vec::new();
-        out.push(b'[');
-
-        for (i, atom) in knowledge.known_atoms().enumerate() {
-            if i != 0 {
-                out.push(b',');
-            }
-
-            out.push(b'"');
-
-            write!(out, "{}", atom.0).unwrap();
-
-            out.push(b'"');
-        }
-
-        out.push(b']');
-
-        (
-            [(header::CONTENT_TYPE, "application/json")],
-            Body::from(out),
+        Json(
+            knowledge
+                .known_atoms()
+                .map(|atom| atom.0.to_string())
+                .collect(),
         )
     }
 }
@@ -118,6 +103,7 @@ impl PrivateKnowledgeServer {
                 get(routes_v1::serving_knowledge_base_path),
             )
             .route("/api/v1/knownAtoms", get(routes_v1::known_atoms))
+            .route("/api/v1/valuesOf", post(routes_v1::values_of_object))
             .layer(cors)
             .with_state(Arc::clone(&state));
 
