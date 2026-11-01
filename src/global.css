@@ -10,15 +10,23 @@
 
 @theme {
     --font-sans: "Inter", "Inter Variable", system-ui;
-    --color-warm-white: oklch(0.97 0.0066 40.59);
+
+    --color-neutral-100: oklch(0.97 0.0066 40.59);
+    --color-neutral-200: oklch(0.92 0.0066 40.59);
+    --color-neutral-300: oklch(87.1% 0.006 40.59);
+    --color-neutral-400: oklch(70.5% 0.015 40.59);
+    --color-neutral-500: oklch(55.2% 0.016 40.59);
+    --color-neutral-600: oklch(44.2% 0.017 40.59);
+    --color-neutral-700: oklch(37% 0.013 40.59);
+    --color-neutral-800: oklch(27.4% 0.006 40.59);
+    --color-neutral-900: oklch(21% 0.006 40.59);
 }
 
 html[data-theme="dark"] {
-    --color-white: oklch(14.5% 0 none);
+    --color-white: oklch(15% 0 none);
 
-    --color-neutral-50: oklch(20% 0 none);
-    --color-neutral-100: oklch(24.5% 0 none);
-    --color-neutral-200: oklch(26.9% 0 none);
+    --color-neutral-100: oklch(20% 0 none);
+    --color-neutral-200: oklch(26% 0 none);
     --color-neutral-300: oklch(37.1% 0 none);
     --color-neutral-400: oklch(43.9% 0 none);
     --color-neutral-500: oklch(55.6% 0 none);
@@ -26,7 +34,6 @@ html[data-theme="dark"] {
     --color-neutral-700: oklch(87% 0 none);
     --color-neutral-800: oklch(92.2% 0 none);
     --color-neutral-900: oklch(97% 0 none);
-    --color-neutral-950: oklch(98.5% 0 none);
 
     --color-black: white;
 }

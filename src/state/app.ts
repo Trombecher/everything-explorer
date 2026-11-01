@@ -169,8 +169,6 @@ export class AppState {
     }
 
     public async connect(connectionIndex: number) {
-        if (this.connectionClient()) throw new Error("already connected");
-
         const connection = this.connection(connectionIndex);
 
         if (connection.type === ConnectionType.Local) {
