@@ -76,10 +76,9 @@ export class AppState {
 
     public readonly browserLanguage: () => BrowserLanguage;
 
-    constructor() {
-        const [state, setState] = createStore<InternalAppState>(
-            defaultAppStateData(),
-        );
+    constructor(initial: InternalAppState) {
+        // TODO: invariants check
+        const [state, setState] = createStore<InternalAppState>(initial);
 
         this.state = state;
         this.setState = setState;

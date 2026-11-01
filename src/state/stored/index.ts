@@ -41,3 +41,5 @@ export const serializeAppState = (
     version: CURRENT_VERSION,
     ...v1.serializeAppState(state),
 });
+
+export const localStorageAppStateKey = "appState";

@@ -4,12 +4,17 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#000000" />
+        <meta name="color-scheme" content="dark light" />
         <title>Tauri + Solid + Typescript App</title>
     </head>
 
     <body
         class="bg-warm-white flex min-h-full pr-2 text-neutral-800 dark:bg-neutral-50"
+        style="background-color: initial"
     >
+        <p id="loading" style="font-family: system-ui; text-align: center">
+            Loading Everything...
+        </p>
         <noscript>You need to enable JavaScript to run this app.</noscript>
 
         <script src="/src/main.ts" type="module"></script>
