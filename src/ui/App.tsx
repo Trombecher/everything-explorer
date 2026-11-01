@@ -8,7 +8,7 @@ import {Theme} from "@/state/theme";
 import {useAppState} from "../context";
 import {Phrase} from "../i18n/phrases";
 import AllAtoms from "./AllAtoms";
-import ConnectionsView from "./ConnectionsView";
+import Home from "./Home";
 import SettingsView from "./SettingsView";
 import SideBar from "./sidebar/SideBar";
 import {Tab} from "./sidebar/tabs";
@@ -66,8 +66,8 @@ export default () => {
                 <Match when={appState.state.currentTab === Tab.AppSettings}>
                     <SettingsView />
                 </Match>
-                <Match when={appState.state.currentTab === Tab.Connections}>
-                    <ConnectionsView />
+                <Match when={appState.state.currentTab === Tab.Home}>
+                    <Home />
                 </Match>
             </Switch>
         </>

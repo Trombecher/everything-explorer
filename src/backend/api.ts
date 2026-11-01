@@ -53,3 +53,5 @@ export const serverIsRunningOnPort = () =>
  */
 export const stopServer = () =>
     invoke<undefined>("stop_serving_knowledge_base");
+
+export const osUserFullName = () => invoke<string>("os_user_full_name");

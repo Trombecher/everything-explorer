@@ -112,6 +112,11 @@ async fn stop_serving_knowledge_base(state: State<'_, AppState>) -> Result<(), (
     Ok(())
 }
 
+#[tauri::command]
+async fn os_user_full_name() -> Result<String, String> {
+    whoami::realname().map_err(|error| error.to_string())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -135,7 +140,8 @@ pub fn run() {
             pick_knowledge_base_file,
             serve_knowledge_base,
             server_is_running_on_port,
-            stop_serving_knowledge_base
+            stop_serving_knowledge_base,
+            os_user_full_name
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

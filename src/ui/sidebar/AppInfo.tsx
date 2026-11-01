@@ -1,4 +1,4 @@
-import DatabaseCog from "lucide-solid/icons/database-cog";
+import HouseIcon from "lucide-solid/icons/house";
 import SettingsIcon from "lucide-solid/icons/settings";
 
 import {useAppState} from "@/context";
@@ -18,7 +18,7 @@ export default () => {
             <p class="mb-4 px-2 text-sm">
                 {appState.translate(Phrase.Version, undefined)} {APP_VERSION}
             </p>
-            <TabButton icon={<DatabaseCog />} tab={Tab.Connections} />
+            <TabButton icon={<HouseIcon />} tab={Tab.Home} />
             <TabButton icon={<SettingsIcon />} tab={Tab.AppSettings} />
         </div>
     );

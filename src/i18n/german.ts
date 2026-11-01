@@ -11,8 +11,9 @@ export const german = {
     [Phrase.System]: () => "System",
     [Phrase.Language]: () => "Sprache",
     [Phrase.Version]: () => "Version",
-    [Phrase.Connections]: () => "Verbindungen",
+    [Phrase.Home]: () => "Startseite",
     [Phrase.Dark]: () => "Dunkel",
     [Phrase.Light]: () => "Hell",
     [Phrase.Theme]: () => "Farbschema",
+    [Phrase.WelcomeBack]: () => "Willkommen zurück",
 } as const satisfies TranslationTable;

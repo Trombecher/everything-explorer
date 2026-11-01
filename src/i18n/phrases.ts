@@ -13,10 +13,11 @@ export namespace Phrase {
         [System]: undefined;
         [Language]: undefined;
         [Version]: undefined;
-        [Connections]: undefined;
+        [Home]: undefined;
         [Light]: undefined;
         [Dark]: undefined;
         [Theme]: undefined;
+        [WelcomeBack]: undefined;
     }>;
 
     export const AppSettings = Symbol();
@@ -28,10 +29,11 @@ export namespace Phrase {
     export const System = Symbol();
     export const Language = Symbol();
     export const Version = Symbol();
-    export const Connections = Symbol();
     export const Dark = Symbol();
     export const Light = Symbol();
     export const Theme = Symbol();
+    export const Home = Symbol();
+    export const WelcomeBack = Symbol();
 }
 
 export type Phrase =
@@ -44,7 +46,8 @@ export type Phrase =
     | typeof Phrase.System
     | typeof Phrase.Language
     | typeof Phrase.Version
-    | typeof Phrase.Connections
     | typeof Phrase.Dark
     | typeof Phrase.Light
-    | typeof Phrase.Theme;
+    | typeof Phrase.Theme
+    | typeof Phrase.Home
+    | typeof Phrase.WelcomeBack;
