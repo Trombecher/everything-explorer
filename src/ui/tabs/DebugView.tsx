@@ -1,28 +1,33 @@
 import {ObjectType} from "@/model";
-import {NodeType} from "@/model/nodes";
+import {Atom} from "@/model/atoms";
 
-import NodeView from "../NodeView";
+import ObjectView from "../ObjectView";
 
 export default () => {
     return (
         <div>
-            <NodeView
-                node={{
-                    type: NodeType.Function,
-                    body: {
-                        type: NodeType.Function,
-                        body: {
-                            type: NodeType.Plus,
-                            first: {
-                                type: NodeType.Literal,
-                                object: {type: ObjectType.Integer, value: 1n},
-                            },
-                            second: {
-                                type: NodeType.Literal,
-                                object: {type: ObjectType.Integer, value: -4n},
+            <ObjectView
+                object={{
+                    type: ObjectType.Set,
+                    elements: [
+                        {
+                            type: ObjectType.Construction,
+                            constructor: Atom.NodeFunction,
+                            value: {
+                                type: ObjectType.Set,
+                                elements: [
+                                    {
+                                        type: ObjectType.Construction,
+                                        constructor: Atom.NodeLiteral,
+                                        value: {
+                                            type: ObjectType.Integer,
+                                            value: 42n,
+                                        },
+                                    },
+                                ],
                             },
                         },
-                    },
+                    ],
                 }}
             />
         </div>

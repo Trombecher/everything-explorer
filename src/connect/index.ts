@@ -1,6 +1,7 @@
 import z from "zod";
 
-import {ObjectType, type Atom, type Object} from "@/model";
+import {ObjectType, type Object} from "@/model";
+import type {Atom} from "@/model/atoms";
 
 import {
     jsonObjectToObject,

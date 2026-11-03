@@ -2,29 +2,6 @@ import z from "zod";
 
 import {ObjectType, type Object as KnowledgeObject} from "@/model";
 
-export type JsonNode =
-    | {
-          readonly type: "plus";
-          readonly first: JsonNode;
-          readonly second: JsonNode;
-      }
-    | {readonly type: "literal"; readonly object: JsonObject}
-    | {readonly type: "function"; readonly body: JsonObject};
-
-export const jsonNodeSchema: z.ZodType<JsonNode> = z.lazy(() =>
-    z.discriminatedUnion("type", [
-        z.object({
-            type: z.literal("plus"),
-            first: jsonNodeSchema,
-            second: jsonNodeSchema,
-        }),
-        z.object({
-            type: z.literal("literal"),
-            object: jsonObjectSchema,
-        }),
-    ]),
-);
-
 /**
  * The JSON representation of an object, mirroring `JsonObject` in the Rust
  * server's wire module.
@@ -61,15 +38,6 @@ export type JsonObject =
     | {
           readonly type: "set";
           readonly elements: readonly JsonObject[];
-      }
-    | {
-          readonly type: "function";
-          readonly body: JsonObject;
-      }
-    | {
-          readonly type: "plus";
-          readonly first: JsonObject;
-          readonly second: JsonObject;
       };
 
 export const jsonObjectSchema: z.ZodType<JsonObject> = z.lazy(() =>
@@ -102,15 +70,6 @@ export const jsonObjectSchema: z.ZodType<JsonObject> = z.lazy(() =>
         z.object({
             type: z.literal("set"),
             elements: z.array(jsonObjectSchema),
-        }),
-        z.object({
-            type: z.literal("plus"),
-            first: jsonObjectSchema,
-            second: jsonObjectSchema,
-        }),
-        z.object({
-            type: z.literal("function"),
-            body: jsonObjectSchema,
         }),
     ]),
 );
@@ -172,17 +131,6 @@ export const jsonObjectToObject = (json: JsonObject): KnowledgeObject => {
                 type: ObjectType.Set,
                 elements: json.elements.map(jsonObjectToObject),
             };
-        case "function":
-            return {
-                type: ObjectType.Function,
-                body: jsonObjectToObject(json.body),
-            };
-        case "plus":
-            return {
-                type: ObjectType.Plus,
-                first: jsonObjectToObject(json.first),
-                second: jsonObjectToObject(json.second),
-            };
     }
 };
 
@@ -226,14 +174,6 @@ export const objectToJsonObject = (object: KnowledgeObject): JsonObject => {
             return {
                 type: "set",
                 elements: object.elements.map(objectToJsonObject),
-            };
-        case ObjectType.Function:
-            return {type: "function", body: objectToJsonObject(object.body)};
-        case ObjectType.Plus:
-            return {
-                type: "plus",
-                first: objectToJsonObject(object.first),
-                second: objectToJsonObject(object.second),
             };
     }
 };

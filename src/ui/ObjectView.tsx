@@ -1,7 +1,10 @@
 import {Match, Switch, type Setter} from "solid-js";
 
 import {ObjectType, type Object} from "@/model";
+import {objectToNode} from "@/model/nodes";
 import {variant} from "@/util";
+
+import NodeView from "./NodeView";
 
 export default (props: {object: Object; setObject?: Setter<Object>}) => {
     return (
@@ -19,6 +22,9 @@ export default (props: {object: Object; setObject?: Setter<Object>}) => {
                         {Number(atom().value)}
                     </div>
                 )}
+            </Match>
+            <Match when={objectToNode(props.object)}>
+                {node => <NodeView node={node()} setObject={props.setObject} />}
             </Match>
         </Switch>
     );
