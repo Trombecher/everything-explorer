@@ -5,7 +5,15 @@ import ObjectView from "../ObjectView";
 export default () => {
     return (
         <div>
-            <ObjectView object={{type: ObjectType.Atom, value: 42n}} />
+            <ObjectView
+                object={{
+                    type: ObjectType.Function,
+                    body: {
+                        type: ObjectType.Function,
+                        body: {type: ObjectType.Integer, value: 0n},
+                    },
+                }}
+            />
         </div>
     );
 };

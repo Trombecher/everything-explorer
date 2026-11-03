@@ -1,4 +1,3 @@
-import BugIcon from "lucide-solid/icons/bug";
 import GlobeIcon from "lucide-solid/icons/globe";
 import Settings2Icon from "lucide-solid/icons/settings-2";
 
@@ -13,7 +12,6 @@ export default () => {
             {(
                 [
                     [Tab.AllAtoms, <GlobeIcon />],
-                    [Tab.Debug, <BugIcon />],
                     [Tab.InstanceProperties, <Settings2Icon />],
                 ] as const
             ).map(([tab, icon]) => (

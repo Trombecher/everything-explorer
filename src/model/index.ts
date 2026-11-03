@@ -6,6 +6,7 @@ export namespace ObjectType {
     export const Integer = Symbol();
     export const Character = Symbol();
     export const Byte = Symbol();
+    export const Function = Symbol();
 }
 
 export type ObjectType =
@@ -15,7 +16,13 @@ export type ObjectType =
     | typeof ObjectType.Text
     | typeof ObjectType.Integer
     | typeof ObjectType.Character
-    | typeof ObjectType.Byte;
+    | typeof ObjectType.Byte
+    | typeof ObjectType.Function;
+
+export type FunctionObject = {
+    readonly type: typeof ObjectType.Function;
+    readonly body: Object;
+};
 
 export type Atom = {
     readonly type: typeof ObjectType.Atom;
@@ -60,4 +67,5 @@ export type Object =
     | TextObject
     | IntegerObject
     | CharacterObject
-    | ByteObject;
+    | ByteObject
+    | FunctionObject;

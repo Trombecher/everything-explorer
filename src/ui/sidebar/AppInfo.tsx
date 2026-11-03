@@ -1,3 +1,4 @@
+import BugIcon from "lucide-solid/icons/bug";
 import HouseIcon from "lucide-solid/icons/house";
 import SettingsIcon from "lucide-solid/icons/settings";
 
@@ -20,6 +21,7 @@ export default () => {
             </p>
             <TabButton icon={<HouseIcon />} tab={Tab.Home} />
             <TabButton icon={<SettingsIcon />} tab={Tab.AppSettings} />
+            <TabButton icon={<BugIcon />} tab={Tab.Debug} />
         </div>
     );
 };
