@@ -6,15 +6,65 @@
         <meta name="theme-color" content="#000000" />
         <meta name="color-scheme" content="dark light" />
         <title>Tauri + Solid + Typescript App</title>
+
+        <style data-loading>
+            #loading-bar {
+                margin-top: 0.5rem;
+                width: 12rem;
+                border-radius: 9999px;
+                height: 8px;
+                background-color: color-mix(
+                    in oklab,
+                    currentColor 10%,
+                    transparent
+                );
+                overflow: hidden;
+                position: relative;
+            }
+
+            #loading-bar::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                background: currentColor;
+                transform: scaleX(0);
+                transform-origin: left;
+                animation: gray-to-white 5s cubic-bezier(0, 0.9, 0.42, 1)
+                    forwards;
+            }
+
+            @keyframes gray-to-white {
+                to {
+                    transform: scaleX(1);
+                }
+            }
+        </style>
     </head>
 
     <body
         class="flex min-h-full bg-neutral-100 pr-2 text-neutral-800"
-        style="background-color: initial"
+        style="
+            background-color: initial;
+            color: initial;
+            display: block;
+            padding: initial;
+        "
     >
-        <p id="loading" style="font-family: system-ui; text-align: center">
-            Loading Everything...
-        </p>
+        <div
+            data-loading
+            style="
+                height: 100vh;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            "
+        >
+            <p style="font-family: system-ui; text-align: center">
+                Loading Everything...
+            </p>
+            <div id="loading-bar"></div>
+        </div>
         <noscript>You need to enable JavaScript to run this app.</noscript>
 
         <script src="/src/main.ts" type="module"></script>

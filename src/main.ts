@@ -20,10 +20,14 @@ const loadAppState = async (): Promise<object> => {
     }
 };
 
-// Block until initial app state is loaded.
-loadedInitialState.state = deserializeAppState(await loadAppState());
+const loadingAppState = loadAppState();
 
-document.body.style.backgroundColor = "";
-document.querySelector("#loading")?.remove();
+const elementsToRemove = document.querySelectorAll("[data-loading]");
+
+// Block until initial app state is loaded.
+loadedInitialState.state = deserializeAppState(await loadingAppState);
+
+document.body.style = "";
+elementsToRemove.forEach(element => element.remove());
 
 render(Root, document.body);
