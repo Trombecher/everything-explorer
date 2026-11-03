@@ -1,3 +1,4 @@
+import BoxIcon from "lucide-solid/icons/box";
 import PlusIcon from "lucide-solid/icons/plus";
 import type {Setter} from "solid-js";
 import {Match, Switch} from "solid-js";
@@ -32,7 +33,12 @@ const NodeView = (props: {node: Node; setObject?: Setter<Object>}) => {
                 )}
             </Match>
             <Match when={variant(props.node, NodeType.Literal)}>
-                {literalNode => <ObjectView object={literalNode().object} />}
+                {literalNode => (
+                    <div class="flex items-center gap-1 rounded-lg border border-blue-600 bg-blue-400 p-1">
+                        <BoxIcon />
+                        <ObjectView object={literalNode().object} />
+                    </div>
+                )}
             </Match>
         </Switch>
     );

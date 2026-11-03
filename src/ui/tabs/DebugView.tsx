@@ -20,8 +20,17 @@ export default () => {
                                         type: ObjectType.Construction,
                                         constructor: Atom.NodeLiteral,
                                         value: {
-                                            type: ObjectType.Integer,
-                                            value: 42n,
+                                            type: ObjectType.Set,
+                                            elements: [
+                                                {
+                                                    type: ObjectType.Integer,
+                                                    value: 42n,
+                                                },
+                                                {
+                                                    type: ObjectType.Set,
+                                                    elements: [],
+                                                },
+                                            ],
                                         },
                                     },
                                 ],

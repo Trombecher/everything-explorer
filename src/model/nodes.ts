@@ -1,3 +1,4 @@
+import type {SetObject} from ".";
 import {ObjectType, type Object} from ".";
 import {Atom} from "./atoms";
 
@@ -33,31 +34,70 @@ export type Node = FunctionNode | PlusNode | LiteralNode;
 export const objectToNode = (object: Object): Node | undefined => {
     if (object.type !== ObjectType.Set) return;
 
-    if (object.elements.length === 1) {
-        const element = object.elements[0]!;
+    let some: Object | undefined;
+    let finalNode: Node | undefined;
 
-        if (element.type === ObjectType.Construction) {
-            if (element.constructor.type === ObjectType.Atom) {
-                if (element.constructor.value === Atom.NodeFunction.value) {
-                    return {
-                        type: NodeType.Function,
-                        body: element.value,
-                        rest: [],
-                    };
-                } else if (
-                    element.constructor.value === Atom.NodeLiteral.value
-                ) {
-                    return {
-                        type: NodeType.Literal,
-                        object: element.value,
-                        rest: [],
-                    };
-                }
-            }
-        }
-    } else if (object.elements.length === 2) {
-        // TODO: add node detection
+    some = singleSetAtomValue(object, Atom.NodeFunction.value);
+    if (some) {
+        if (finalNode) return undefined;
+
+        finalNode = {
+            type: NodeType.Function,
+            body: some,
+            rest: withoutAtomConstructors(object.elements, [
+                Atom.NodeFunction.value,
+            ]),
+        };
     }
 
-    return undefined;
+    some = singleSetAtomValue(object, Atom.NodeLiteral.value);
+    if (some) {
+        if (finalNode) return undefined;
+
+        finalNode = {
+            type: NodeType.Literal,
+            object: some,
+            rest: withoutAtomConstructors(object.elements, [
+                Atom.NodeLiteral.value,
+            ]),
+        };
+    }
+
+    return finalNode;
+};
+
+const withoutAtomConstructors = (
+    elements: readonly Object[],
+    withoutAtomValues: readonly bigint[],
+): Object[] =>
+    elements.filter(element => {
+        return (
+            element.type !== ObjectType.Construction ||
+            (element.constructor.type === ObjectType.Atom &&
+                !withoutAtomValues.includes(element.constructor.value))
+        );
+    });
+
+const singleSetAtomValue = (
+    set: SetObject,
+    atomValue: bigint,
+): Object | undefined => {
+    // TODO: optimize
+
+    const [element1, element2] = set.elements
+        .filter(element => {
+            return (
+                element.type === ObjectType.Construction &&
+                element.constructor.type === ObjectType.Atom &&
+                element.constructor.value === atomValue
+            );
+        })
+        .map(
+            element =>
+                (element as Object & {type: typeof ObjectType.Construction})
+                    .value,
+        );
+
+    if (element2) return;
+    return element1;
 };
