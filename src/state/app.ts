@@ -7,9 +7,8 @@ import {ConnectionClient} from "@/connect";
 
 import {Language, translate} from "../i18n";
 import type {Phrase} from "../i18n/phrases";
-import {Tab} from "../ui/sidebar/tabs";
 import type {DeepReadonly} from "../util";
-import {System} from "./common";
+import {System, Tab} from "./common";
 import type {ThemeSetting} from "./theme";
 
 export type LanguageSetting = Language | typeof System;

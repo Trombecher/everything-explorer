@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use axum::{Json, extract::State, http::StatusCode, response::IntoResponse};
-use everything::model::{Object, SetApi};
+use everything::model::Object;
 
 use crate::server::{WebServerState, wire::JsonObject};
 
@@ -22,11 +22,7 @@ pub async fn values_of_object(
     let object =
         Object::try_from(json).map_err(|error| (StatusCode::BAD_REQUEST, error.to_string()))?;
     let knowledge = state.knowledge().await;
-    let values = knowledge
-        .values_of(&object)
-        .values()
-        .map(From::from)
-        .collect();
+    let values = knowledge.values_of(&object).map(From::from).collect();
 
     Ok(Json(values))
 }

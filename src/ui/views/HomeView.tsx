@@ -10,8 +10,7 @@ import * as backend from "@/backend/api";
 import {useAppState} from "@/context";
 import {Phrase} from "@/i18n/phrases";
 import {ConnectionType} from "@/state/app";
-
-import Button, {ButtonSeverity} from "./reuse/Button";
+import Button, {ButtonSeverity} from "@/ui/reuse/Button";
 
 const AddConnectionButton = () => {
     const appState = useAppState();

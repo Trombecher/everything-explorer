@@ -2,8 +2,15 @@ import {Button} from "@kobalte/core/button";
 import type {JSXElement} from "solid-js";
 
 import {useAppState} from "@/context";
+import {Phrase} from "@/i18n/phrases";
+import {Tab} from "@/state/common";
 
-import {Tab, tabToPhrase} from "./tabs";
+export const tabToPhrase = {
+    [Tab.AllAtoms]: Phrase.AllAtoms,
+    [Tab.InstanceProperties]: Phrase.InstanceProperties,
+    [Tab.AppSettings]: Phrase.AppSettings,
+    [Tab.Home]: Phrase.Home,
+} as const satisfies Record<Tab, Phrase>;
 
 export default (props: {tab: Tab; icon: JSXElement}) => {
     const appState = useAppState();

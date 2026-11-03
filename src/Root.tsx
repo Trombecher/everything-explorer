@@ -17,8 +17,6 @@ export default () => {
         throw new Error("missing initial state");
     }
 
-    console.log(loadedInitialState.state);
-
     const appState = new AppState(loadedInitialState.state);
     loadedInitialState.state = undefined;
 

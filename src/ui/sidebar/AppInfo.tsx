@@ -3,9 +3,9 @@ import SettingsIcon from "lucide-solid/icons/settings";
 
 import {useAppState} from "@/context";
 import {Phrase} from "@/i18n/phrases";
+import {Tab} from "@/state/common";
 
 import TabButton from "./TabButton";
-import {Tab} from "./tabs";
 
 export default () => {
     const appState = useAppState();

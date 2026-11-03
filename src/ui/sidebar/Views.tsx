@@ -1,8 +1,9 @@
 import GlobeIcon from "lucide-solid/icons/globe";
 import Settings2Icon from "lucide-solid/icons/settings-2";
 
+import {Tab} from "@/state/common";
+
 import TabButton from "./TabButton";
-import {Tab} from "./tabs";
 
 export default () => {
     return (

@@ -1,17 +1,16 @@
 import {createEffect, Match, Switch} from "solid-js";
 
 import * as backend from "@/backend/api";
-import {System} from "@/state/common";
+import {System, Tab} from "@/state/common";
 import type {ThemeSetting} from "@/state/theme";
 import {Theme} from "@/state/theme";
 
 import {useAppState} from "../context";
 import {Phrase} from "../i18n/phrases";
-import AllAtoms from "./AllAtoms";
-import Home from "./Home";
-import SettingsView from "./SettingsView";
 import SideBar from "./sidebar/SideBar";
-import {Tab} from "./sidebar/tabs";
+import AllAtoms from "./views/AllAtomsView";
+import Home from "./views/HomeView";
+import SettingsView from "./views/SettingsView";
 
 export default () => {
     const appState = useAppState();

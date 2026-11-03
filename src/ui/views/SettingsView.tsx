@@ -1,9 +1,9 @@
 import {useAppState} from "@/context";
 import {Phrase} from "@/i18n/phrases";
 
-import LanguageSelector from "./LanguageSelector";
-import Swatch from "./Swatch";
-import ThemeSelector from "./ThemeSelector";
+import LanguageSelector from "../LanguageSelector";
+import Swatch from "../Swatch";
+import ThemeSelector from "../ThemeSelector";
 
 export default () => {
     const appState = useAppState();
