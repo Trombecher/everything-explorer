@@ -38,6 +38,10 @@ export type JsonObject =
     | {
           readonly type: "set";
           readonly elements: readonly JsonObject[];
+      }
+    | {
+          readonly type: "function";
+          readonly body: JsonObject;
       };
 
 export const jsonObjectSchema: z.ZodType<JsonObject> = z.lazy(() =>
@@ -131,6 +135,11 @@ export const jsonObjectToObject = (json: JsonObject): KnowledgeObject => {
                 type: ObjectType.Set,
                 elements: json.elements.map(jsonObjectToObject),
             };
+        case "function":
+            return {
+                type: ObjectType.Function,
+                body: jsonObjectToObject(json.body),
+            };
     }
 };
 
@@ -175,5 +184,7 @@ export const objectToJsonObject = (object: KnowledgeObject): JsonObject => {
                 type: "set",
                 elements: object.elements.map(objectToJsonObject),
             };
+        case ObjectType.Function:
+            return {type: "function", body: objectToJsonObject(object.body)};
     }
 };
