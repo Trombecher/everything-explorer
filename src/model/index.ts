@@ -1,3 +1,5 @@
+import type {Node} from "./nodes";
+
 export namespace ObjectType {
     export const Atom = Symbol();
     export const Set = Symbol();
@@ -10,21 +12,7 @@ export namespace ObjectType {
     export const Plus = Symbol();
 }
 
-export type ObjectType =
-    | typeof ObjectType.Atom
-    | typeof ObjectType.Set
-    | typeof ObjectType.Construction
-    | typeof ObjectType.Text
-    | typeof ObjectType.Integer
-    | typeof ObjectType.Character
-    | typeof ObjectType.Byte
-    | typeof ObjectType.Function
-    | typeof ObjectType.Plus;
-
-export type FunctionObject = {
-    readonly type: typeof ObjectType.Function;
-    readonly body: Object;
-};
+export type ObjectType = Object["type"];
 
 export type Atom = {
     readonly type: typeof ObjectType.Atom;
@@ -62,12 +50,6 @@ export type ByteObject = {
     readonly value: number;
 };
 
-export type PlusObject = {
-    readonly type: typeof ObjectType.Plus;
-    readonly first: Object;
-    readonly second: Object;
-};
-
 export type Object =
     | Atom
     | SetObject
@@ -76,5 +58,4 @@ export type Object =
     | IntegerObject
     | CharacterObject
     | ByteObject
-    | FunctionObject
-    | PlusObject;
+    | Node;

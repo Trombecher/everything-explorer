@@ -2,6 +2,29 @@ import z from "zod";
 
 import {ObjectType, type Object as KnowledgeObject} from "@/model";
 
+export type JsonNode =
+    | {
+          readonly type: "plus";
+          readonly first: JsonNode;
+          readonly second: JsonNode;
+      }
+    | {readonly type: "literal"; readonly object: JsonObject}
+    | {readonly type: "function"; readonly body: JsonObject};
+
+export const jsonNodeSchema: z.ZodType<JsonNode> = z.lazy(() =>
+    z.discriminatedUnion("type", [
+        z.object({
+            type: z.literal("plus"),
+            first: jsonNodeSchema,
+            second: jsonNodeSchema,
+        }),
+        z.object({
+            type: z.literal("literal"),
+            object: jsonObjectSchema,
+        }),
+    ]),
+);
+
 /**
  * The JSON representation of an object, mirroring `JsonObject` in the Rust
  * server's wire module.

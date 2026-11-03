@@ -1,19 +1,26 @@
 import {ObjectType} from "@/model";
+import {NodeType} from "@/model/nodes";
 
-import ObjectView from "../ObjectView";
+import NodeView from "../NodeView";
 
 export default () => {
     return (
         <div>
-            <ObjectView
-                object={{
-                    type: ObjectType.Function,
+            <NodeView
+                node={{
+                    type: NodeType.Function,
                     body: {
-                        type: ObjectType.Function,
+                        type: NodeType.Function,
                         body: {
-                            type: ObjectType.Plus,
-                            first: {type: ObjectType.Integer, value: 1n},
-                            second: {type: ObjectType.Integer, value: -4n},
+                            type: NodeType.Plus,
+                            first: {
+                                type: NodeType.Literal,
+                                object: {type: ObjectType.Integer, value: 1n},
+                            },
+                            second: {
+                                type: NodeType.Literal,
+                                object: {type: ObjectType.Integer, value: -4n},
+                            },
                         },
                     },
                 }}
