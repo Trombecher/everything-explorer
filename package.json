@@ -16,8 +16,8 @@
         "@kobalte/core": "^0.13.14",
         "@tauri-apps/api": "^2.12.4",
         "@tauri-apps/plugin-opener": "^2.7.2",
-        "lucide-solid": "^1.63.0",
-        "solid-js": "^1.9.17",
+        "lucide-solid": "^1.66.0",
+        "solid-js": "^1.9.18",
         "zod": "^4.6.7"
     },
     "devDependencies": {
@@ -28,7 +28,7 @@
         "tailwindcss": "^4.3.3",
         "typescript": "~7.0.2",
         "vite": "^8.3.5",
-        "vite-plugin-solid": "^2.11.14"
+        "vite-plugin-solid": "^2.11.15"
     },
     "devEngines": {
         "packageManager": {
