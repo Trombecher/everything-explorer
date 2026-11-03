@@ -8,10 +8,10 @@ import {Theme} from "@/state/theme";
 import {useAppState} from "../context";
 import {Phrase} from "../i18n/phrases";
 import SideBar from "./sidebar/SideBar";
-import AllAtoms from "./views/AllAtomsView";
-import DebugView from "./views/DebugView";
-import Home from "./views/HomeView";
-import SettingsView from "./views/SettingsView";
+import AllAtoms from "./tabs/AllAtomsView";
+import DebugView from "./tabs/DebugView";
+import Home from "./tabs/HomeView";
+import SettingsView from "./tabs/SettingsView";
 
 export default () => {
     const appState = useAppState();

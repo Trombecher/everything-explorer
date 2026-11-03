@@ -1,5 +1,5 @@
-import type {Setter, Accessor} from "solid-js";
-import {createSignal, onMount, onCleanup} from "solid-js";
+import type {Accessor, Setter} from "solid-js";
+import {createSignal, onCleanup, onMount} from "solid-js";
 import {type SetStoreFunction, createStore} from "solid-js/store";
 
 import * as backend from "@/backend/api";
@@ -55,14 +55,8 @@ export const detectBrowserLanguage = (): BrowserLanguage => {
 
 export const defaultAppStateData = (): InternalAppState => ({
     languageSetting: System,
-    currentTab: Tab.Home,
-    connections: [
-        {
-            type: ConnectionType.Local,
-            filePath: "D:\\Downloads\\test.everythingkb",
-            name: "Testing...",
-        },
-    ],
+    currentTab: Tab.Debug,
+    connections: [],
     themeSetting: System,
 });
 
