@@ -9,6 +9,7 @@ import {useAppState} from "../context";
 import {Phrase} from "../i18n/phrases";
 import SideBar from "./sidebar/SideBar";
 import AllAtoms from "./views/AllAtomsView";
+import DebugView from "./views/DebugView";
 import Home from "./views/HomeView";
 import SettingsView from "./views/SettingsView";
 
@@ -67,6 +68,9 @@ export default () => {
                 </Match>
                 <Match when={appState.state.currentTab === Tab.Home}>
                     <Home />
+                </Match>
+                <Match when={appState.state.currentTab === Tab.Debug}>
+                    <DebugView />
                 </Match>
             </Switch>
         </>

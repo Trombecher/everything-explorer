@@ -10,6 +10,7 @@ export const tabToPhrase = {
     [Tab.InstanceProperties]: Phrase.InstanceProperties,
     [Tab.AppSettings]: Phrase.AppSettings,
     [Tab.Home]: Phrase.Home,
+    [Tab.Debug]: Phrase.Debug,
 } as const satisfies Record<Tab, Phrase>;
 
 export default (props: {tab: Tab; icon: JSXElement}) => {

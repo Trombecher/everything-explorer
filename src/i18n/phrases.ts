@@ -18,6 +18,7 @@ export namespace Phrase {
         [Dark]: undefined;
         [Theme]: undefined;
         [WelcomeBack]: undefined;
+        [Debug]: undefined;
     }>;
 
     export const AppSettings = Symbol();
@@ -34,6 +35,7 @@ export namespace Phrase {
     export const Theme = Symbol();
     export const Home = Symbol();
     export const WelcomeBack = Symbol();
+    export const Debug = Symbol();
 }
 
 export type Phrase =
@@ -50,4 +52,5 @@ export type Phrase =
     | typeof Phrase.Light
     | typeof Phrase.Theme
     | typeof Phrase.Home
-    | typeof Phrase.WelcomeBack;
+    | typeof Phrase.WelcomeBack
+    | typeof Phrase.Debug;

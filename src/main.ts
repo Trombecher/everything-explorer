@@ -15,7 +15,7 @@ const loadAppState = async (): Promise<object> => {
 
     try {
         return JSON.parse(string ?? "");
-    } catch (_) {
+    } catch {
         return {};
     }
 };

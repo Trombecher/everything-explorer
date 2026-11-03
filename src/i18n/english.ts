@@ -16,4 +16,5 @@ export const english = {
     [Phrase.Light]: () => "Light",
     [Phrase.Theme]: () => "Theme",
     [Phrase.WelcomeBack]: () => "Welcome back",
+    [Phrase.Debug]: () => "Debug",
 } as const satisfies TranslationTable;
