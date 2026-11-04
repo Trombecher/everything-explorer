@@ -4,10 +4,8 @@ import type {Object} from "@/model";
 import {defaultObject, ObjectType} from "@/model";
 import {Atom} from "@/model/atoms";
 
-import ObjectView, {
-    ObjectSelection,
-    ObjectSelectionContext,
-} from "../ObjectView";
+import ObjectView from "../objects/ObjectView";
+import {ObjectSelection, ObjectSelectionContext} from "../objects/selection";
 
 export default () => {
     const [object, setObject] = createSignal<Object>({

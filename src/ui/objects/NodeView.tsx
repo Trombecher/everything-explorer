@@ -8,9 +8,9 @@ import {NodeType} from "@/model/nodes";
 import type {DeepReadonly} from "@/util";
 import {variant} from "@/util";
 
-import type {ObjectSelectionPath} from "./ObjectView";
+import MapsToIcon from "../reuse/MapsToIcon";
 import ObjectView from "./ObjectView";
-import MapsToIcon from "./reuse/MapsToIcon";
+import type {ObjectSelectionPath} from "./selection";
 
 const NodeView = (props: {
     node: Node;

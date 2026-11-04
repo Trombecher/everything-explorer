@@ -1,164 +1,23 @@
 import {
     createComputed,
-    createContext,
     createEffect,
     createMemo,
     createSignal,
-    Index,
     Match,
     Switch,
-    useContext,
 } from "solid-js";
-import {createStore, type SetStoreFunction} from "solid-js/store";
 
-import type {SetObject} from "@/model";
 import {defaultObject, ObjectType, type Object} from "@/model";
 import {Atom} from "@/model/atoms";
 import {nodeChildCount, nodeToObject, objectToNode} from "@/model/nodes";
+import BlackBoardZIcon from "@/ui/reuse/BlackBoardZIcon";
 import type {DeepReadonly} from "@/util";
 import {variant} from "@/util";
 
 import NodeView from "./NodeView";
-import BlackBoardZIcon from "./reuse/BlackBoardZIcon";
-import LeftBraceIcon from "./reuse/LeftBraceIcon";
-
-export type ObjectSelectionPath = number[];
-
-export type ObjectSelectionPathInfo = {
-    path: ObjectSelectionPath;
-
-    /**
-     * This is equal or smaller to the path length.
-     */
-    effectiveLength: number;
-};
-
-export class ObjectSelection {
-    public readonly pathInfo: DeepReadonly<ObjectSelectionPathInfo>;
-    private readonly setPathInfo: SetStoreFunction<ObjectSelectionPathInfo>;
-
-    constructor() {
-        const [pathInfo, setPathInfo] = createStore<ObjectSelectionPathInfo>({
-            effectiveLength: 0,
-            path: [],
-        });
-
-        this.pathInfo = pathInfo;
-        this.setPathInfo = setPathInfo;
-    }
-
-    isSelected(path: DeepReadonly<ObjectSelectionPath>) {
-        return (
-            path.length === this.pathInfo.effectiveLength &&
-            path.every((position, i) => position === this.pathInfo.path[i])
-        );
-    }
-
-    dataSelected(path: DeepReadonly<ObjectSelectionPath>): "" | undefined {
-        return this.isSelected(path) ? "" : undefined;
-    }
-
-    setPath(path: DeepReadonly<ObjectSelectionPath>) {
-        this.setPathInfo(
-            (pathInfo: ObjectSelectionPathInfo): ObjectSelectionPathInfo => {
-                if (
-                    path.every((position, i) => position === pathInfo.path[i])
-                ) {
-                    // Path is a prefix of existing -> reduce effective length.
-                    return {path: pathInfo.path, effectiveLength: path.length};
-                }
-
-                // Path is not a prefix -> replace entire path.
-                return {path: [...path], effectiveLength: path.length};
-            },
-        );
-    }
-
-    selectParent() {
-        // Reduce effective length.
-        this.setPathInfo(
-            (pathInfo: ObjectSelectionPathInfo): ObjectSelectionPathInfo => ({
-                path: pathInfo.path,
-                effectiveLength: Math.max(pathInfo.effectiveLength - 1, 0),
-            }),
-        );
-    }
-
-    selectChild(childIndex: number | "previous") {
-        this.setPathInfo(
-            (pathInfo: ObjectSelectionPathInfo): ObjectSelectionPathInfo => {
-                const newEffectiveLength = pathInfo.effectiveLength + 1;
-
-                if (
-                    pathInfo.effectiveLength < pathInfo.path.length &&
-                    (childIndex === "previous" ||
-                        childIndex ===
-                            this.pathInfo.path[pathInfo.effectiveLength])
-                )
-                    return {
-                        path: pathInfo.path,
-                        effectiveLength: newEffectiveLength,
-                    };
-
-                return {
-                    effectiveLength: newEffectiveLength,
-                    path: [
-                        ...pathInfo.path.slice(0, pathInfo.effectiveLength),
-                        childIndex === "previous" ? 0 : childIndex,
-                    ],
-                };
-            },
-        );
-    }
-
-    selectPreviousSibling() {
-        // Decrement last.
-        this.setPathInfo(
-            (pathInfo: ObjectSelectionPathInfo): ObjectSelectionPathInfo => {
-                const current = pathInfo.path[pathInfo.effectiveLength - 1];
-                if (current === undefined || current === 0) return pathInfo;
-
-                return {
-                    path: [
-                        ...pathInfo.path.slice(0, pathInfo.effectiveLength - 1),
-                        Math.max(current - 1, 0),
-                    ],
-                    effectiveLength: pathInfo.effectiveLength,
-                };
-            },
-        );
-    }
-
-    selectNextSibling(siblingCount: number) {
-        // Increment last position and discard non-effective tail.
-        this.setPathInfo(
-            (pathInfo: ObjectSelectionPathInfo): ObjectSelectionPathInfo => {
-                const current = pathInfo.path[pathInfo.effectiveLength - 1];
-                if (current === undefined || current === siblingCount - 1)
-                    return pathInfo;
-
-                return {
-                    path: [
-                        ...pathInfo.path.slice(0, pathInfo.effectiveLength - 1),
-                        Math.min(current + 1, siblingCount - 1),
-                    ],
-                    effectiveLength: pathInfo.effectiveLength,
-                };
-            },
-        );
-    }
-}
-
-export const ObjectSelectionContext = createContext<
-    undefined | ObjectSelection
->();
-
-export const useObjectSelection = () => {
-    const objectSelection = useContext(ObjectSelectionContext);
-    if (!objectSelection) throw new Error("no object selection context");
-
-    return objectSelection;
-};
+import type {ObjectSelectionPath} from "./selection";
+import {useObjectSelection} from "./selection";
+import SetObjectView from "./SetObjectView";
 
 const objectChildCount = (obj: Object): number => {
     switch (obj.type) {
@@ -179,7 +38,7 @@ const objectChildCount = (obj: Object): number => {
     }
 };
 
-const ObjectView = (props: {
+export const ObjectView = (props: {
     object: Object;
     setObject: ((newObject: Object | undefined) => void) | undefined;
     path: DeepReadonly<ObjectSelectionPath>;
@@ -352,11 +211,18 @@ const ObjectView = (props: {
                                 siblingCount={2}
                                 object={construction().constructor}
                                 setObject={newConstructor => {
-                                    props.setObject?.({
-                                        ...construction(),
-                                        constructor:
-                                            newConstructor ?? defaultObject,
-                                    });
+                                    if (newConstructor === undefined) {
+                                        // Delete constructor -> convert to value
+
+                                        objectSelection.selectParent();
+
+                                        props.setObject?.(construction().value);
+                                    } else {
+                                        props.setObject?.({
+                                            ...construction(),
+                                            constructor: newConstructor,
+                                        });
+                                    }
                                 }}
                                 path={[...props.path, 0]}
                             />
@@ -364,10 +230,18 @@ const ObjectView = (props: {
                                 siblingCount={2}
                                 object={construction().value}
                                 setObject={newValue => {
-                                    props.setObject?.({
-                                        ...construction(),
-                                        value: newValue ?? defaultObject,
-                                    });
+                                    if (newValue === undefined) {
+                                        objectSelection.selectParent();
+
+                                        props.setObject?.(
+                                            construction().constructor,
+                                        );
+                                    } else {
+                                        props.setObject?.({
+                                            ...construction(),
+                                            value: newValue,
+                                        });
+                                    }
                                 }}
                                 path={[...props.path, 1]}
                             />
@@ -376,69 +250,6 @@ const ObjectView = (props: {
                 </Match>
             </Switch>
         </div>
-    );
-};
-
-const SetObjectView = (props: {
-    set: SetObject;
-    setSet: ((newSet: SetObject | undefined) => void) | undefined;
-    path: DeepReadonly<ObjectSelectionPath>;
-}) => {
-    const objectSelection = useObjectSelection();
-
-    return (
-        <>
-            <LeftBraceIcon />
-            <Index each={props.set.elements}>
-                {(element, i) => (
-                    <>
-                        {i > 0 ? "," : ""}
-                        <ObjectView
-                            object={element()}
-                            siblingCount={props.set.elements.length}
-                            setObject={
-                                props.setSet &&
-                                (newElement => {
-                                    if (newElement === undefined) {
-                                        props.setSet?.({
-                                            type: ObjectType.Set,
-                                            elements: props.set.elements.filter(
-                                                (_, j) => i !== j,
-                                            ),
-                                        });
-
-                                        if (props.set.elements.length === 0) {
-                                            // we remove the last sibling
-
-                                            objectSelection.selectParent();
-                                        } else if (
-                                            props.set.elements.length === i
-                                        ) {
-                                            // we remove the last element of the siblings.
-
-                                            objectSelection.selectPreviousSibling();
-                                        }
-                                    } else {
-                                        // Change element
-                                        props.setSet?.({
-                                            type: ObjectType.Set,
-                                            elements: props.set.elements.map(
-                                                (element, j) =>
-                                                    i !== j
-                                                        ? element
-                                                        : newElement,
-                                            ),
-                                        });
-                                    }
-                                })
-                            }
-                            path={[...props.path, i]}
-                        />
-                    </>
-                )}
-            </Index>
-            <LeftBraceIcon class="-scale-x-100" />
-        </>
     );
 };
 
