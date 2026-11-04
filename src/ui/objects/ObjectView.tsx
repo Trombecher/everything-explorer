@@ -2,17 +2,13 @@ import {createEffect, createMemo, Match, Switch} from "solid-js";
 
 import {defaultObject, ObjectType, type Object} from "@/model";
 import type {Node} from "@/model/nodes";
-import {
-    nodeChildCount,
-    nodeToObject,
-    NodeType,
-    objectToNode,
-} from "@/model/nodes";
+import {nodeChildCount, nodeToObject, NodeType} from "@/model/nodes";
 import type {DeepReadonly} from "@/util";
 import {variant} from "@/util";
 
 import ConstructionView from "./ConstructionView";
 import IntegerView from "./IntegerView";
+import {CHROME_X, naturalWidth, nodeFor} from "./layout";
 import NodeView from "./NodeView";
 import type {ObjectSelection, ObjectSelectionPath} from "./selection";
 import {useObjectSelection} from "./selection";
@@ -228,6 +224,9 @@ export const ObjectView = (props: {
     path: DeepReadonly<ObjectSelectionPath>;
     siblingCount: number;
 
+    /** Available width for this view's border box in px. */
+    budget: number;
+
     /**
      * Tries to replace the parent with this object.
      * Selection is handled by this function.
@@ -238,7 +237,7 @@ export const ObjectView = (props: {
 }) => {
     const objectSelection = useObjectSelection();
 
-    const maybeNode = createMemo(() => objectToNode(props.object));
+    const maybeNode = createMemo(() => nodeFor(props.object));
 
     const childCount = createMemo((): number => {
         const node = maybeNode();
@@ -246,6 +245,12 @@ export const ObjectView = (props: {
 
         return objectChildCount(props.object);
     });
+
+    const natural = createMemo(() => naturalWidth(props.object));
+    const column = createMemo(
+        () => childCount() >= 2 && natural() > props.budget,
+    );
+    const contentBudget = () => props.budget - CHROME_X;
 
     return (
         <div
@@ -276,7 +281,7 @@ export const ObjectView = (props: {
             style={{
                 "background-color": `light-dark(oklch(0.92 0.07 ${viewToColorHue(maybeNode()?.type, props.object.type)}), oklch(0.3 0.07 ${viewToColorHue(maybeNode()?.type, props.object.type)}))`,
             }}
-            class={`data-selected:text-always-white flex items-center gap-1 rounded-lg border border-neutral-400 bg-neutral-100 p-1 text-neutral-800 select-none data-selected:border-blue-500 data-selected:bg-blue-500!`}
+            class={`data-selected:text-always-white flex gap-1 rounded-lg border border-neutral-400 bg-neutral-100 p-1 text-neutral-800 select-none data-selected:border-blue-500 data-selected:bg-blue-500! ${column() ? "flex-col items-start" : "items-center"}`}
         >
             <Switch>
                 <Match when={variant(props.object, ObjectType.Atom)}>
@@ -302,6 +307,7 @@ export const ObjectView = (props: {
                             }
                             path={props.path}
                             childCount={childCount()}
+                            budget={contentBudget()}
                         />
                     )}
                 </Match>
@@ -311,6 +317,8 @@ export const ObjectView = (props: {
                             set={set()}
                             setSet={props.setObject}
                             path={props.path}
+                            budget={contentBudget()}
+                            column={column()}
                         />
                     )}
                 </Match>
@@ -320,6 +328,7 @@ export const ObjectView = (props: {
                             construction={construction()}
                             path={props.path}
                             setObject={props.setObject}
+                            budget={contentBudget()}
                         />
                     )}
                 </Match>

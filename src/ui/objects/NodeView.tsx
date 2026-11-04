@@ -12,14 +12,17 @@ import type {DeepReadonly} from "@/util";
 import {variant} from "@/util";
 
 import MapsToIcon from "../reuse/MapsToIcon";
+import {GAP, ICON_WIDTH, measureText} from "./layout";
 import ObjectView from "./ObjectView";
 import {useObjectSelection, type ObjectSelectionPath} from "./selection";
 
 const BinaryOperationView = (props: {
     node: TimesNode | PlusNode;
     icon: JSXElement;
+    iconWidth: number;
     path: ObjectSelectionPath;
     childCount: number;
+    budget: number;
     setObject?: ((newObject: Object) => void) | undefined;
 }) => {
     const objectSelection = useObjectSelection();
@@ -56,39 +59,43 @@ const BinaryOperationView = (props: {
                     })
                 }
                 path={[...props.path, 0]}
+                budget={props.budget}
             />
-            {props.icon}
-            <ObjectView
-                replaceParentWithThis={
-                    props.setObject &&
-                    (() => {
-                        if (!props.setObject) return;
+            <span class="flex items-center gap-1">
+                {props.icon}
+                <ObjectView
+                    replaceParentWithThis={
+                        props.setObject &&
+                        (() => {
+                            if (!props.setObject) return;
 
-                        objectSelection.selectParent();
-                        props.setObject(props.node.second);
-                    })
-                }
-                siblingCount={props.childCount}
-                object={props.node.second}
-                setObject={
-                    props.setObject &&
-                    (newSecond => {
-                        if (newSecond === undefined) {
                             objectSelection.selectParent();
+                            props.setObject(props.node.second);
+                        })
+                    }
+                    siblingCount={props.childCount}
+                    object={props.node.second}
+                    setObject={
+                        props.setObject &&
+                        (newSecond => {
+                            if (newSecond === undefined) {
+                                objectSelection.selectParent();
 
-                            props.setObject?.(props.node.first);
-                        } else {
-                            props.setObject?.(
-                                nodeToObject({
-                                    ...props.node,
-                                    second: newSecond,
-                                }),
-                            );
-                        }
-                    })
-                }
-                path={[...props.path, 1]}
-            />
+                                props.setObject?.(props.node.first);
+                            } else {
+                                props.setObject?.(
+                                    nodeToObject({
+                                        ...props.node,
+                                        second: newSecond,
+                                    }),
+                                );
+                            }
+                        })
+                    }
+                    path={[...props.path, 1]}
+                    budget={props.budget - props.iconWidth - GAP}
+                />
+            </span>
         </>
     );
 };
@@ -98,6 +105,9 @@ const NodeView = (props: {
     setObject: ((newObject: Object) => void) | undefined;
     path: DeepReadonly<ObjectSelectionPath>;
     childCount: number;
+
+    /** Available width for the content of the enclosing object view. */
+    budget: number;
 }) => {
     const objectSelection = useObjectSelection();
 
@@ -132,6 +142,12 @@ const NodeView = (props: {
                                 })
                             }
                             path={[...props.path, 0]}
+                            budget={
+                                props.budget -
+                                measureText("x") -
+                                ICON_WIDTH.mapsTo -
+                                2 * GAP
+                            }
                         />
                     </>
                 )}
@@ -140,9 +156,11 @@ const NodeView = (props: {
                 {plusNode => (
                     <BinaryOperationView
                         icon={<PlusIcon />}
+                        iconWidth={ICON_WIDTH.plus}
                         node={plusNode()}
                         childCount={props.childCount}
                         path={props.path}
+                        budget={props.budget}
                         setObject={props.setObject}
                     />
                 )}
@@ -175,6 +193,7 @@ const NodeView = (props: {
                                 })
                             }
                             path={[...props.path, 0]}
+                            budget={props.budget - ICON_WIDTH.box - GAP}
                         />
                     </>
                 )}
@@ -183,9 +202,11 @@ const NodeView = (props: {
                 {timesNode => (
                     <BinaryOperationView
                         icon={<DotIcon />}
+                        iconWidth={ICON_WIDTH.dot}
                         node={timesNode()}
                         childCount={props.childCount}
                         path={props.path}
+                        budget={props.budget}
                         setObject={props.setObject}
                     />
                 )}

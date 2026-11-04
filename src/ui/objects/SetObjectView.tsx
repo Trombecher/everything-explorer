@@ -5,6 +5,7 @@ import {type SetObject, ObjectType} from "@/model";
 import type {DeepReadonly} from "@/util";
 
 import LeftBraceIcon from "../reuse/LeftBraceIcon";
+import {GAP, ICON_WIDTH, measureText} from "./layout";
 import ObjectView from "./ObjectView";
 import type {ObjectSelectionPath} from "./selection";
 import {useObjectSelection} from "./selection";
@@ -13,16 +14,27 @@ export default (props: {
     set: SetObject;
     setSet: ((newSet: Object | undefined) => void) | undefined;
     path: DeepReadonly<ObjectSelectionPath>;
+
+    /** Available width for the content of the enclosing object view. */
+    budget: number;
+
+    /** Whether the enclosing object view is laid out as a column. */
+    column: boolean;
 }) => {
     const objectSelection = useObjectSelection();
+
+    const elementBudget = (index: number) =>
+        (props.column
+            ? props.budget
+            : props.budget - 2 * ICON_WIDTH.brace - 2 * GAP) -
+        (index < props.set.elements.length - 1 ? measureText(",") : 0);
 
     return (
         <>
             <LeftBraceIcon />
             <Index each={props.set.elements}>
                 {(element, i) => (
-                    <>
-                        {i > 0 ? "," : ""}
+                    <span class="flex items-center">
                         <ObjectView
                             replaceParentWithThis={
                                 props.setSet &&
@@ -70,8 +82,10 @@ export default (props: {
                                 })
                             }
                             path={[...props.path, i]}
+                            budget={elementBudget(i)}
                         />
-                    </>
+                        {i < props.set.elements.length - 1 ? "," : ""}
+                    </span>
                 )}
             </Index>
             <LeftBraceIcon class="-scale-x-100" />

@@ -1,4 +1,4 @@
-import {createSignal} from "solid-js";
+import {createSignal, onCleanup, onMount} from "solid-js";
 
 import type {Object} from "@/model";
 import {defaultObject, ObjectType} from "@/model";
@@ -55,6 +55,7 @@ export default () => {
             selectionPathInfo: {effectiveLength: 0, path: []},
         },
     ]);
+    const [budget, setBudget] = createSignal(Number.POSITIVE_INFINITY);
 
     const lastHistoryEntry = () => {
         const last = history().at(-1);
@@ -100,6 +101,25 @@ export default () => {
         },
     );
 
+    let objectContainer: HTMLDivElement | undefined;
+
+    onMount(() => {
+        if (!objectContainer) return;
+
+        const updateBudget = () => {
+            const width = objectContainer?.getBoundingClientRect().width ?? 0;
+
+            if (width > 0) setBudget(width);
+        };
+
+        updateBudget();
+
+        const resizeObserver = new ResizeObserver(updateBudget);
+        resizeObserver.observe(objectContainer);
+
+        onCleanup(() => resizeObserver.disconnect());
+    });
+
     return (
         <div
             class="mx-auto my-2 max-w-3xl grow rounded-3xl border border-neutral-200 bg-white p-4"
@@ -114,23 +134,31 @@ export default () => {
                 }
             }}
         >
-            <ObjectSelectionContext.Provider value={objectSelection}>
-                <ObjectView
-                    siblingCount={1}
-                    object={lastHistoryEntry().object}
-                    setObject={newObject => {
-                        pushHistoryEntry({
-                            object: newObject ?? defaultObject,
-                            selectionPathInfo:
-                                lastHistoryEntry().selectionPathInfo,
-                        });
-                    }}
-                    path={[]}
-                    replaceParentWithThis={() => {
-                        // Do nothing, there is no parent.
-                    }}
-                />
-            </ObjectSelectionContext.Provider>
+            <div
+                class="w-full"
+                ref={el => {
+                    objectContainer = el;
+                }}
+            >
+                <ObjectSelectionContext.Provider value={objectSelection}>
+                    <ObjectView
+                        siblingCount={1}
+                        object={lastHistoryEntry().object}
+                        setObject={newObject => {
+                            pushHistoryEntry({
+                                object: newObject ?? defaultObject,
+                                selectionPathInfo:
+                                    lastHistoryEntry().selectionPathInfo,
+                            });
+                        }}
+                        path={[]}
+                        budget={budget()}
+                        replaceParentWithThis={() => {
+                            // Do nothing, there is no parent.
+                        }}
+                    />
+                </ObjectSelectionContext.Provider>
+            </div>
             <Swatch />
         </div>
     );
