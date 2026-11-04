@@ -1,5 +1,6 @@
 import {Index} from "solid-js";
 
+import type {Object} from "@/model";
 import {type SetObject, ObjectType} from "@/model";
 import type {DeepReadonly} from "@/util";
 
@@ -10,7 +11,7 @@ import {useObjectSelection} from "./selection";
 
 export default (props: {
     set: SetObject;
-    setSet: ((newSet: SetObject | undefined) => void) | undefined;
+    setSet: ((newSet: Object | undefined) => void) | undefined;
     path: DeepReadonly<ObjectSelectionPath>;
 }) => {
     const objectSelection = useObjectSelection();
@@ -23,6 +24,15 @@ export default (props: {
                     <>
                         {i > 0 ? "," : ""}
                         <ObjectView
+                            replaceParentWithThis={
+                                props.setSet &&
+                                (() => {
+                                    if (!props.setSet) return;
+
+                                    objectSelection.selectParent();
+                                    props.setSet?.(element());
+                                })
+                            }
                             object={element()}
                             siblingCount={props.set.elements.length}
                             setObject={

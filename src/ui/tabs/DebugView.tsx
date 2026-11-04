@@ -123,6 +123,9 @@ export default () => {
                         });
                     }}
                     path={[]}
+                    replaceParentWithThis={() => {
+                        // Do nothing, there is no parent.
+                    }}
                 />
             </ObjectSelectionContext.Provider>
             yo

@@ -15,6 +15,15 @@ export default (props: {
     return (
         <>
             <ObjectView
+                replaceParentWithThis={
+                    props.setObject &&
+                    (() => {
+                        if (!props.setObject) return;
+
+                        objectSelection.selectParent();
+                        props.setObject(props.construction.constructor);
+                    })
+                }
                 siblingCount={2}
                 object={props.construction.constructor}
                 setObject={newConstructor => {
@@ -34,6 +43,15 @@ export default (props: {
                 path={[...props.path, 0]}
             />
             <ObjectView
+                replaceParentWithThis={
+                    props.setObject &&
+                    (() => {
+                        if (!props.setObject) return;
+
+                        objectSelection.selectParent();
+                        props.setObject(props.construction.value);
+                    })
+                }
                 siblingCount={2}
                 object={props.construction.value}
                 setObject={newValue => {

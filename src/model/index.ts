@@ -52,6 +52,11 @@ export type Object =
     | CharacterObject
     | ByteObject;
 
+export const construction = (
+    constructor: Object,
+    value: Object,
+): Construction => ({type: ObjectType.Construction, constructor, value});
+
 export const defaultObject = {
     type: ObjectType.Set,
     elements: [],

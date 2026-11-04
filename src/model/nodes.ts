@@ -1,14 +1,22 @@
 import type {SetObject} from ".";
-import {ObjectType, type Object} from ".";
+import {construction, ObjectType, type Object} from ".";
 import {Atom} from "./atoms";
 
 export namespace NodeType {
     export const Function = Symbol("NodeType.Function");
     export const Plus = Symbol("NodeType.Plus");
     export const Literal = Symbol("NodeType.Literal");
+    export const Times = Symbol("NodeType.Times");
 }
 
 export type NodeType = Node["type"];
+
+export type TimesNode = {
+    readonly type: typeof NodeType.Times;
+    readonly first: Object;
+    readonly second: Object;
+    readonly rest: readonly Object[];
+};
 
 export type FunctionNode = {
     readonly type: typeof NodeType.Function;
@@ -29,7 +37,7 @@ export type LiteralNode = {
     readonly rest: readonly Object[];
 };
 
-export type Node = FunctionNode | PlusNode | LiteralNode;
+export type Node = FunctionNode | PlusNode | LiteralNode | TimesNode;
 
 export const nodeChildCount = (nodeType: NodeType): number => {
     switch (nodeType) {
@@ -38,6 +46,8 @@ export const nodeChildCount = (nodeType: NodeType): number => {
         case NodeType.Literal:
             return 1;
         case NodeType.Plus:
+            return 2;
+        case NodeType.Times:
             return 2;
     }
 };
@@ -93,6 +103,28 @@ export const objectToNode = (object: Object): Node | undefined => {
         }
     }
 
+    some = singleSetAtomValue(object, Atom.NodeMultiplyFirst.value);
+    if (some) {
+        const second = singleSetAtomValue(
+            object,
+            Atom.NodeMultiplySecond.value,
+        );
+
+        if (second) {
+            if (finalNode) return undefined;
+
+            finalNode = {
+                type: NodeType.Times,
+                first: some,
+                second,
+                rest: withoutAtomConstructors(object.elements, [
+                    Atom.NodeMultiplyFirst.value,
+                    Atom.NodeMultiplySecond.value,
+                ]),
+            };
+        }
+    }
+
     return finalNode;
 };
 
@@ -134,43 +166,31 @@ const singleSetAtomValue = (
 
 export const nodeToObject = (node: Node): Object => {
     switch (node.type) {
-        case NodeType.Function:
+        case NodeType.Times:
             return {
                 type: ObjectType.Set,
                 elements: [
-                    {
-                        type: ObjectType.Construction,
-                        constructor: Atom.NodeFunction,
-                        value: node.body,
-                    },
+                    construction(Atom.NodeMultiplyFirst, node.first),
+                    construction(Atom.NodeMultiplySecond, node.second),
                 ],
+            };
+        case NodeType.Function:
+            return {
+                type: ObjectType.Set,
+                elements: [construction(Atom.NodeFunction, node.body)],
             };
         case NodeType.Plus:
             return {
                 type: ObjectType.Set,
                 elements: [
-                    {
-                        type: ObjectType.Construction,
-                        constructor: Atom.NodeAddFirst,
-                        value: node.first,
-                    },
-                    {
-                        type: ObjectType.Construction,
-                        constructor: Atom.NodeAddSecond,
-                        value: node.second,
-                    },
+                    construction(Atom.NodeAddFirst, node.first),
+                    construction(Atom.NodeAddSecond, node.second),
                 ],
             };
         case NodeType.Literal:
             return {
                 type: ObjectType.Set,
-                elements: [
-                    {
-                        type: ObjectType.Construction,
-                        constructor: Atom.NodeLiteral,
-                        value: node.object,
-                    },
-                ],
+                elements: [construction(Atom.NodeLiteral, node.object)],
             };
     }
 };

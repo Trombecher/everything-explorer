@@ -1,7 +1,6 @@
 import {createEffect, createMemo, Match, Switch} from "solid-js";
 
 import {defaultObject, ObjectType, type Object} from "@/model";
-import {Atom} from "@/model/atoms";
 import type {Node} from "@/model/nodes";
 import {
     nodeChildCount,
@@ -49,6 +48,7 @@ const handleKeyDown = (
     object: Object,
     setObject: ((newObject: Object | undefined) => void) | undefined,
     node: Node | undefined,
+    replaceParentWithThis: (() => void) | undefined,
 ) => {
     if (
         e.target.tagName === "INPUT" ||
@@ -61,7 +61,7 @@ const handleKeyDown = (
 
     if (e.key === "ArrowRight") {
         if (e.shiftKey) {
-            objectSelection.selectChild("previous");
+            if (childCount > 0) objectSelection.selectChild("previous");
         } else {
             objectSelection.selectNextSibling(siblingCount);
         }
@@ -87,7 +87,11 @@ const handleKeyDown = (
                 ],
             });
         }
-    } else if ((e.key === "Backspace" && e.shiftKey) || e.key === "Delete") {
+    } else if (e.key === "Backspace" && !e.shiftKey) {
+        // Replace parent with this object.
+
+        replaceParentWithThis?.();
+    } else if (e.key === "Delete") {
         // Delete whole object (or replace with empty set).
 
         setObject?.(undefined);
@@ -123,31 +127,24 @@ const handleKeyDown = (
             setObject?.(undefined);
         }
     } else if (e.key === "+") {
-        setObject?.({
-            type: ObjectType.Set,
-            elements: [
-                {
-                    type: ObjectType.Construction,
-                    constructor: Atom.NodeAddFirst,
-                    value: object,
-                },
-                {
-                    type: ObjectType.Construction,
-                    constructor: Atom.NodeAddSecond,
-                    value: defaultObject,
-                },
-            ],
-        });
+        setObject?.(
+            nodeToObject({
+                type: NodeType.Plus,
+                first: object,
+                second: defaultObject,
+                rest: [],
+            }),
+        );
 
-        objectSelection.selectChild(0);
-    } else if (e.key === " ") {
         objectSelection.selectChild(1);
-
+    } else if (e.key === " ") {
         setObject?.({
             type: ObjectType.Construction,
             constructor: object,
             value: defaultObject,
         });
+
+        objectSelection.selectChild(1);
     } else if (e.key === "l") {
         if (!setObject) return;
 
@@ -178,6 +175,17 @@ const handleKeyDown = (
         // Replace with number.
 
         setObject({type: ObjectType.Integer, value: BigInt(e.key)});
+    } else if (e.key === "*") {
+        setObject?.(
+            nodeToObject({
+                type: NodeType.Times,
+                first: object,
+                second: defaultObject,
+                rest: [],
+            }),
+        );
+
+        objectSelection.selectChild(1);
     }
 };
 
@@ -186,6 +194,14 @@ export const ObjectView = (props: {
     setObject: ((newObject: Object | undefined) => void) | undefined;
     path: DeepReadonly<ObjectSelectionPath>;
     siblingCount: number;
+
+    /**
+     * Tries to replace the parent with this object.
+     * Selection is handled by this function.
+     *
+     * The object view calling this function is selected.
+     */
+    replaceParentWithThis: (() => void) | undefined;
 }) => {
     const objectSelection = useObjectSelection();
 
@@ -209,6 +225,7 @@ export const ObjectView = (props: {
                     props.object,
                     props.setObject,
                     maybeNode(),
+                    props.replaceParentWithThis,
                 )
             }
             ref={div => {
