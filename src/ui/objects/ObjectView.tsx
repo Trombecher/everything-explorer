@@ -1,21 +1,15 @@
-import {
-    createComputed,
-    createEffect,
-    createMemo,
-    createSignal,
-    Match,
-    Switch,
-} from "solid-js";
+import {createEffect, createMemo, Match, Switch} from "solid-js";
 
 import {defaultObject, ObjectType, type Object} from "@/model";
 import {Atom} from "@/model/atoms";
 import {nodeChildCount, nodeToObject, objectToNode} from "@/model/nodes";
-import BlackBoardZIcon from "@/ui/reuse/BlackBoardZIcon";
 import type {DeepReadonly} from "@/util";
 import {variant} from "@/util";
 
+import ConstructionView from "./ConstructionView";
+import IntegerView from "./IntegerView";
 import NodeView from "./NodeView";
-import type {ObjectSelectionPath} from "./selection";
+import type {ObjectSelection, ObjectSelectionPath} from "./selection";
 import {useObjectSelection} from "./selection";
 import SetObjectView from "./SetObjectView";
 
@@ -38,6 +32,81 @@ const objectChildCount = (obj: Object): number => {
     }
 };
 
+const handleKeyDown = (
+    e: KeyboardEvent & {
+        currentTarget: HTMLDivElement;
+        target: Element;
+    },
+    objectSelection: ObjectSelection,
+    siblingCount: number,
+    childCount: number,
+    object: Object,
+    setObject: ((newObject: Object | undefined) => void) | undefined,
+) => {
+    if (
+        e.target.tagName === "INPUT" ||
+        e.target !== e.currentTarget ||
+        e.ctrlKey
+    )
+        return;
+
+    e.preventDefault();
+
+    if (e.key === "ArrowRight") {
+        if (e.shiftKey) {
+            objectSelection.selectNextSibling(siblingCount);
+        } else if (childCount > 0) {
+            objectSelection.selectChild("previous");
+        }
+    } else if (e.key === "ArrowLeft") {
+        if (e.shiftKey) {
+            objectSelection.selectPreviousSibling();
+        } else {
+            objectSelection.selectParent();
+        }
+    } else if (e.key === "Enter") {
+        if (!setObject) return;
+
+        if (object.type === ObjectType.Set) {
+            objectSelection.selectChild(object.elements.length);
+
+            setObject({
+                type: ObjectType.Set,
+                elements: [
+                    ...object.elements,
+                    {type: ObjectType.Set, elements: []},
+                ],
+            });
+        }
+    } else if (e.key === "Backspace" || e.key === "Delete") {
+        setObject?.(undefined);
+    } else if (e.key === "+") {
+        setObject?.({
+            type: ObjectType.Set,
+            elements: [
+                {
+                    type: ObjectType.Construction,
+                    constructor: Atom.NodeAddFirst,
+                    value: object,
+                },
+                {
+                    type: ObjectType.Construction,
+                    constructor: Atom.NodeAddSecond,
+                    value: defaultObject,
+                },
+            ],
+        });
+    } else if (e.key === " ") {
+        objectSelection.selectChild(1);
+
+        setObject?.({
+            type: ObjectType.Construction,
+            constructor: object,
+            value: defaultObject,
+        });
+    }
+};
+
 export const ObjectView = (props: {
     object: Object;
     setObject: ((newObject: Object | undefined) => void) | undefined;
@@ -57,72 +126,16 @@ export const ObjectView = (props: {
 
     return (
         <div
-            onKeyDown={e => {
-                if (
-                    e.target.tagName === "INPUT" ||
-                    e.target !== e.currentTarget ||
-                    e.ctrlKey
+            onKeyDown={e =>
+                handleKeyDown(
+                    e,
+                    objectSelection,
+                    props.siblingCount,
+                    childCount(),
+                    props.object,
+                    props.setObject,
                 )
-                    return;
-
-                e.preventDefault();
-
-                if (e.key === "ArrowRight") {
-                    if (e.shiftKey) {
-                        objectSelection.selectNextSibling(props.siblingCount);
-                    } else if (childCount() > 0) {
-                        objectSelection.selectChild("previous");
-                    }
-                } else if (e.key === "ArrowLeft") {
-                    if (e.shiftKey) {
-                        objectSelection.selectPreviousSibling();
-                    } else {
-                        objectSelection.selectParent();
-                    }
-                } else if (e.key === "Enter") {
-                    if (!props.setObject) return;
-
-                    if (props.object.type === ObjectType.Set) {
-                        objectSelection.selectChild(
-                            props.object.elements.length,
-                        );
-
-                        props.setObject({
-                            type: ObjectType.Set,
-                            elements: [
-                                ...props.object.elements,
-                                {type: ObjectType.Set, elements: []},
-                            ],
-                        });
-                    }
-                } else if (e.key === "Backspace" || e.key === "Delete") {
-                    props.setObject?.(undefined);
-                } else if (e.key === "+") {
-                    props.setObject?.({
-                        type: ObjectType.Set,
-                        elements: [
-                            {
-                                type: ObjectType.Construction,
-                                constructor: Atom.NodeAddFirst,
-                                value: props.object,
-                            },
-                            {
-                                type: ObjectType.Construction,
-                                constructor: Atom.NodeAddSecond,
-                                value: defaultObject,
-                            },
-                        ],
-                    });
-                } else if (e.key === " ") {
-                    objectSelection.selectChild(1);
-
-                    props.setObject?.({
-                        type: ObjectType.Construction,
-                        constructor: props.object,
-                        value: defaultObject,
-                    });
-                }
-            }}
+            }
             ref={div => {
                 createEffect(() => {
                     if (objectSelection.isSelected(props.path)) {
@@ -142,43 +155,12 @@ export const ObjectView = (props: {
                     {atom => <>@{String(atom().value)}</>}
                 </Match>
                 <Match when={variant(props.object, ObjectType.Integer)}>
-                    {integer => {
-                        const [text, setText] = createSignal("");
-                        createComputed(() => setText(String(integer().value)));
-
-                        return (
-                            <>
-                                <BlackBoardZIcon />
-                                <input
-                                    value={text()}
-                                    readOnly={!props.setObject}
-                                    onKeyDown={e => {
-                                        if (e.key === "Enter") {
-                                            e.currentTarget.blur();
-                                        }
-                                    }}
-                                    onBlur={
-                                        props.setObject &&
-                                        (() => {
-                                            try {
-                                                const newBigInt =
-                                                    BigInt(text());
-
-                                                props.setObject?.({
-                                                    type: ObjectType.Integer,
-                                                    value: newBigInt,
-                                                });
-                                            } catch {}
-                                        })
-                                    }
-                                    onInput={e => {
-                                        setText(e.currentTarget.value);
-                                    }}
-                                    class="block field-sizing-content pr-2"
-                                />
-                            </>
-                        );
-                    }}
+                    {integer => (
+                        <IntegerView
+                            integer={integer()}
+                            setInteger={props.setObject}
+                        />
+                    )}
                 </Match>
                 <Match when={maybeNode()}>
                     {node => (
@@ -206,46 +188,11 @@ export const ObjectView = (props: {
                 </Match>
                 <Match when={variant(props.object, ObjectType.Construction)}>
                     {construction => (
-                        <>
-                            <ObjectView
-                                siblingCount={2}
-                                object={construction().constructor}
-                                setObject={newConstructor => {
-                                    if (newConstructor === undefined) {
-                                        // Delete constructor -> convert to value
-
-                                        objectSelection.selectParent();
-
-                                        props.setObject?.(construction().value);
-                                    } else {
-                                        props.setObject?.({
-                                            ...construction(),
-                                            constructor: newConstructor,
-                                        });
-                                    }
-                                }}
-                                path={[...props.path, 0]}
-                            />
-                            <ObjectView
-                                siblingCount={2}
-                                object={construction().value}
-                                setObject={newValue => {
-                                    if (newValue === undefined) {
-                                        objectSelection.selectParent();
-
-                                        props.setObject?.(
-                                            construction().constructor,
-                                        );
-                                    } else {
-                                        props.setObject?.({
-                                            ...construction(),
-                                            value: newValue,
-                                        });
-                                    }
-                                }}
-                                path={[...props.path, 1]}
-                            />
-                        </>
+                        <ConstructionView
+                            construction={construction()}
+                            path={props.path}
+                            setObject={props.setObject}
+                        />
                     )}
                 </Match>
             </Switch>
