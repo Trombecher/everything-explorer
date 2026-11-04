@@ -4,7 +4,6 @@ import {
     createEffect,
     createMemo,
     createSignal,
-    For,
     Index,
     Match,
     Switch,
@@ -269,7 +268,6 @@ const ObjectView = (props: {
                 createEffect(() => {
                     if (objectSelection.isSelected(props.path)) {
                         div.focus();
-                        console.log("focus", props.object);
                     }
                 });
             }}
@@ -402,26 +400,24 @@ const SetObjectView = (props: {
                                 props.setSet &&
                                 (newElement => {
                                     if (newElement === undefined) {
-                                        if (props.set.elements.length === 1) {
-                                            // we remove the last sibling
-
-                                            objectSelection.selectParent();
-                                        } else if (
-                                            props.set.elements.length - 1 ===
-                                            i
-                                        ) {
-                                            // we remove the last element of the siblings.
-
-                                            objectSelection.selectPreviousSibling();
-                                        }
-
-                                        // Delete element
                                         props.setSet?.({
                                             type: ObjectType.Set,
                                             elements: props.set.elements.filter(
                                                 (_, j) => i !== j,
                                             ),
                                         });
+
+                                        if (props.set.elements.length === 0) {
+                                            // we remove the last sibling
+
+                                            objectSelection.selectParent();
+                                        } else if (
+                                            props.set.elements.length === i
+                                        ) {
+                                            // we remove the last element of the siblings.
+
+                                            objectSelection.selectPreviousSibling();
+                                        }
                                     } else {
                                         // Change element
                                         props.setSet?.({

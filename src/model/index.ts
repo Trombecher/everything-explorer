@@ -56,3 +56,58 @@ export const defaultObject = {
     type: ObjectType.Set,
     elements: [],
 } as const satisfies Object;
+
+const deduplicateObjects = (objects: readonly Object[]): Object[] => {
+    const unique: Object[] = [];
+    for (const object of objects) {
+        if (!unique.some(existing => objectsEqual(existing, object))) {
+            unique.push(object);
+        }
+    }
+    return unique;
+};
+
+/**
+ * Compares two objects by their structure only, i.e. their type and the values
+ * of their fields. No semantic meaning is taken into account: for example,
+ * two sets are only equal if their elements are the same, regardless of their
+ * order and duplicates.
+ */
+export const objectsEqual = (left: Object, right: Object): boolean => {
+    switch (left.type) {
+        case ObjectType.Atom:
+            return right.type === ObjectType.Atom && left.value === right.value;
+        case ObjectType.Set: {
+            if (right.type !== ObjectType.Set) return false;
+
+            const leftElements = deduplicateObjects(left.elements);
+            const rightElements = deduplicateObjects(right.elements);
+
+            return (
+                leftElements.length === rightElements.length &&
+                leftElements.every(element =>
+                    rightElements.some(other => objectsEqual(element, other)),
+                )
+            );
+        }
+        case ObjectType.Construction:
+            return (
+                right.type === ObjectType.Construction &&
+                objectsEqual(left.constructor, right.constructor) &&
+                objectsEqual(left.value, right.value)
+            );
+        case ObjectType.Text:
+            return right.type === ObjectType.Text && left.text === right.text;
+        case ObjectType.Integer:
+            return (
+                right.type === ObjectType.Integer && left.value === right.value
+            );
+        case ObjectType.Character:
+            return (
+                right.type === ObjectType.Character &&
+                left.value === right.value
+            );
+        case ObjectType.Byte:
+            return right.type === ObjectType.Byte && left.value === right.value;
+    }
+};
