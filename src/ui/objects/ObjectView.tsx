@@ -252,6 +252,12 @@ export const ObjectView = (props: {
     );
     const contentBudget = () => props.budget - CHROME_X;
 
+    /**
+     * Cross-axis alignment in column mode. Only sets and binary operations can
+     * have two or more children, and binary operations center the operator row.
+     */
+    const alignItems = () => (maybeNode() ? "items-center" : "items-start");
+
     return (
         <div
             onKeyDown={e =>
@@ -281,7 +287,7 @@ export const ObjectView = (props: {
             style={{
                 "background-color": `light-dark(oklch(0.92 0.07 ${viewToColorHue(maybeNode()?.type, props.object.type)}), oklch(0.3 0.07 ${viewToColorHue(maybeNode()?.type, props.object.type)}))`,
             }}
-            class={`data-selected:text-always-white flex gap-1 rounded-lg border border-neutral-400 bg-neutral-100 p-1 text-neutral-800 select-none data-selected:border-blue-500 data-selected:bg-blue-500! ${column() ? "flex-col items-start" : "items-center"}`}
+            class={`data-selected:text-always-white flex gap-1 rounded-lg border border-neutral-400 bg-neutral-100 p-1 text-neutral-800 select-none data-selected:border-blue-500 data-selected:bg-blue-500! ${column() ? `flex-col ${alignItems()}` : "items-center"}`}
         >
             <Switch>
                 <Match when={variant(props.object, ObjectType.Atom)}>
@@ -308,6 +314,7 @@ export const ObjectView = (props: {
                             path={props.path}
                             childCount={childCount()}
                             budget={contentBudget()}
+                            column={column()}
                         />
                     )}
                 </Match>

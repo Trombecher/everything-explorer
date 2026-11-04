@@ -23,6 +23,7 @@ const BinaryOperationView = (props: {
     path: ObjectSelectionPath;
     childCount: number;
     budget: number;
+    column: boolean;
     setObject?: ((newObject: Object) => void) | undefined;
 }) => {
     const objectSelection = useObjectSelection();
@@ -61,41 +62,43 @@ const BinaryOperationView = (props: {
                 path={[...props.path, 0]}
                 budget={props.budget}
             />
-            <span class="flex items-center gap-1">
-                {props.icon}
-                <ObjectView
-                    replaceParentWithThis={
-                        props.setObject &&
-                        (() => {
-                            if (!props.setObject) return;
+            {props.icon}
+            <ObjectView
+                replaceParentWithThis={
+                    props.setObject &&
+                    (() => {
+                        if (!props.setObject) return;
 
+                        objectSelection.selectParent();
+                        props.setObject(props.node.second);
+                    })
+                }
+                siblingCount={props.childCount}
+                object={props.node.second}
+                setObject={
+                    props.setObject &&
+                    (newSecond => {
+                        if (newSecond === undefined) {
                             objectSelection.selectParent();
-                            props.setObject(props.node.second);
-                        })
-                    }
-                    siblingCount={props.childCount}
-                    object={props.node.second}
-                    setObject={
-                        props.setObject &&
-                        (newSecond => {
-                            if (newSecond === undefined) {
-                                objectSelection.selectParent();
 
-                                props.setObject?.(props.node.first);
-                            } else {
-                                props.setObject?.(
-                                    nodeToObject({
-                                        ...props.node,
-                                        second: newSecond,
-                                    }),
-                                );
-                            }
-                        })
-                    }
-                    path={[...props.path, 1]}
-                    budget={props.budget - props.iconWidth - GAP}
-                />
-            </span>
+                            props.setObject?.(props.node.first);
+                        } else {
+                            props.setObject?.(
+                                nodeToObject({
+                                    ...props.node,
+                                    second: newSecond,
+                                }),
+                            );
+                        }
+                    })
+                }
+                path={[...props.path, 1]}
+                budget={
+                    props.column
+                        ? props.budget
+                        : props.budget - props.iconWidth - GAP
+                }
+            />
         </>
     );
 };
@@ -108,6 +111,9 @@ const NodeView = (props: {
 
     /** Available width for the content of the enclosing object view. */
     budget: number;
+
+    /** Whether the enclosing object view is laid out as a column. */
+    column: boolean;
 }) => {
     const objectSelection = useObjectSelection();
 
@@ -161,6 +167,7 @@ const NodeView = (props: {
                         childCount={props.childCount}
                         path={props.path}
                         budget={props.budget}
+                        column={props.column}
                         setObject={props.setObject}
                     />
                 )}
@@ -207,6 +214,7 @@ const NodeView = (props: {
                         childCount={props.childCount}
                         path={props.path}
                         budget={props.budget}
+                        column={props.column}
                         setObject={props.setObject}
                     />
                 )}
