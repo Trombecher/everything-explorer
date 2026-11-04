@@ -61,15 +61,15 @@ const handleKeyDown = (
 
     if (e.key === "ArrowRight") {
         if (e.shiftKey) {
-            objectSelection.selectNextSibling(siblingCount);
-        } else if (childCount > 0) {
             objectSelection.selectChild("previous");
+        } else {
+            objectSelection.selectNextSibling(siblingCount);
         }
     } else if (e.key === "ArrowLeft") {
         if (e.shiftKey) {
-            objectSelection.selectPreviousSibling();
-        } else {
             objectSelection.selectParent();
+        } else {
+            objectSelection.selectPreviousSibling();
         }
     } else if (e.key === "Enter") {
         if (!setObject) return;

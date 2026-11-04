@@ -1,37 +1,35 @@
+import type {Accessor, Setter} from "solid-js";
 import {createContext, useContext} from "solid-js";
-import {createStore, type SetStoreFunction} from "solid-js/store";
 
 import type {DeepReadonly} from "@/util";
 
-export type ObjectSelectionPath = number[];
+export type ObjectSelectionPath = readonly number[];
 
 export type ObjectSelectionPathInfo = {
-    path: ObjectSelectionPath;
+    readonly path: ObjectSelectionPath;
 
     /**
      * This is equal or smaller to the path length.
      */
-    effectiveLength: number;
+    readonly effectiveLength: number;
 };
 
 export class ObjectSelection {
-    public readonly pathInfo: DeepReadonly<ObjectSelectionPathInfo>;
-    private readonly setPathInfo: SetStoreFunction<ObjectSelectionPathInfo>;
+    public readonly pathInfo: Accessor<ObjectSelectionPathInfo>;
+    private readonly setPathInfo: Setter<ObjectSelectionPathInfo>;
 
-    constructor() {
-        const [pathInfo, setPathInfo] = createStore<ObjectSelectionPathInfo>({
-            effectiveLength: 0,
-            path: [],
-        });
-
+    constructor(
+        pathInfo: Accessor<ObjectSelectionPathInfo>,
+        setPathInfo: Setter<ObjectSelectionPathInfo>,
+    ) {
         this.pathInfo = pathInfo;
         this.setPathInfo = setPathInfo;
     }
 
     isSelected(path: DeepReadonly<ObjectSelectionPath>) {
         return (
-            path.length === this.pathInfo.effectiveLength &&
-            path.every((position, i) => position === this.pathInfo.path[i])
+            path.length === this.pathInfo().effectiveLength &&
+            path.every((position, i) => position === this.pathInfo().path[i])
         );
     }
 
@@ -55,6 +53,15 @@ export class ObjectSelection {
         );
     }
 
+    setPathWithEffectiveLength(data: DeepReadonly<ObjectSelectionPathInfo>) {
+        if (data.effectiveLength > data.path.length) throw new Error(":/");
+
+        this.setPathInfo({
+            effectiveLength: data.effectiveLength,
+            path: [...data.path],
+        });
+    }
+
     selectParent() {
         // Reduce effective length.
         this.setPathInfo(
@@ -74,7 +81,7 @@ export class ObjectSelection {
                     pathInfo.effectiveLength < pathInfo.path.length &&
                     (childIndex === "previous" ||
                         childIndex ===
-                            this.pathInfo.path[pathInfo.effectiveLength])
+                            this.pathInfo().path[pathInfo.effectiveLength])
                 )
                     return {
                         path: pathInfo.path,
