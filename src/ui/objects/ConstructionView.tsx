@@ -1,6 +1,7 @@
 import type {Construction, Object} from "@/model";
 import type {DeepReadonly} from "@/util";
 
+import DotDotIcon from "../reuse/DotDotIcon";
 import ObjectView from "./ObjectView";
 import type {ObjectSelectionPath} from "./selection";
 import {useObjectSelection} from "./selection";
@@ -14,6 +15,7 @@ export default (props: {
 
     return (
         <>
+            <DotDotIcon />
             <ObjectView
                 replaceParentWithThis={
                     props.setObject &&

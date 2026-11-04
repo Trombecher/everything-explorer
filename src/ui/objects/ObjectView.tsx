@@ -189,6 +189,39 @@ const handleKeyDown = (
     }
 };
 
+const viewToColorHue = (
+    nodeType: NodeType | undefined,
+    objectType: ObjectType,
+): number => {
+    switch (nodeType) {
+        case NodeType.Function:
+            return 54;
+        case NodeType.Literal:
+            return 23;
+        case NodeType.Plus:
+            return 100;
+        case NodeType.Times:
+            return 340;
+        case undefined:
+            switch (objectType) {
+                case ObjectType.Atom:
+                    return 190;
+                case ObjectType.Byte:
+                    return 200;
+                case ObjectType.Integer:
+                    return 300;
+                case ObjectType.Construction:
+                    return 80;
+                case ObjectType.Character:
+                    return 160;
+                case ObjectType.Set:
+                    return 220;
+                case ObjectType.Text:
+                    return 250;
+            }
+    }
+};
+
 export const ObjectView = (props: {
     object: Object;
     setObject: ((newObject: Object | undefined) => void) | undefined;
@@ -240,7 +273,10 @@ export const ObjectView = (props: {
             }}
             tabIndex={objectSelection.isSelected(props.path) ? 0 : -1}
             data-selected={objectSelection.dataSelected(props.path)}
-            class={`data-selected:text-always-white flex items-center gap-1 rounded-lg border border-neutral-400 bg-neutral-100 p-1 text-neutral-800 data-selected:border-blue-700 data-selected:bg-blue-500`}
+            style={{
+                "background-color": `light-dark(oklch(0.92 0.07 ${viewToColorHue(maybeNode()?.type, props.object.type)}), oklch(0.3 0.07 ${viewToColorHue(maybeNode()?.type, props.object.type)}))`,
+            }}
+            class={`data-selected:text-always-white flex items-center gap-1 rounded-lg border border-neutral-400 bg-neutral-100 p-1 text-neutral-800 select-none data-selected:border-blue-500 data-selected:bg-blue-500!`}
         >
             <Switch>
                 <Match when={variant(props.object, ObjectType.Atom)}>
@@ -287,6 +323,7 @@ export const ObjectView = (props: {
                         />
                     )}
                 </Match>
+                <Match when={true}>NOT IMPL</Match>
             </Switch>
         </div>
     );

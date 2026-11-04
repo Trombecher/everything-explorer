@@ -2,40 +2,43 @@ import {createSignal} from "solid-js";
 
 import type {Object} from "@/model";
 import {defaultObject, ObjectType} from "@/model";
-import {Atom} from "@/model/atoms";
+import {nodeToObject, NodeType} from "@/model/nodes";
 
 import ObjectView from "../objects/ObjectView";
 import type {ObjectSelectionPathInfo} from "../objects/selection";
 import {ObjectSelection, ObjectSelectionContext} from "../objects/selection";
+import Swatch from "../Swatch";
 
-const createInitialObject = (): Object => ({
+const createInitialObject2 = (): Object => ({
     type: ObjectType.Set,
     elements: [
+        nodeToObject({
+            type: NodeType.Function,
+            body: nodeToObject({
+                type: NodeType.Literal,
+                object: {
+                    type: ObjectType.Integer,
+                    value: 42n,
+                },
+                rest: [],
+            }),
+            rest: [],
+        }),
+        nodeToObject({
+            type: NodeType.Plus,
+            first: {type: ObjectType.Atom, value: 34534598n},
+            second: nodeToObject({
+                type: NodeType.Times,
+                first: defaultObject,
+                second: defaultObject,
+                rest: [],
+            }),
+            rest: [],
+        }),
         {
             type: ObjectType.Construction,
-            constructor: Atom.NodeFunction,
-            value: {
-                type: ObjectType.Set,
-                elements: [
-                    {
-                        type: ObjectType.Construction,
-                        constructor: Atom.NodeLiteral,
-                        value: {
-                            type: ObjectType.Set,
-                            elements: [
-                                {
-                                    type: ObjectType.Integer,
-                                    value: 42n,
-                                },
-                                {
-                                    type: ObjectType.Set,
-                                    elements: [],
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
+            constructor: {type: ObjectType.Character, value: "a"},
+            value: {type: ObjectType.Text, text: "this is some text"},
         },
     ],
 });
@@ -48,7 +51,7 @@ type HistoryEntry = {
 export default () => {
     const [history, setHistory] = createSignal<readonly HistoryEntry[]>([
         {
-            object: createInitialObject(),
+            object: createInitialObject2(),
             selectionPathInfo: {effectiveLength: 0, path: []},
         },
     ]);
@@ -128,7 +131,7 @@ export default () => {
                     }}
                 />
             </ObjectSelectionContext.Provider>
-            yo
+            <Swatch />
         </div>
     );
 };
