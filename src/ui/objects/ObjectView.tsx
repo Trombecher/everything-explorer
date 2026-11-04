@@ -2,7 +2,13 @@ import {createEffect, createMemo, Match, Switch} from "solid-js";
 
 import {defaultObject, ObjectType, type Object} from "@/model";
 import {Atom} from "@/model/atoms";
-import {nodeChildCount, nodeToObject, objectToNode} from "@/model/nodes";
+import type {Node} from "@/model/nodes";
+import {
+    nodeChildCount,
+    nodeToObject,
+    NodeType,
+    objectToNode,
+} from "@/model/nodes";
 import type {DeepReadonly} from "@/util";
 import {variant} from "@/util";
 
@@ -42,6 +48,7 @@ const handleKeyDown = (
     childCount: number,
     object: Object,
     setObject: ((newObject: Object | undefined) => void) | undefined,
+    node: Node | undefined,
 ) => {
     if (
         e.target.tagName === "INPUT" ||
@@ -67,6 +74,8 @@ const handleKeyDown = (
     } else if (e.key === "Enter") {
         if (!setObject) return;
 
+        // Try to add new empty set to object.
+
         if (object.type === ObjectType.Set) {
             objectSelection.selectChild(object.elements.length);
 
@@ -78,8 +87,41 @@ const handleKeyDown = (
                 ],
             });
         }
-    } else if (e.key === "Backspace" || e.key === "Delete") {
+    } else if ((e.key === "Backspace" && e.shiftKey) || e.key === "Delete") {
+        // Delete whole object (or replace with empty set).
+
         setObject?.(undefined);
+    } else if (e.key === "Backspace") {
+        if (!setObject) return;
+
+        // Delete object but retain a child if possible.
+
+        if (node) {
+            switch (node.type) {
+                case NodeType.Function: {
+                    // Retain body.
+
+                    setObject(node.body);
+                    break;
+                }
+                case NodeType.Literal: {
+                    // Retain literal.
+
+                    setObject(node.object);
+                    break;
+                }
+                case NodeType.Plus: {
+                    // Retain first operand.
+
+                    setObject(node.first);
+                    break;
+                }
+            }
+        } else {
+            // We just delete everything.
+
+            setObject?.(undefined);
+        }
     } else if (e.key === "+") {
         setObject?.({
             type: ObjectType.Set,
@@ -96,6 +138,8 @@ const handleKeyDown = (
                 },
             ],
         });
+
+        objectSelection.selectChild(0);
     } else if (e.key === " ") {
         objectSelection.selectChild(1);
 
@@ -104,6 +148,36 @@ const handleKeyDown = (
             constructor: object,
             value: defaultObject,
         });
+    } else if (e.key === "l") {
+        if (!setObject) return;
+
+        setObject(
+            nodeToObject({
+                type: NodeType.Literal,
+                object: object,
+                rest: [],
+            }),
+        );
+
+        objectSelection.selectChild(0);
+    } else if (e.key === "f") {
+        if (!setObject) return;
+
+        setObject(
+            nodeToObject({
+                type: NodeType.Function,
+                body: object,
+                rest: [],
+            }),
+        );
+
+        objectSelection.selectChild(0);
+    } else if ("0123456789".includes(e.key)) {
+        if (!setObject) return;
+
+        // Replace with number.
+
+        setObject({type: ObjectType.Integer, value: BigInt(e.key)});
     }
 };
 
@@ -134,6 +208,7 @@ export const ObjectView = (props: {
                     childCount(),
                     props.object,
                     props.setObject,
+                    maybeNode(),
                 )
             }
             ref={div => {
@@ -166,10 +241,10 @@ export const ObjectView = (props: {
                     {node => (
                         <NodeView
                             node={node()}
-                            setNode={
+                            setObject={
                                 props.setObject &&
-                                (node => {
-                                    props.setObject?.(nodeToObject(node));
+                                (object => {
+                                    props.setObject?.(object);
                                 })
                             }
                             path={props.path}

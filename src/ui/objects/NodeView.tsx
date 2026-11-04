@@ -2,22 +2,25 @@ import BoxIcon from "lucide-solid/icons/box";
 import PlusIcon from "lucide-solid/icons/plus";
 import {Match, Switch} from "solid-js";
 
+import type {Object} from "@/model";
 import {defaultObject} from "@/model";
 import type {Node} from "@/model/nodes";
-import {NodeType} from "@/model/nodes";
+import {nodeToObject, NodeType} from "@/model/nodes";
 import type {DeepReadonly} from "@/util";
 import {variant} from "@/util";
 
 import MapsToIcon from "../reuse/MapsToIcon";
 import ObjectView from "./ObjectView";
-import type {ObjectSelectionPath} from "./selection";
+import {useObjectSelection, type ObjectSelectionPath} from "./selection";
 
 const NodeView = (props: {
     node: Node;
-    setNode: ((newNode: Node) => void) | undefined;
+    setObject: ((newObject: Object) => void) | undefined;
     path: DeepReadonly<ObjectSelectionPath>;
     childCount: number;
 }) => {
+    const objectSelection = useObjectSelection();
+
     return (
         <Switch>
             <Match when={variant(props.node, NodeType.Function)}>
@@ -29,12 +32,14 @@ const NodeView = (props: {
                             siblingCount={props.childCount}
                             object={functionNode().body}
                             setObject={
-                                props.setNode &&
+                                props.setObject &&
                                 (newBody => {
-                                    props.setNode?.({
-                                        ...functionNode(),
-                                        body: newBody ?? defaultObject,
-                                    });
+                                    props.setObject?.(
+                                        nodeToObject({
+                                            ...functionNode(),
+                                            body: newBody ?? defaultObject,
+                                        }),
+                                    );
                                 })
                             }
                             path={[...props.path, 0]}
@@ -49,12 +54,20 @@ const NodeView = (props: {
                             siblingCount={props.childCount}
                             object={plusNode().first}
                             setObject={
-                                props.setNode &&
+                                props.setObject &&
                                 (newFirst => {
-                                    props.setNode?.({
-                                        ...plusNode(),
-                                        first: newFirst ?? defaultObject,
-                                    });
+                                    if (newFirst === undefined) {
+                                        objectSelection.selectParent();
+
+                                        props.setObject?.(plusNode().second);
+                                    } else {
+                                        props.setObject?.(
+                                            nodeToObject({
+                                                ...plusNode(),
+                                                first: newFirst,
+                                            }),
+                                        );
+                                    }
                                 })
                             }
                             path={[...props.path, 0]}
@@ -64,12 +77,20 @@ const NodeView = (props: {
                             siblingCount={props.childCount}
                             object={plusNode().second}
                             setObject={
-                                props.setNode &&
+                                props.setObject &&
                                 (newSecond => {
-                                    props.setNode?.({
-                                        ...plusNode(),
-                                        second: newSecond ?? defaultObject,
-                                    });
+                                    if (newSecond === undefined) {
+                                        objectSelection.selectParent();
+
+                                        props.setObject?.(plusNode().first);
+                                    } else {
+                                        props.setObject?.(
+                                            nodeToObject({
+                                                ...plusNode(),
+                                                second: newSecond,
+                                            }),
+                                        );
+                                    }
                                 })
                             }
                             path={[...props.path, 1]}
@@ -85,12 +106,14 @@ const NodeView = (props: {
                             siblingCount={props.childCount}
                             object={literalNode().object}
                             setObject={
-                                props.setNode &&
+                                props.setObject &&
                                 (newObject => {
-                                    props.setNode?.({
-                                        ...literalNode(),
-                                        object: newObject ?? defaultObject,
-                                    });
+                                    props.setObject?.(
+                                        nodeToObject({
+                                            ...literalNode(),
+                                            object: newObject ?? defaultObject,
+                                        }),
+                                    );
                                 })
                             }
                             path={[...props.path, 0]}

@@ -74,6 +74,25 @@ export const objectToNode = (object: Object): Node | undefined => {
         };
     }
 
+    some = singleSetAtomValue(object, Atom.NodeAddFirst.value);
+    if (some) {
+        const second = singleSetAtomValue(object, Atom.NodeAddSecond.value);
+
+        if (second) {
+            if (finalNode) return undefined;
+
+            finalNode = {
+                type: NodeType.Plus,
+                first: some,
+                second,
+                rest: withoutAtomConstructors(object.elements, [
+                    Atom.NodeAddFirst.value,
+                    Atom.NodeAddSecond.value,
+                ]),
+            };
+        }
+    }
+
     return finalNode;
 };
 
