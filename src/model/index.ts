@@ -1,13 +1,13 @@
 import type {Atom} from "./atoms";
 
 export namespace ObjectType {
-    export const Atom = Symbol();
-    export const Set = Symbol();
-    export const Construction = Symbol();
-    export const Text = Symbol();
-    export const Integer = Symbol();
-    export const Character = Symbol();
-    export const Byte = Symbol();
+    export const Atom = Symbol("ObjectType.Atom");
+    export const Set = Symbol("ObjectType.Set");
+    export const Construction = Symbol("ObjectType.Construction");
+    export const Text = Symbol("ObjectType.Text");
+    export const Integer = Symbol("ObjectType.Integer");
+    export const Character = Symbol("ObjectType.Character");
+    export const Byte = Symbol("ObjectType.Byte");
 }
 
 export type ObjectType = Object["type"];
@@ -51,3 +51,8 @@ export type Object =
     | IntegerObject
     | CharacterObject
     | ByteObject;
+
+export const defaultObject = {
+    type: ObjectType.Set,
+    elements: [],
+} as const satisfies Object;

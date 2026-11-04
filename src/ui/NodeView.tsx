@@ -1,43 +1,101 @@
 import BoxIcon from "lucide-solid/icons/box";
 import PlusIcon from "lucide-solid/icons/plus";
-import type {Setter} from "solid-js";
 import {Match, Switch} from "solid-js";
 
-import type {Object} from "@/model";
+import {defaultObject} from "@/model";
 import type {Node} from "@/model/nodes";
 import {NodeType} from "@/model/nodes";
+import type {DeepReadonly} from "@/util";
 import {variant} from "@/util";
 
+import type {ObjectSelectionPath} from "./ObjectView";
 import ObjectView from "./ObjectView";
 import MapsToIcon from "./reuse/MapsToIcon";
 
-const NodeView = (props: {node: Node; setObject?: Setter<Object>}) => {
+const NodeView = (props: {
+    node: Node;
+    setNode: ((newNode: Node) => void) | undefined;
+    path: DeepReadonly<ObjectSelectionPath>;
+    childCount: number;
+}) => {
     return (
         <Switch>
             <Match when={variant(props.node, NodeType.Function)}>
-                {functionObject => (
-                    <div class="text-always-white flex items-center gap-1 rounded-lg border border-violet-700 bg-violet-500 p-1">
+                {functionNode => (
+                    <>
                         <i>x</i>
                         <MapsToIcon />
-                        <ObjectView object={functionObject().body} />
-                    </div>
+                        <ObjectView
+                            siblingCount={props.childCount}
+                            object={functionNode().body}
+                            setObject={
+                                props.setNode &&
+                                (newBody => {
+                                    props.setNode?.({
+                                        ...functionNode(),
+                                        body: newBody ?? defaultObject,
+                                    });
+                                })
+                            }
+                            path={[...props.path, 0]}
+                        />
+                    </>
                 )}
             </Match>
             <Match when={variant(props.node, NodeType.Plus)}>
                 {plusNode => (
-                    <div class="text-always-white flex items-center gap-1 rounded-lg border border-lime-700 bg-lime-500 p-1">
-                        <ObjectView object={plusNode().first} />
+                    <>
+                        <ObjectView
+                            siblingCount={props.childCount}
+                            object={plusNode().first}
+                            setObject={
+                                props.setNode &&
+                                (newFirst => {
+                                    props.setNode?.({
+                                        ...plusNode(),
+                                        first: newFirst ?? defaultObject,
+                                    });
+                                })
+                            }
+                            path={[...props.path, 0]}
+                        />
                         <PlusIcon />
-                        <ObjectView object={plusNode().second} />
-                    </div>
+                        <ObjectView
+                            siblingCount={props.childCount}
+                            object={plusNode().second}
+                            setObject={
+                                props.setNode &&
+                                (newSecond => {
+                                    props.setNode?.({
+                                        ...plusNode(),
+                                        second: newSecond ?? defaultObject,
+                                    });
+                                })
+                            }
+                            path={[...props.path, 1]}
+                        />
+                    </>
                 )}
             </Match>
             <Match when={variant(props.node, NodeType.Literal)}>
                 {literalNode => (
-                    <div class="flex items-center gap-1 rounded-lg border border-blue-600 bg-blue-400 p-1">
+                    <>
                         <BoxIcon />
-                        <ObjectView object={literalNode().object} />
-                    </div>
+                        <ObjectView
+                            siblingCount={props.childCount}
+                            object={literalNode().object}
+                            setObject={
+                                props.setNode &&
+                                (newObject => {
+                                    props.setNode?.({
+                                        ...literalNode(),
+                                        object: newObject ?? defaultObject,
+                                    });
+                                })
+                            }
+                            path={[...props.path, 0]}
+                        />
+                    </>
                 )}
             </Match>
         </Switch>
