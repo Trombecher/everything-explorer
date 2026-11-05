@@ -55,6 +55,36 @@ export class ConnectionClient {
     }
 
     /**
+     * Returns all values `x` such that `constructor x` is a value of `object`.
+     */
+    public async constructionValuesOfObject(
+        object: Object,
+        constructor: Object,
+    ): Promise<Object[]> {
+        const response = await fetch(
+            `${this.url}/api/v1/constructionValues`,
+            {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    object: objectToJsonObject(object),
+                    constructor: objectToJsonObject(constructor),
+                }),
+            },
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                `failed to query construction values (${response.status}): ${await response.text()}`,
+            );
+        }
+
+        return jsonObjectsSchema
+            .parse(await response.json())
+            .map(jsonObjectToObject);
+    }
+
+    /**
      * Returns the path of the knowledge base file the server is serving.
      */
     public async servingPath(): Promise<string> {

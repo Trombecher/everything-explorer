@@ -113,6 +113,28 @@ fn sets_round_trip() {
 }
 
 #[test]
+fn construction_values_requests_deserialize() {
+    let request: JsonConstructionValuesRequest = serde_json::from_str(
+        r#"{
+            "object": {"type": "atom", "value": "1"},
+            "constructor": {"type": "construction", "constructor": {"type": "atom", "value": "2"}, "value": {"type": "atom", "value": "3"}}
+        }"#,
+    )
+    .expect("the request deserializes");
+
+    assert_eq!(
+        request,
+        JsonConstructionValuesRequest {
+            object: JsonObject::Atom { value: JsonAtom(1) },
+            constructor: JsonObject::Construction {
+                constructor: Box::new(JsonObject::Atom { value: JsonAtom(2) }),
+                value: Box::new(JsonObject::Atom { value: JsonAtom(3) }),
+            },
+        }
+    );
+}
+
+#[test]
 fn invalid_atom_ids_are_rejected() {
     assert!(
         serde_json::from_str::<JsonObject>(r#"{"type":"atom","value":"not an atom"}"#).is_err()

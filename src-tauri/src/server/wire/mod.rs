@@ -103,6 +103,14 @@ pub enum JsonObject {
     },
 }
 
+/// The JSON representation of a request to query construction values.
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct JsonConstructionValuesRequest {
+    pub object: JsonObject,
+    pub constructor: JsonObject,
+}
+
 /// Errors that can occur when converting a [`JsonObject`] into an [`Object`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum JsonObjectError {

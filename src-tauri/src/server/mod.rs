@@ -65,6 +65,10 @@ impl PrivateKnowledgeServer {
             )
             .route("/api/v1/knownAtoms", get(routes_v1::known_atoms))
             .route("/api/v1/valuesOf", post(routes_v1::values_of_object))
+            .route(
+                "/api/v1/constructionValues",
+                post(routes_v1::construction_values_of_object),
+            )
             .layer(cors)
             .with_state(Arc::clone(&state));
 
