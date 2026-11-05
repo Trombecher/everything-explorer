@@ -1,19 +1,14 @@
-import {createResource, Suspense} from "solid-js";
+import AtomIcon from "lucide-solid/icons/atom";
+import {createEffect, createResource, Suspense} from "solid-js";
 
 import {useAppState} from "@/context";
-import {ObjectType, type Object} from "@/model";
 import {Atom} from "@/model/atoms";
 
-/**
- * Formats the values of the `name` construction of an atom for display.
- */
-export const formatAtomNames = (names: readonly Object[]): string =>
-    names
-        .map(object => {
-            if (object.type === ObjectType.Text) return object.text;
-            return "<object>";
-        })
-        .join(", ");
+import {
+    cacheAtomNames,
+    formatAtomNames,
+    noteAtomNamesConnection,
+} from "./atomNames";
 
 export default (props: {atom: Atom}) => {
     const appState = useAppState();
@@ -23,19 +18,33 @@ export default (props: {atom: Atom}) => {
             const connectionClient = appState.connectionClient();
             return connectionClient && {connectionClient, atom: props.atom};
         },
-        ({connectionClient, atom}) =>
-            connectionClient.constructionValuesOfObject(atom, Atom.Name),
+        ({connectionClient, atom}) => {
+            noteAtomNamesConnection(connectionClient.url);
+
+            return connectionClient.constructionValuesOfObject(atom, Atom.Name);
+        },
     );
 
-    const numericLabel = () => `@${String(props.atom.value)}`;
+    createEffect(() => {
+        const atomNames = names();
+
+        if (atomNames) cacheAtomNames(props.atom, atomNames);
+    });
 
     const label = () => {
         const atomNames = names();
 
-        if (!atomNames || atomNames.length === 0) return numericLabel();
+        if (!atomNames || atomNames.length === 0) {
+            return String(props.atom.value);
+        }
 
-        return `@${formatAtomNames(atomNames)}`;
+        return formatAtomNames(atomNames);
     };
 
-    return <Suspense fallback={numericLabel()}>{label()}</Suspense>;
+    return (
+        <span class="flex items-center gap-1">
+            <AtomIcon />
+            <Suspense fallback={String(props.atom.value)}>{label()}</Suspense>
+        </span>
+    );
 };

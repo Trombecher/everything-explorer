@@ -13,7 +13,7 @@ import {onCleanup} from "solid-js";
 import {useAppState} from "@/context";
 import {Atom} from "@/model/atoms";
 
-import {formatAtomNames} from "../objects/AtomView";
+import {formatAtomNames} from "../objects/atomNames";
 import ObjectRootView from "../objects/ObjectRootView";
 import Button from "../reuse/Button";
 

@@ -1,6 +1,8 @@
 import {ObjectType, type Object} from "@/model";
 import {type Node, NodeType, objectToNode} from "@/model/nodes";
 
+import {atomDisplayText, atomNamesRevision} from "./atomNames";
+
 /**
  * Layout model for object views.
  *
@@ -10,8 +12,8 @@ import {type Node, NodeType, objectToNode} from "@/model/nodes";
  * not depend on the rendered layout, which keeps it stable (it cannot
  * oscillate) and deterministic for a given available width.
  *
- * Keep this in sync with ObjectView, NodeView, SetObjectView, ConstructionView
- * and TextView.
+ * Keep this in sync with ObjectView, AtomView, NodeView, SetObjectView,
+ * ConstructionView and TextView.
  */
 
 /**
@@ -28,6 +30,7 @@ export const GAP = 4;
  * Widths of the icons used by the object views.
  */
 export const ICON_WIDTH = {
+    atom: 24,
     brace: 12,
     mapsTo: 32,
     dotDot: 24,
@@ -151,7 +154,10 @@ const computeNaturalWidth = (object: Object): number => {
                 naturalWidth(object.value),
             ]);
         case ObjectType.Atom:
-            return leafWidth(`@${object.value}`);
+            return rowWidth([
+                ICON_WIDTH.atom,
+                measureText(atomDisplayText(object)),
+            ]);
         case ObjectType.Integer:
             return rowWidth([
                 ICON_WIDTH.blackboardZ,
@@ -167,16 +173,20 @@ const computeNaturalWidth = (object: Object): number => {
     }
 };
 
-const naturalWidthCache = new WeakMap<Object, number>();
+const naturalWidthCache = new WeakMap<
+    Object,
+    {revision: number; width: number}
+>();
 
 /**
  * Natural (single row) width of an object view in px.
  */
 export const naturalWidth = (object: Object): number => {
+    const revision = atomNamesRevision();
     const cached = naturalWidthCache.get(object);
-    if (cached !== undefined) return cached;
+    if (cached?.revision === revision) return cached.width;
 
     const width = computeNaturalWidth(object);
-    naturalWidthCache.set(object, width);
+    naturalWidthCache.set(object, {revision, width});
     return width;
 };
