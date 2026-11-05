@@ -10,8 +10,8 @@ import {type Node, NodeType, objectToNode} from "@/model/nodes";
  * not depend on the rendered layout, which keeps it stable (it cannot
  * oscillate) and deterministic for a given available width.
  *
- * Keep this in sync with ObjectView, NodeView, SetObjectView and
- * ConstructionView.
+ * Keep this in sync with ObjectView, NodeView, SetObjectView, ConstructionView
+ * and TextView.
  */
 
 /**
@@ -157,9 +157,12 @@ const computeNaturalWidth = (object: Object): number => {
                 ICON_WIDTH.blackboardZ,
                 measureText(String(object.value)) + INTEGER_INPUT_PADDING_X,
             ]);
+        case ObjectType.Text:
+            return rowWidth([
+                measureText('"') + measureText(object.text) + measureText('"'),
+            ]);
         case ObjectType.Character:
         case ObjectType.Byte:
-        case ObjectType.Text:
             return leafWidth(NOT_IMPLEMENTED_TEXT);
     }
 };

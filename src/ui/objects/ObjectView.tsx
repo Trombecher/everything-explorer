@@ -13,6 +13,7 @@ import NodeView from "./NodeView";
 import type {ObjectSelection, ObjectSelectionPath} from "./selection";
 import {useObjectSelection} from "./selection";
 import SetObjectView from "./SetObjectView";
+import TextView from "./TextView";
 
 const objectChildCount = (obj: Object): number => {
     switch (obj.type) {
@@ -329,6 +330,11 @@ export const ObjectView = (props: {
                             setObject={props.setObject}
                             budget={contentBudget()}
                         />
+                    )}
+                </Match>
+                <Match when={variant(props.object, ObjectType.Text)}>
+                    {text => (
+                        <TextView text={text()} setText={props.setObject} />
                     )}
                 </Match>
                 <Match when={true}>NOT IMPL</Match>
