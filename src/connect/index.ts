@@ -23,6 +23,8 @@ export class ConnectionClient {
             `${this.url}/api/v1/knownAtoms?limit=${limit}`,
         );
 
+        if (!response.ok) throw new Error("error while fetching known atoms");
+
         return knownAtomsEndpointResponse
             .parse(await response.json())
             .map(atomString => ({

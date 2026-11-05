@@ -163,6 +163,11 @@ export class AppState {
     public async disconnect() {
         if (backend.isApp()) await backend.stopServer();
         this.setConnectionClient(undefined);
+        if (
+            this.state.currentTab === Tab.InstanceProperties ||
+            this.state.currentTab === Tab.Things
+        )
+            this.setCurrentTab(Tab.Home);
     }
 
     public isConnected() {

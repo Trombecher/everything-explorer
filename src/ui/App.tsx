@@ -11,7 +11,7 @@ import SideBar from "./sidebar/SideBar";
 import DebugView from "./tabs/DebugView";
 import Home from "./tabs/HomeView";
 import SettingsView from "./tabs/SettingsView";
-import AllAtoms from "./tabs/Things";
+import AllAtoms from "./tabs/ThingsView";
 
 export default () => {
     const appState = useAppState();
