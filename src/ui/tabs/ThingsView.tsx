@@ -7,7 +7,6 @@ import {createResource, createSignal, For, Show, Suspense} from "solid-js";
 import {useAppState} from "@/context";
 import type {Atom} from "@/model/atoms";
 
-import ObjectRootView from "../objects/ObjectRootView";
 import Button from "../reuse/Button";
 
 export default () => {
@@ -31,7 +30,7 @@ export default () => {
                         Add
                     </Button>
                 </div>
-                <div class="flex flex-wrap">
+                <div class="mt-4 flex flex-wrap gap-2">
                     <Suspense fallback={"loading..."}>
                         <For each={atoms()}>
                             {atom => (
@@ -59,12 +58,6 @@ const AtomCard = (props: {
     selectedAtom: Atom | undefined;
     setSelectedAtom: Setter<Atom | undefined>;
 }) => {
-    const appState = useAppState();
-    const [values] = createResource(
-        () => appState.connectionClient(),
-        client => client.valuesOfObject(props.atom),
-    );
-
     return (
         <KobalteButton
             onPointerDown={() => {
@@ -78,12 +71,6 @@ const AtomCard = (props: {
             class={`block h-48 w-48 overflow-hidden rounded-4xl border p-4 text-left ${props.selectedAtom === props.atom ? "border-blue-500 bg-blue-400/20" : "border-neutral-200 bg-neutral-100 hover:bg-neutral-200"}`}
         >
             <div class="mb-2">@{String(props.atom.value)}</div>
-
-            <Suspense fallback={<>loading props</>}>
-                <For each={values()}>
-                    {value => <ObjectRootView budget={128} object={value} />}
-                </For>
-            </Suspense>
         </KobalteButton>
     );
 };
