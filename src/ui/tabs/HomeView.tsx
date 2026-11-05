@@ -77,7 +77,7 @@ export default () => {
     });
 
     return (
-        <div class="mx-auto my-2 max-w-3xl grow rounded-3xl border border-neutral-200 bg-white p-4">
+        <div class="mx-auto my-2 max-w-3xl grow rounded-4xl border border-neutral-200 bg-white p-4">
             <h2 class="mb-4 text-2xl font-semibold tracking-tight text-black">
                 {appState.translate(Phrase.WelcomeBack, undefined)}
                 <Suspense>{userName() && `, ${userName()}`}</Suspense>!

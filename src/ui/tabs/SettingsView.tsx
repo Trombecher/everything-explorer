@@ -8,7 +8,7 @@ export default () => {
     const appState = useAppState();
 
     return (
-        <div class="mx-auto my-2 max-w-2xl grow rounded-3xl border border-neutral-200 bg-white p-4">
+        <div class="mx-auto my-2 max-w-2xl grow rounded-4xl border border-neutral-200 bg-white p-4">
             <h2 class="mb-4 text-2xl font-semibold tracking-tight text-black">
                 {appState.translate(Phrase.AppSettings, undefined)}
             </h2>

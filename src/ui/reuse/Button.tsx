@@ -20,7 +20,7 @@ export default (
     return (
         <Button
             {...otherProps}
-            class={`rounded-xl ${severityProps.severity === ButtonSeverity.Danger ? "bg-red-400 text-black hover:bg-red-500 active:bg-red-600 dark:text-white" : "bg-blue-500 text-white hover:bg-blue-600 active:bg-blue-700 dark:text-black"} px-3 py-1 font-semibold active:scale-97 ${props.class}`}
+            class={`cursor-pointer rounded-2xl ${severityProps.severity === ButtonSeverity.Danger ? "bg-red-400 text-black hover:bg-red-500 active:bg-red-600 dark:text-white" : "bg-blue-500 text-white hover:bg-blue-600 active:bg-blue-700 dark:text-black"} px-3 py-1 font-medium active:scale-97 ${props.class}`}
         />
     );
 };

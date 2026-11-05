@@ -7,7 +7,7 @@ export namespace Phrase {
         [AppSettings]: undefined;
         [Greeting]: {forName: string};
         [InstanceProperties]: undefined;
-        [AllAtoms]: undefined;
+        [Things]: undefined;
         [German]: undefined;
         [English]: undefined;
         [System]: undefined;
@@ -24,7 +24,7 @@ export namespace Phrase {
     export const AppSettings = Symbol();
     export const Greeting = Symbol();
     export const InstanceProperties = Symbol();
-    export const AllAtoms = Symbol();
+    export const Things = Symbol();
     export const German = Symbol();
     export const English = Symbol();
     export const System = Symbol();
@@ -42,7 +42,7 @@ export type Phrase =
     | typeof Phrase.AppSettings
     | typeof Phrase.Greeting
     | typeof Phrase.InstanceProperties
-    | typeof Phrase.AllAtoms
+    | typeof Phrase.Things
     | typeof Phrase.German
     | typeof Phrase.English
     | typeof Phrase.System

@@ -43,5 +43,6 @@ html[data-theme="dark"] {
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 * {
+    corner-shape: superellipse(1.6);
     @apply outline-offset-2 outline-blue-500 focus-visible:outline-2;
 }

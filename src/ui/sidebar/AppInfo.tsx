@@ -12,7 +12,7 @@ export default () => {
     const appState = useAppState();
 
     return (
-        <div class="rounded-3xl border border-neutral-200 bg-white p-2">
+        <div class="rounded-4xl border border-neutral-200 bg-white p-2">
             <h1 class="mt-2 px-2 text-lg font-bold text-black">
                 Everything Explorer
             </h1>
