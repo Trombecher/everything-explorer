@@ -11,9 +11,9 @@ import {onMount} from "solid-js";
 import {onCleanup} from "solid-js";
 
 import {useAppState} from "@/context";
-import {Object, ObjectType} from "@/model";
 import {Atom} from "@/model/atoms";
 
+import {formatAtomNames} from "../objects/AtomView";
 import ObjectRootView from "../objects/ObjectRootView";
 import Button from "../reuse/Button";
 
@@ -108,7 +108,7 @@ const PropertiesPanel = (props: {selectedAtom: Atom; close: () => void}) => {
             <div class="flex items-center gap-2 p-2">
                 <TablePropertiesIcon />
                 <h2 class="text-xl font-semibold text-black">
-                    Properties of {formatNames(names() ?? [])}
+                    Properties of {formatAtomNames(names() ?? [])}
                 </h2>
             </div>
             <KobalteButton
@@ -154,14 +154,6 @@ const PropertiesPanel = (props: {selectedAtom: Atom; close: () => void}) => {
     );
 };
 
-const formatNames = (names: readonly Object[]): string =>
-    names
-        .map(object => {
-            if (object.type === ObjectType.Text) return object.text;
-            return "<object>";
-        })
-        .join(", ");
-
 const AtomCard = (props: {
     atom: Atom;
     selectedAtom: Atom | undefined;
@@ -191,7 +183,7 @@ const AtomCard = (props: {
         >
             <span class="block text-center text-lg font-medium">
                 <Suspense fallback={<>loading...</>}>
-                    {formatNames(names() ?? [])}
+                    {formatAtomNames(names() ?? [])}
                 </Suspense>
             </span>
         </KobalteButton>

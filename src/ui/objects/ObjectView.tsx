@@ -6,6 +6,7 @@ import {nodeChildCount, nodeToObject, NodeType} from "@/model/nodes";
 import type {DeepReadonly} from "@/util";
 import {variant} from "@/util";
 
+import AtomView from "./AtomView";
 import ConstructionView from "./ConstructionView";
 import IntegerView from "./IntegerView";
 import {CHROME_X, naturalWidth, nodeFor} from "./layout";
@@ -284,7 +285,7 @@ export const ObjectView = (props: {
         >
             <Switch>
                 <Match when={variant(props.object, ObjectType.Atom)}>
-                    {atom => <>@{String(atom().value)}</>}
+                    {atom => <AtomView atom={atom()} />}
                 </Match>
                 <Match when={variant(props.object, ObjectType.Integer)}>
                     {integer => (
