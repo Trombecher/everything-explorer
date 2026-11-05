@@ -32,8 +32,8 @@ const BinaryOperationView = (props: {
         <>
             <ObjectView
                 replaceParentWithThis={
-                    props.setObject &&
-                    (() => {
+                    props.setObject
+                    && (() => {
                         if (!props.setObject) return;
 
                         objectSelection.selectParent();
@@ -43,18 +43,15 @@ const BinaryOperationView = (props: {
                 siblingCount={props.childCount}
                 object={props.node.first}
                 setObject={
-                    props.setObject &&
-                    (newFirst => {
+                    props.setObject
+                    && (newFirst => {
                         if (newFirst === undefined) {
                             objectSelection.selectParent();
 
                             props.setObject?.(props.node.second);
                         } else {
                             props.setObject?.(
-                                nodeToObject({
-                                    ...props.node,
-                                    first: newFirst,
-                                }),
+                                nodeToObject({...props.node, first: newFirst}),
                             );
                         }
                     })
@@ -65,8 +62,8 @@ const BinaryOperationView = (props: {
             {props.icon}
             <ObjectView
                 replaceParentWithThis={
-                    props.setObject &&
-                    (() => {
+                    props.setObject
+                    && (() => {
                         if (!props.setObject) return;
 
                         objectSelection.selectParent();
@@ -76,8 +73,8 @@ const BinaryOperationView = (props: {
                 siblingCount={props.childCount}
                 object={props.node.second}
                 setObject={
-                    props.setObject &&
-                    (newSecond => {
+                    props.setObject
+                    && (newSecond => {
                         if (newSecond === undefined) {
                             objectSelection.selectParent();
 
@@ -109,10 +106,14 @@ const NodeView = (props: {
     path: DeepReadonly<ObjectSelectionPath>;
     childCount: number;
 
-    /** Available width for the content of the enclosing object view. */
+    /**
+     * Available width for the content of the enclosing object view.
+     */
     budget: number;
 
-    /** Whether the enclosing object view is laid out as a column. */
+    /**
+     * Whether the enclosing object view is laid out as a column.
+     */
     column: boolean;
 }) => {
     const objectSelection = useObjectSelection();
@@ -126,8 +127,8 @@ const NodeView = (props: {
                         <MapsToIcon />
                         <ObjectView
                             replaceParentWithThis={
-                                props.setObject &&
-                                (() => {
+                                props.setObject
+                                && (() => {
                                     if (!props.setObject) return;
 
                                     objectSelection.selectParent();
@@ -137,8 +138,8 @@ const NodeView = (props: {
                             siblingCount={props.childCount}
                             object={functionNode().body}
                             setObject={
-                                props.setObject &&
-                                (newBody => {
+                                props.setObject
+                                && (newBody => {
                                     props.setObject?.(
                                         nodeToObject({
                                             ...functionNode(),
@@ -149,10 +150,10 @@ const NodeView = (props: {
                             }
                             path={[...props.path, 0]}
                             budget={
-                                props.budget -
-                                measureText("x") -
-                                ICON_WIDTH.mapsTo -
-                                2 * GAP
+                                props.budget
+                                - measureText("x")
+                                - ICON_WIDTH.mapsTo
+                                - 2 * GAP
                             }
                         />
                     </>
@@ -178,8 +179,8 @@ const NodeView = (props: {
                         <BoxIcon />
                         <ObjectView
                             replaceParentWithThis={
-                                props.setObject &&
-                                (() => {
+                                props.setObject
+                                && (() => {
                                     if (!props.setObject) return;
 
                                     objectSelection.selectParent();
@@ -189,8 +190,8 @@ const NodeView = (props: {
                             siblingCount={props.childCount}
                             object={literalNode().object}
                             setObject={
-                                props.setObject &&
-                                (newObject => {
+                                props.setObject
+                                && (newObject => {
                                     props.setObject?.(
                                         nodeToObject({
                                             ...literalNode(),

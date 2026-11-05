@@ -26,11 +26,7 @@ const storedConnectionSchema = z.discriminatedUnion("type", [
         filePath: z.string(),
         name: z.string(),
     }),
-    z.object({
-        type: z.literal("remote"),
-        url: z.string(),
-        name: z.string(),
-    }),
+    z.object({type: z.literal("remote"), url: z.string(), name: z.string()}),
 ]);
 
 export const storedAppStateSchema = z.object({
@@ -139,11 +135,7 @@ const connectionToStored = (
                 name: connection.name,
             };
         case ConnectionType.Remote:
-            return {
-                type: "remote",
-                url: connection.url,
-                name: connection.name,
-            };
+            return {type: "remote", url: connection.url, name: connection.name};
     }
 };
 

@@ -34,10 +34,7 @@ const objectChildCount = (obj: Object): number => {
 };
 
 const handleKeyDown = (
-    e: KeyboardEvent & {
-        currentTarget: HTMLDivElement;
-        target: Element;
-    },
+    e: KeyboardEvent & {currentTarget: HTMLDivElement; target: Element},
     objectSelection: ObjectSelection,
     siblingCount: number,
     childCount: number,
@@ -47,9 +44,9 @@ const handleKeyDown = (
     replaceParentWithThis: (() => void) | undefined,
 ) => {
     if (
-        e.target.tagName === "INPUT" ||
-        e.target !== e.currentTarget ||
-        e.ctrlKey
+        e.target.tagName === "INPUT"
+        || e.target !== e.currentTarget
+        || e.ctrlKey
     )
         return;
 
@@ -145,11 +142,7 @@ const handleKeyDown = (
         if (!setObject) return;
 
         setObject(
-            nodeToObject({
-                type: NodeType.Literal,
-                object: object,
-                rest: [],
-            }),
+            nodeToObject({type: NodeType.Literal, object: object, rest: []}),
         );
 
         objectSelection.selectChild(0);
@@ -157,11 +150,7 @@ const handleKeyDown = (
         if (!setObject) return;
 
         setObject(
-            nodeToObject({
-                type: NodeType.Function,
-                body: object,
-                rest: [],
-            }),
+            nodeToObject({type: NodeType.Function, body: object, rest: []}),
         );
 
         objectSelection.selectChild(0);
@@ -224,12 +213,14 @@ export const ObjectView = (props: {
     path: DeepReadonly<ObjectSelectionPath>;
     siblingCount: number;
 
-    /** Available width for this view's border box in px. */
+    /**
+     * Available width for this view's border box in px.
+     */
     budget: number;
 
     /**
-     * Tries to replace the parent with this object.
-     * Selection is handled by this function.
+     * Tries to replace the parent with this object. Selection is handled by
+     * this function.
      *
      * The object view calling this function is selected.
      */
@@ -254,7 +245,8 @@ export const ObjectView = (props: {
 
     /**
      * Cross-axis alignment in column mode. Only sets and binary operations can
-     * have two or more children, and binary operations center the operator row.
+     * have two or more children, and binary operations center the operator
+     * row.
      */
     const alignItems = () => (maybeNode() ? "items-center" : "items-start");
 
@@ -306,8 +298,8 @@ export const ObjectView = (props: {
                         <NodeView
                             node={node()}
                             setObject={
-                                props.setObject &&
-                                (object => {
+                                props.setObject
+                                && (object => {
                                     props.setObject?.(object);
                                 })
                             }

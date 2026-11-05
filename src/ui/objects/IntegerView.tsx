@@ -22,8 +22,8 @@ export default (props: {
                     }
                 }}
                 onBlur={
-                    props.setInteger &&
-                    (() => {
+                    props.setInteger
+                    && (() => {
                         try {
                             const newBigInt = BigInt(text());
 

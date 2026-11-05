@@ -23,22 +23,12 @@ export default defineConfig(() => ({
         port: 1420,
         strictPort: true,
         host: host || false,
-        hmr: host
-            ? {
-                  protocol: "ws",
-                  host,
-                  port: 1421,
-              }
-            : undefined,
+        hmr: host ? {protocol: "ws", host, port: 1421} : undefined,
         watch: {
             // 3. tell Vite to ignore watching `src-tauri`
             ignored: ["**/src-tauri/**"],
         },
     },
-    define: {
-        APP_VERSION: JSON.stringify(packageJson.version),
-    },
-    resolve: {
-        tsconfigPaths: true,
-    },
+    define: {APP_VERSION: JSON.stringify(packageJson.version)},
+    resolve: {tsconfigPaths: true},
 }));

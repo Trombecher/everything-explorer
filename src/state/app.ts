@@ -23,14 +23,8 @@ export type ConnectionType =
     | typeof ConnectionType.Remote;
 
 export type Connection = (
-    | {
-          type: typeof ConnectionType.Local;
-          filePath: string;
-      }
-    | {
-          type: typeof ConnectionType.Remote;
-          url: string;
-      }
+    | {type: typeof ConnectionType.Local; filePath: string}
+    | {type: typeof ConnectionType.Remote; url: string}
 ) & {name: string};
 
 const connectionsShareURI = (
@@ -38,15 +32,15 @@ const connectionsShareURI = (
     connection2: DeepReadonly<Connection>,
 ): boolean => {
     if (
-        connection2.type === ConnectionType.Local &&
-        connection.type === ConnectionType.Local
+        connection2.type === ConnectionType.Local
+        && connection.type === ConnectionType.Local
     ) {
         return connection.filePath === connection2.filePath;
     }
 
     if (
-        connection.type === ConnectionType.Remote &&
-        connection2.type === ConnectionType.Remote
+        connection.type === ConnectionType.Remote
+        && connection2.type === ConnectionType.Remote
     ) {
         return connection.url === connection2.url;
     }
@@ -57,10 +51,9 @@ const connectionsShareURI = (
 /**
  * Invariants:
  *
- * * If `lastUsedConnectionIndex` is not `undefined`,
- *   then it is a safe non-negative integer
- *   which is a valid connection index.
- * * No connection URL is double.
+ * - If `lastUsedConnectionIndex` is not `undefined`, then it is a safe
+ *   non-negative integer which is a valid connection index.
+ * - No connection URL is double.
  */
 export type InternalAppState = {
     languageSetting: LanguageSetting;
@@ -71,8 +64,7 @@ export type InternalAppState = {
 };
 
 /**
- * Modifies the given `appState` such that all
- * invariants are good.
+ * Modifies the given `appState` such that all invariants are good.
  */
 const enforceInvariants = (appState: InternalAppState) => {
     // Filter out doubles.
@@ -85,10 +77,10 @@ const enforceInvariants = (appState: InternalAppState) => {
     );
 
     if (
-        appState.lastUsedConnectionIndex !== undefined &&
-        (!Number.isSafeInteger(appState.lastUsedConnectionIndex) ||
-            appState.lastUsedConnectionIndex < 0 ||
-            !appState.connections[appState.lastUsedConnectionIndex])
+        appState.lastUsedConnectionIndex !== undefined
+        && (!Number.isSafeInteger(appState.lastUsedConnectionIndex)
+            || appState.lastUsedConnectionIndex < 0
+            || !appState.connections[appState.lastUsedConnectionIndex])
     ) {
         appState.lastUsedConnectionIndex = undefined;
     }
@@ -164,8 +156,8 @@ export class AppState {
         if (backend.isApp()) await backend.stopServer();
         this.setConnectionClient(undefined);
         if (
-            this.state.currentTab === Tab.InstanceProperties ||
-            this.state.currentTab === Tab.Things
+            this.state.currentTab === Tab.InstanceProperties
+            || this.state.currentTab === Tab.Things
         )
             this.setCurrentTab(Tab.Home);
     }
@@ -215,8 +207,8 @@ export class AppState {
     public localConnectionIndexFromPath(filePath: string): number | undefined {
         const index = this.state.connections.findIndex(
             connection =>
-                connection.type === ConnectionType.Local &&
-                connection.filePath === filePath,
+                connection.type === ConnectionType.Local
+                && connection.filePath === filePath,
         );
 
         return index === -1 ? undefined : index;
@@ -254,8 +246,8 @@ export class AppState {
 
     public languageIsNotAvailable(): boolean {
         return (
-            this.state.languageSetting === System &&
-            this.browserLanguage() === undefined
+            this.state.languageSetting === System
+            && this.browserLanguage() === undefined
         );
     }
 

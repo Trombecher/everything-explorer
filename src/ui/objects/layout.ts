@@ -14,13 +14,19 @@ import {type Node, NodeType, objectToNode} from "@/model/nodes";
  * ConstructionView.
  */
 
-/** Horizontal padding and border of one object view (`p-1` + `border`). */
+/**
+ * Horizontal padding and border of one object view (`p-1` + `border`).
+ */
 export const CHROME_X = 2 * (4 + 1);
 
-/** Width of `gap-1` between the flex items of an object view. */
+/**
+ * Width of `gap-1` between the flex items of an object view.
+ */
 export const GAP = 4;
 
-/** Widths of the icons used by the object views. */
+/**
+ * Widths of the icons used by the object views.
+ */
 export const ICON_WIDTH = {
     brace: 12,
     mapsTo: 32,
@@ -31,10 +37,14 @@ export const ICON_WIDTH = {
     blackboardZ: 24,
 } as const;
 
-/** Horizontal padding of the integer input (`pr-2`; Preflight resets the rest). */
+/**
+ * Horizontal padding of the integer input (`pr-2`; Preflight resets the rest).
+ */
 const INTEGER_INPUT_PADDING_X = 8;
 
-/** Text that ObjectView renders for object types that have no view yet. */
+/**
+ * Text that ObjectView renders for object types that have no view yet.
+ */
 const NOT_IMPLEMENTED_TEXT = "NOT IMPL";
 
 let textMeasurer: HTMLSpanElement | undefined;
@@ -57,7 +67,9 @@ const textMeasurerElement = (): HTMLSpanElement => {
 
 const textWidthCache = new Map<string, number>();
 
-/** Width of a single-line text run in the font of the object views. */
+/**
+ * Width of a single-line text run in the font of the object views.
+ */
 export const measureText = (text: string): number => {
     const cached = textWidthCache.get(text);
     if (cached !== undefined) return cached;
@@ -73,13 +85,15 @@ export const measureText = (text: string): number => {
 const leafWidth = (text: string): number => CHROME_X + measureText(text);
 
 const rowWidth = (items: readonly number[]): number =>
-    CHROME_X +
-    items.reduce((sum, width) => sum + width, 0) +
-    GAP * Math.max(0, items.length - 1);
+    CHROME_X
+    + items.reduce((sum, width) => sum + width, 0)
+    + GAP * Math.max(0, items.length - 1);
 
 const nodeCache = new WeakMap<Object, Node | undefined>();
 
-/** Cached `objectToNode` that is shared with the width model. */
+/**
+ * Cached `objectToNode` that is shared with the width model.
+ */
 export const nodeFor = (object: Object): Node | undefined => {
     if (nodeCache.has(object)) return nodeCache.get(object);
 
@@ -152,7 +166,9 @@ const computeNaturalWidth = (object: Object): number => {
 
 const naturalWidthCache = new WeakMap<Object, number>();
 
-/** Natural (single row) width of an object view in px. */
+/**
+ * Natural (single row) width of an object view in px.
+ */
 export const naturalWidth = (object: Object): number => {
     const cached = naturalWidthCache.get(object);
     if (cached !== undefined) return cached;

@@ -15,10 +15,14 @@ export default (props: {
     setSet: ((newSet: Object | undefined) => void) | undefined;
     path: DeepReadonly<ObjectSelectionPath>;
 
-    /** Available width for the content of the enclosing object view. */
+    /**
+     * Available width for the content of the enclosing object view.
+     */
     budget: number;
 
-    /** Whether the enclosing object view is laid out as a column. */
+    /**
+     * Whether the enclosing object view is laid out as a column.
+     */
     column: boolean;
 }) => {
     const objectSelection = useObjectSelection();
@@ -26,8 +30,8 @@ export default (props: {
     const elementBudget = (index: number) =>
         (props.column
             ? props.budget
-            : props.budget - 2 * ICON_WIDTH.brace - 2 * GAP) -
-        (index < props.set.elements.length - 1 ? measureText(",") : 0);
+            : props.budget - 2 * ICON_WIDTH.brace - 2 * GAP)
+        - (index < props.set.elements.length - 1 ? measureText(",") : 0);
 
     return (
         <>
@@ -37,8 +41,8 @@ export default (props: {
                     <span class="flex items-center">
                         <ObjectView
                             replaceParentWithThis={
-                                props.setSet &&
-                                (() => {
+                                props.setSet
+                                && (() => {
                                     if (!props.setSet) return;
 
                                     objectSelection.selectParent();
@@ -48,8 +52,8 @@ export default (props: {
                             object={element()}
                             siblingCount={props.set.elements.length}
                             setObject={
-                                props.setSet &&
-                                (newElement => {
+                                props.setSet
+                                && (newElement => {
                                     if (newElement === undefined) {
                                         props.setSet?.({
                                             type: ObjectType.Set,

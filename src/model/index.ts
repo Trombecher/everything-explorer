@@ -74,9 +74,9 @@ const deduplicateObjects = (objects: readonly Object[]): Object[] => {
 
 /**
  * Compares two objects by their structure only, i.e. their type and the values
- * of their fields. No semantic meaning is taken into account: for example,
- * two sets are only equal if their elements are the same, regardless of their
- * order and duplicates.
+ * of their fields. No semantic meaning is taken into account: for example, two
+ * sets are only equal if their elements are the same, regardless of their order
+ * and duplicates.
  */
 export const objectsEqual = (left: Object, right: Object): boolean => {
     switch (left.type) {
@@ -89,17 +89,17 @@ export const objectsEqual = (left: Object, right: Object): boolean => {
             const rightElements = deduplicateObjects(right.elements);
 
             return (
-                leftElements.length === rightElements.length &&
-                leftElements.every(element =>
+                leftElements.length === rightElements.length
+                && leftElements.every(element =>
                     rightElements.some(other => objectsEqual(element, other)),
                 )
             );
         }
         case ObjectType.Construction:
             return (
-                right.type === ObjectType.Construction &&
-                objectsEqual(left.constructor, right.constructor) &&
-                objectsEqual(left.value, right.value)
+                right.type === ObjectType.Construction
+                && objectsEqual(left.constructor, right.constructor)
+                && objectsEqual(left.value, right.value)
             );
         case ObjectType.Text:
             return right.type === ObjectType.Text && left.text === right.text;
@@ -109,8 +109,8 @@ export const objectsEqual = (left: Object, right: Object): boolean => {
             );
         case ObjectType.Character:
             return (
-                right.type === ObjectType.Character &&
-                left.value === right.value
+                right.type === ObjectType.Character
+                && left.value === right.value
             );
         case ObjectType.Byte:
             return right.type === ObjectType.Byte && left.value === right.value;

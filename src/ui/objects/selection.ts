@@ -28,8 +28,8 @@ export class ObjectSelection {
 
     isSelected(path: DeepReadonly<ObjectSelectionPath>) {
         return (
-            path.length === this.pathInfo().effectiveLength &&
-            path.every((position, i) => position === this.pathInfo().path[i])
+            path.length === this.pathInfo().effectiveLength
+            && path.every((position, i) => position === this.pathInfo().path[i])
         );
     }
 
@@ -78,10 +78,10 @@ export class ObjectSelection {
                 const newEffectiveLength = pathInfo.effectiveLength + 1;
 
                 if (
-                    pathInfo.effectiveLength < pathInfo.path.length &&
-                    (childIndex === "previous" ||
-                        childIndex ===
-                            this.pathInfo().path[pathInfo.effectiveLength])
+                    pathInfo.effectiveLength < pathInfo.path.length
+                    && (childIndex === "previous"
+                        || childIndex
+                            === this.pathInfo().path[pathInfo.effectiveLength])
                 )
                     return {
                         path: pathInfo.path,

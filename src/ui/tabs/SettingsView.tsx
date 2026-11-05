@@ -2,6 +2,7 @@ import {useAppState} from "@/context";
 import {Phrase} from "@/i18n/phrases";
 
 import LanguageSelector from "../LanguageSelector";
+import Button from "../reuse/Button";
 import ThemeSelector from "../ThemeSelector";
 
 export default () => {
@@ -15,6 +16,13 @@ export default () => {
             <div class="grid grid-cols-2 items-center gap-4">
                 <LanguageSelector />
                 <ThemeSelector />
+                <Button
+                    onClick={() => {
+                        location.href = "/";
+                    }}
+                >
+                    Reload
+                </Button>
             </div>
         </div>
     );

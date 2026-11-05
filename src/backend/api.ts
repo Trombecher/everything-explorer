@@ -19,7 +19,8 @@ export const applyThemeSetting = (themeSetting: ThemeSetting) => {
 };
 
 /**
- * Returns the stored app settings as a JSON string, or `null` if nothing has been stored yet.
+ * Returns the stored app settings as a JSON string, or `null` if nothing has
+ * been stored yet.
  */
 export const getAppSettings = () => invoke<string | null>("get_app_settings");
 
@@ -37,7 +38,8 @@ export const pickPathForNewKnowledgeBaseFile = () =>
 
 /**
  * Starts the server for serving a knowledge base at that path.
- * @returns the port of the server on localhost.
+ *
+ * @returns The port of the server on localhost.
  */
 export const servePath = (path: string) =>
     invoke<number>("serve_knowledge_base", {path});

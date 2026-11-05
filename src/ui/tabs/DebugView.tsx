@@ -16,10 +16,7 @@ const createInitialObject2 = (): Object => ({
             type: NodeType.Function,
             body: nodeToObject({
                 type: NodeType.Literal,
-                object: {
-                    type: ObjectType.Integer,
-                    value: 42n,
-                },
+                object: {type: ObjectType.Integer, value: 42n},
                 rest: [],
             }),
             rest: [],

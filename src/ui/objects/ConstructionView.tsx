@@ -12,7 +12,9 @@ export default (props: {
     setObject: ((newObject: Object) => void) | undefined;
     path: DeepReadonly<ObjectSelectionPath>;
 
-    /** Available width for the content of the enclosing object view. */
+    /**
+     * Available width for the content of the enclosing object view.
+     */
     budget: number;
 }) => {
     const objectSelection = useObjectSelection();
@@ -23,8 +25,8 @@ export default (props: {
                 <DotDotIcon />
                 <ObjectView
                     replaceParentWithThis={
-                        props.setObject &&
-                        (() => {
+                        props.setObject
+                        && (() => {
                             if (!props.setObject) return;
 
                             objectSelection.selectParent();
@@ -53,8 +55,8 @@ export default (props: {
             </span>
             <ObjectView
                 replaceParentWithThis={
-                    props.setObject &&
-                    (() => {
+                    props.setObject
+                    && (() => {
                         if (!props.setObject) return;
 
                         objectSelection.selectParent();

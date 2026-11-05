@@ -134,9 +134,9 @@ const withoutAtomConstructors = (
 ): Object[] =>
     elements.filter(element => {
         return (
-            element.type !== ObjectType.Construction ||
-            (element.constructor.type === ObjectType.Atom &&
-                !withoutAtomValues.includes(element.constructor.value))
+            element.type !== ObjectType.Construction
+            || (element.constructor.type === ObjectType.Atom
+                && !withoutAtomValues.includes(element.constructor.value))
         );
     });
 
@@ -149,9 +149,9 @@ const singleSetAtomValue = (
     const [element1, element2] = set.elements
         .filter(element => {
             return (
-                element.type === ObjectType.Construction &&
-                element.constructor.type === ObjectType.Atom &&
-                element.constructor.value === atomValue
+                element.type === ObjectType.Construction
+                && element.constructor.type === ObjectType.Atom
+                && element.constructor.value === atomValue
             );
         })
         .map(

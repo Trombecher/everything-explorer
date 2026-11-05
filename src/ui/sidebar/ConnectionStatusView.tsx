@@ -21,8 +21,8 @@ export default () => {
                     if (appState.isConnected()) {
                         appState.disconnect();
                     } else if (
-                        appState.state.connections.length > 0 &&
-                        appState.state.lastUsedConnectionIndex !== undefined
+                        appState.state.connections.length > 0
+                        && appState.state.lastUsedConnectionIndex !== undefined
                     ) {
                         appState.connect(
                             appState.state.lastUsedConnectionIndex,

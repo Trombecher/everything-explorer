@@ -19,8 +19,8 @@ const storedVersion = (stored: unknown): unknown => {
 /**
  * Converts versioned stored app state into the internal representation.
  *
- * Falls back to the default internal app state if the version is unknown or
- * the stored value is invalid.
+ * Falls back to the default internal app state if the version is unknown or the
+ * stored value is invalid.
  */
 export const deserializeAppState = (stored: unknown): InternalAppState => {
     switch (storedVersion(stored)) {
