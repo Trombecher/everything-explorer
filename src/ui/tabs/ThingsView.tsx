@@ -5,7 +5,7 @@ import type {Setter} from "solid-js";
 import {createResource, createSignal, For, Show, Suspense} from "solid-js";
 
 import {useAppState} from "@/context";
-import type {Atom} from "@/model/atoms";
+import {Atom} from "@/model/atoms";
 
 import Button from "../reuse/Button";
 
@@ -58,6 +58,13 @@ const AtomCard = (props: {
     selectedAtom: Atom | undefined;
     setSelectedAtom: Setter<Atom | undefined>;
 }) => {
+    const appState = useAppState();
+    const [names] = createResource(
+        () => appState.connectionClient(),
+        connectionClient =>
+            connectionClient.constructionValuesOfObject(props.atom, Atom.Name),
+    );
+
     return (
         <KobalteButton
             onPointerDown={() => {
@@ -71,6 +78,12 @@ const AtomCard = (props: {
             class={`block h-48 w-48 overflow-hidden rounded-4xl border p-4 text-left ${props.selectedAtom === props.atom ? "border-blue-500 bg-blue-400/20" : "border-neutral-200 bg-neutral-100 hover:bg-neutral-200"}`}
         >
             <div class="mb-2">@{String(props.atom.value)}</div>
+            <div>
+                Names:{" "}
+                <Suspense fallback={<>loading...</>}>
+                    {names()?.join(", ")}
+                </Suspense>
+            </div>
         </KobalteButton>
     );
 };
