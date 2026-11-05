@@ -7,6 +7,8 @@ import XIcon from "lucide-solid/icons/x";
 import type {Setter} from "solid-js";
 import {createResource, createSignal, For, Show, Suspense} from "solid-js";
 import {Index} from "solid-js";
+import {onMount} from "solid-js";
+import {onCleanup} from "solid-js";
 
 import {useAppState} from "@/context";
 import {Object, ObjectType} from "@/model";
@@ -99,6 +101,8 @@ const PropertiesPanel = (props: {selectedAtom: Atom; close: () => void}) => {
             connectionClient.valuesOfObject(selectedAtom),
     );
 
+    const [budget, setBudget] = createSignal(Number.POSITIVE_INFINITY);
+
     return (
         <div class="relative flex w-full flex-col gap-2 rounded-4xl border border-neutral-200 bg-white p-2">
             <div class="flex items-center gap-2 p-2">
@@ -116,13 +120,36 @@ const PropertiesPanel = (props: {selectedAtom: Atom; close: () => void}) => {
                 <XIcon />
             </KobalteButton>
 
-            <Suspense fallback={<>loading properties...</>}>
-                <Index each={values()}>
-                    {object => (
-                        <ObjectRootView budget={400} object={object()} />
-                    )}
-                </Index>
-            </Suspense>
+            <div
+                ref={div => {
+                    onMount(() => {
+                        const updateBudget = () => {
+                            const width =
+                                div.getBoundingClientRect().width ?? 0;
+
+                            if (width > 0) setBudget(width);
+                        };
+
+                        updateBudget();
+
+                        const resizeObserver = new ResizeObserver(updateBudget);
+                        resizeObserver.observe(div);
+
+                        onCleanup(() => resizeObserver.disconnect());
+                    });
+                }}
+            >
+                <Suspense fallback={<>loading properties...</>}>
+                    <Index each={values()}>
+                        {object => (
+                            <ObjectRootView
+                                budget={budget()}
+                                object={object()}
+                            />
+                        )}
+                    </Index>
+                </Suspense>
+            </div>
         </div>
     );
 };
