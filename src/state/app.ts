@@ -33,11 +33,65 @@ export type Connection = (
       }
 ) & {name: string};
 
+const connectionsShareURI = (
+    connection: DeepReadonly<Connection>,
+    connection2: DeepReadonly<Connection>,
+): boolean => {
+    if (
+        connection2.type === ConnectionType.Local &&
+        connection.type === ConnectionType.Local
+    ) {
+        return connection.filePath === connection2.filePath;
+    }
+
+    if (
+        connection.type === ConnectionType.Remote &&
+        connection2.type === ConnectionType.Remote
+    ) {
+        return connection.url === connection2.url;
+    }
+
+    return false;
+};
+
+/**
+ * Invariants:
+ *
+ * * If `lastUsedConnectionIndex` is not `undefined`,
+ *   then it is a safe non-negative integer
+ *   which is a valid connection index.
+ * * No connection URL is double.
+ */
 export type InternalAppState = {
     languageSetting: LanguageSetting;
     currentTab: Tab;
     connections: Connection[];
     themeSetting: ThemeSetting;
+    lastUsedConnectionIndex: number | undefined;
+};
+
+/**
+ * Modifies the given `appState` such that all
+ * invariants are good.
+ */
+const enforceInvariants = (appState: InternalAppState) => {
+    // Filter out doubles.
+    appState.connections = appState.connections.filter(
+        (connection, i) =>
+            !appState.connections.find(
+                (connection2, j) =>
+                    i < j && connectionsShareURI(connection, connection2),
+            ),
+    );
+
+    if (
+        appState.lastUsedConnectionIndex !== undefined &&
+        (!Number.isSafeInteger(appState.lastUsedConnectionIndex) ||
+            appState.lastUsedConnectionIndex < 0 ||
+            !appState.connections[appState.lastUsedConnectionIndex])
+    ) {
+        appState.lastUsedConnectionIndex = undefined;
+    }
 };
 
 export type BrowserLanguage = Language | undefined;
@@ -58,6 +112,7 @@ export const defaultAppStateData = (): InternalAppState => ({
     currentTab: Tab.Debug,
     connections: [],
     themeSetting: System,
+    lastUsedConnectionIndex: undefined,
 });
 
 export class AppState {
@@ -70,7 +125,8 @@ export class AppState {
     public readonly browserLanguage: () => BrowserLanguage;
 
     constructor(initial: InternalAppState) {
-        // TODO: invariants check
+        enforceInvariants(initial);
+
         const [state, setState] = createStore<InternalAppState>(initial);
 
         this.state = state;
@@ -183,6 +239,8 @@ export class AppState {
 
             this.setConnectionClient(new ConnectionClient(connection.url));
         }
+
+        this.setState("lastUsedConnectionIndex", connectionIndex);
     }
 
     public reset() {
@@ -245,6 +303,12 @@ export class AppState {
             throw new Error(`invalid connection index ${connectionIndex}`);
 
         return connection;
+    }
+
+    public lastUsedConnection(): Connection | undefined {
+        if (this.state.lastUsedConnectionIndex === undefined) return;
+
+        return this.connection(this.state.lastUsedConnectionIndex);
     }
 
     private modifyConnection(

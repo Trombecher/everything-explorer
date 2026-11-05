@@ -16,6 +16,10 @@ const storedLanguageSettingSchema = z.enum(["en-US", "de"]);
 
 const storedThemeSettingSchema = z.enum(["dark", "light"]);
 
+const nonNegativeIntegerSchema = z
+    .number()
+    .refine(n => Number.isSafeInteger(n) && n >= 0);
+
 const storedConnectionSchema = z.discriminatedUnion("type", [
     z.object({
         type: z.literal("local"),
@@ -44,6 +48,11 @@ export const storedAppStateSchema = z.object({
      * Default: empty array.
      */
     connections: z.array(storedConnectionSchema).optional(),
+
+    /**
+     * Default: none
+     */
+    lastUsedConnectionIndex: nonNegativeIntegerSchema.optional(),
 });
 
 export type StoredAppState = z.infer<typeof storedAppStateSchema>;
@@ -151,6 +160,7 @@ export const serializeAppState = (
         ...(languageSetting === undefined ? {} : {languageSetting}),
         ...(themeSetting === undefined ? {} : {themeSetting}),
         connections: state.connections.map(connectionToStored),
+        lastUsedConnectionIndex: state.lastUsedConnectionIndex,
     };
 };
 
@@ -164,12 +174,18 @@ export const deserializeAppState = (stored: unknown): InternalAppState => {
 
     if (!result.success) return defaultAppStateData();
 
-    const {languageSetting, themeSetting, connections} = result.data;
+    const {
+        languageSetting,
+        themeSetting,
+        connections,
+        lastUsedConnectionIndex,
+    } = result.data;
 
     return {
         ...defaultAppStateData(),
         languageSetting: languageSettingFromStored(languageSetting),
         themeSetting: themeSettingFromStored(themeSetting),
         connections: (connections ?? []).map(connectionFromStored),
+        lastUsedConnectionIndex,
     };
 };

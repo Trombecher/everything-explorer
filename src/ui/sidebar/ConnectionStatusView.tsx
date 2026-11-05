@@ -1,5 +1,4 @@
 import UnplugIcon from "lucide-solid/icons/unplug";
-import {Show} from "solid-js";
 
 import {useAppState} from "@/context";
 
@@ -21,8 +20,13 @@ export default () => {
                 onClick={() => {
                     if (appState.isConnected()) {
                         appState.disconnect();
-                    } else if (appState.state.connections.length > 0) {
-                        appState.connect(0);
+                    } else if (
+                        appState.state.connections.length > 0 &&
+                        appState.state.lastUsedConnectionIndex !== undefined
+                    ) {
+                        appState.connect(
+                            appState.state.lastUsedConnectionIndex,
+                        );
                     }
                 }}
             >
@@ -31,7 +35,7 @@ export default () => {
                     {appState.isConnected()
                         ? "Disconnect from "
                         : "Connect to "}
-                    {appState.state.connections[0]?.name}
+                    {appState.lastUsedConnection()?.name}
                 </span>
             </Button>
         </div>
