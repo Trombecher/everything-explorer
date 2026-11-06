@@ -6,7 +6,11 @@ import ObjectView from "./ObjectView";
 import type {ObjectSelectionPathInfo} from "./selection";
 import {ObjectSelection, ObjectSelectionContext} from "./selection";
 
-export default (props: {object: Object; budget: number}) => {
+export default (props: {
+    object: Object;
+    budget: number;
+    setObject: ((newObject: Object | undefined) => void) | undefined;
+}) => {
     const [objectSelection, setObjectSelection] =
         createSignal<ObjectSelectionPathInfo>({effectiveLength: 0, path: []});
 
@@ -20,7 +24,7 @@ export default (props: {object: Object; budget: number}) => {
                 path={[]}
                 siblingCount={1}
                 replaceParentWithThis={undefined}
-                setObject={undefined}
+                setObject={props.setObject}
             />
         </ObjectSelectionContext.Provider>
     );

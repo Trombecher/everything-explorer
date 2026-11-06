@@ -173,6 +173,10 @@ const handleKeyDown = (
         );
 
         objectSelection.selectChild(1);
+    } else if (e.key === "a") {
+        // Replace with atom
+
+        setObject?.({type: ObjectType.Atom, value: 0n});
     }
 };
 

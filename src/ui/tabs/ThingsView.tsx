@@ -5,12 +5,20 @@ import SearchIcon from "lucide-solid/icons/search";
 import TablePropertiesIcon from "lucide-solid/icons/table-properties";
 import XIcon from "lucide-solid/icons/x";
 import type {Setter} from "solid-js";
-import {createResource, createSignal, For, Show, Suspense} from "solid-js";
+import {
+    createEffect,
+    createResource,
+    createSignal,
+    For,
+    Show,
+    Suspense,
+} from "solid-js";
 import {Index} from "solid-js";
 import {onMount} from "solid-js";
 import {onCleanup} from "solid-js";
 
 import {useAppState} from "@/context";
+import {defaultObject, objectsEqual, type Object} from "@/model";
 import {Atom} from "@/model/atoms";
 
 import {formatAtomNames} from "../objects/atomNames";
@@ -61,10 +69,10 @@ export default () => {
                     </Suspense>
                 </div>
             </div>
-            <Show when={selectedAtom()}>
+            <Show when={selectedAtom()} keyed>
                 {selectedAtom => (
                     <PropertiesPanel
-                        selectedAtom={selectedAtom()}
+                        selectedAtom={selectedAtom}
                         close={() => setSelectedAtom(undefined)}
                     />
                 )}
@@ -73,7 +81,15 @@ export default () => {
     );
 };
 
+/**
+ * Horizontal space taken by the per-property remove button and the gap before
+ * it, in px.
+ */
+const REMOVE_BUTTON_SPACE = 48;
+
 const PropertiesPanel = (props: {selectedAtom: Atom; close: () => void}) => {
+    const appState = useAppState();
+
     const clientAndAtom = () => {
         const connectionClient = appState.connectionClient();
 
@@ -85,7 +101,6 @@ const PropertiesPanel = (props: {selectedAtom: Atom; close: () => void}) => {
         );
     };
 
-    const appState = useAppState();
     const [names] = createResource(
         clientAndAtom,
         ({connectionClient, selectedAtom}) =>
@@ -100,6 +115,84 @@ const PropertiesPanel = (props: {selectedAtom: Atom; close: () => void}) => {
         ({connectionClient, selectedAtom}) =>
             connectionClient.valuesOfObject(selectedAtom),
     );
+
+    /**
+     * The properties shown in the UI. This is kept separate from the resource
+     * so that adding a property is reflected immediately and duplicate
+     * properties are not collapsed.
+     */
+    const [properties, setProperties] = createSignal<readonly Object[]>([]);
+
+    createEffect(() => {
+        const loadedValues = values();
+
+        if (loadedValues) setProperties(loadedValues);
+    });
+
+    const addProperty = () => {
+        const current = clientAndAtom();
+        if (!current) return;
+
+        const {connectionClient, selectedAtom} = current;
+
+        setProperties(previous => [...previous, defaultObject]);
+
+        void connectionClient
+            .addStatement({atom: selectedAtom, object: defaultObject})
+            .catch(error => console.error("failed to add property", error));
+    };
+
+    const changeProperty = (
+        index: number,
+        oldObject: Object,
+        newObject: Object | undefined,
+    ) => {
+        const current = clientAndAtom();
+        if (!current) return;
+
+        const {connectionClient, selectedAtom} = current;
+
+        setProperties(previous => {
+            if (newObject === undefined) {
+                return previous.filter((_, i) => i !== index);
+            }
+
+            return previous.map((object, i) =>
+                i === index ? newObject : object,
+            );
+        });
+
+        if (newObject !== undefined && objectsEqual(oldObject, newObject)) {
+            return;
+        }
+
+        void (async () => {
+            try {
+                // Add first so a failed add does not lose the existing
+                // statement.
+                if (newObject !== undefined) {
+                    await connectionClient.addStatement({
+                        atom: selectedAtom,
+                        object: newObject,
+                    });
+                }
+
+                await connectionClient.removeStatement({
+                    atom: selectedAtom,
+                    object: oldObject,
+                });
+            } catch (error) {
+                console.error("failed to update property", error);
+            }
+        })();
+    };
+
+    const removeProperty = (index: number) => {
+        const oldObject = properties()[index];
+        if (!oldObject) return;
+
+        changeProperty(index, oldObject, undefined);
+    };
 
     const [budget, setBudget] = createSignal(Number.POSITIVE_INFINITY);
 
@@ -120,6 +213,17 @@ const PropertiesPanel = (props: {selectedAtom: Atom; close: () => void}) => {
                 <XIcon />
             </KobalteButton>
 
+            <div class="px-2">
+                <Button
+                    class="flex w-fit gap-2"
+                    disabled={values() === undefined}
+                    onClick={addProperty}
+                >
+                    <PlusIcon />
+                    Add property
+                </Button>
+            </div>
+
             <div
                 ref={div => {
                     onMount(() => {
@@ -139,16 +243,35 @@ const PropertiesPanel = (props: {selectedAtom: Atom; close: () => void}) => {
                     });
                 }}
             >
-                <Suspense fallback={<>loading properties...</>}>
-                    <Index each={values()}>
-                        {object => (
-                            <ObjectRootView
-                                budget={budget()}
-                                object={object()}
-                            />
+                <Show when={values()} fallback={<>loading properties...</>}>
+                    <Index each={properties()}>
+                        {(object, index) => (
+                            <div class="flex items-center gap-2">
+                                <div class="min-w-0 flex-1">
+                                    <ObjectRootView
+                                        budget={budget() - REMOVE_BUTTON_SPACE}
+                                        object={object()}
+                                        setObject={newObject => {
+                                            changeProperty(
+                                                index,
+                                                object(),
+                                                newObject,
+                                            );
+                                        }}
+                                    />
+                                </div>
+                                <KobalteButton
+                                    class="shrink-0 rounded-2xl p-2 text-neutral-500 hover:bg-neutral-100 hover:text-red-500"
+                                    title="Remove property"
+                                    aria-label="Remove property"
+                                    onClick={() => removeProperty(index)}
+                                >
+                                    <XIcon />
+                                </KobalteButton>
+                            </div>
                         )}
                     </Index>
-                </Suspense>
+                </Show>
             </div>
         </div>
     );
