@@ -249,7 +249,9 @@ const PropertiesPanel = (props: {selectedAtom: Atom; close: () => void}) => {
                             <div class="flex items-center gap-2">
                                 <div class="min-w-0 flex-1">
                                     <ObjectRootView
-                                        budget={budget() - REMOVE_BUTTON_SPACE}
+                                        widthBudgetInPixels={
+                                            budget() - REMOVE_BUTTON_SPACE
+                                        }
                                         object={object()}
                                         setObject={newObject => {
                                             changeProperty(

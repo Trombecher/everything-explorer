@@ -8,7 +8,7 @@ import {ObjectSelection, ObjectSelectionContext} from "./selection";
 
 export default (props: {
     object: Object;
-    budget: number;
+    widthBudgetInPixels: number;
     setObject: ((newObject: Object | undefined) => void) | undefined;
 }) => {
     const [objectSelection, setObjectSelection] =
@@ -19,7 +19,7 @@ export default (props: {
             value={new ObjectSelection(objectSelection, setObjectSelection)}
         >
             <ObjectView
-                widthBudgetInPixels={props.budget}
+                widthBudgetInPixels={props.widthBudgetInPixels}
                 object={props.object}
                 path={[]}
                 siblingCount={1}

@@ -12,8 +12,7 @@ import type {DeepReadonly} from "@/util";
 import {variant} from "@/util";
 
 import MapsToIcon from "../reuse/MapsToIcon";
-import type {LayoutMode} from "./layout";
-import {GAP, ICON_WIDTH, measureText} from "./layout";
+import {GAP, ICON_WIDTH, LayoutMode, measureText} from "./layout";
 import ObjectView from "./ObjectView";
 import {useObjectSelection, type ObjectSelectionPath} from "./selection";
 
@@ -92,7 +91,7 @@ const BinaryOperationView = (props: {
                 }
                 path={[...props.path, 1]}
                 widthBudgetInPixels={
-                    props.layoutModeOfEnclosingObjectView
+                    props.layoutModeOfEnclosingObjectView === LayoutMode.Column
                         ? props.budget
                         : props.budget - props.iconWidth - GAP
                 }

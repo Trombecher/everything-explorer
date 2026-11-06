@@ -68,7 +68,6 @@ export const objectToNode = (object: Object): Node | typeof NotANode => {
     }
 
     const node = objectToNodeWithoutCache(object);
-    console.log("object:", object, "node:", node);
     objectNodeCache.set(object, node);
     return node;
 };

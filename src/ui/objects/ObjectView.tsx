@@ -254,6 +254,9 @@ export const ObjectView = (props: {
     const objectSelection = useObjectSelection();
 
     const contentBudget = () => props.widthBudgetInPixels - CHROME_X;
+    const layoutMode = () =>
+        calculateLayoutModeOfObject(props.object, props.widthBudgetInPixels);
+    const isNode = () => objectToNode(props.object) !== NotANode;
 
     return (
         <div
@@ -282,7 +285,7 @@ export const ObjectView = (props: {
             style={{
                 "background-color": `light-dark(oklch(0.92 0.07 ${objectViewColorHue(props.object)}), oklch(0.3 0.07 ${objectViewColorHue(props.object)}))`,
             }}
-            class={`data-selected:text-always-white flex gap-1 rounded-xl border border-neutral-400 bg-neutral-100 p-1 text-neutral-800 select-none data-selected:border-blue-500 data-selected:bg-blue-500! ${calculateLayoutModeOfObject(props.object, props.widthBudgetInPixels) === LayoutMode.Column ? `flex-col ${objectToNode(props.object) ? "items-center" : "items-start"}` : "items-center"}`}
+            class={`data-selected:text-always-white flex gap-1 rounded-xl border border-neutral-400 bg-neutral-100 p-1 text-neutral-800 select-none data-selected:border-blue-500 data-selected:bg-blue-500! ${layoutMode() === LayoutMode.Column ? `flex-col ${isNode() ? "items-center" : "items-start"}` : "items-center"}`}
         >
             <Switch>
                 <Match when={variant(props.object, ObjectType.Atom)}>
@@ -311,10 +314,7 @@ export const ObjectView = (props: {
                             path={props.path}
                             childCount={childCountOfObject(props.object)}
                             widthBudgetInPixels={contentBudget()}
-                            layoutModeOfEnclosingObjectView={calculateLayoutModeOfObject(
-                                props.object,
-                                props.widthBudgetInPixels,
-                            )}
+                            layoutModeOfEnclosingObjectView={layoutMode()}
                         />
                     )}
                 </Match>
@@ -325,10 +325,7 @@ export const ObjectView = (props: {
                             setSet={props.setObject}
                             path={props.path}
                             widthBudgetInPixels={contentBudget()}
-                            layoutModeOfEnclodingObjectView={calculateLayoutModeOfObject(
-                                props.object,
-                                props.widthBudgetInPixels,
-                            )}
+                            layoutModeOfEnclosingObjectView={layoutMode()}
                         />
                     )}
                 </Match>

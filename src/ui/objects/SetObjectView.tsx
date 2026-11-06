@@ -5,8 +5,7 @@ import {type SetObject, ObjectType} from "@/model";
 import type {DeepReadonly} from "@/util";
 
 import LeftBraceIcon from "../reuse/LeftBraceIcon";
-import type {LayoutMode} from "./layout";
-import {GAP, ICON_WIDTH, measureText} from "./layout";
+import {GAP, ICON_WIDTH, LayoutMode, measureText} from "./layout";
 import ObjectView from "./ObjectView";
 import type {ObjectSelectionPath} from "./selection";
 import {useObjectSelection} from "./selection";
@@ -18,12 +17,12 @@ export default (props: {
 
     widthBudgetInPixels: number;
 
-    layoutModeOfEnclodingObjectView: LayoutMode;
+    layoutModeOfEnclosingObjectView: LayoutMode;
 }) => {
     const objectSelection = useObjectSelection();
 
     const elementBudget = (index: number) =>
-        (props.layoutModeOfEnclodingObjectView
+        (props.layoutModeOfEnclosingObjectView === LayoutMode.Column
             ? props.widthBudgetInPixels
             : props.widthBudgetInPixels - 2 * ICON_WIDTH.brace - 2 * GAP)
         - (index < props.set.elements.length - 1 ? measureText(",") : 0);
