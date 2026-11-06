@@ -1,3 +1,4 @@
+import {TextField} from "@kobalte/core/text-field";
 import {createComputed, createSignal} from "solid-js";
 
 import {ObjectType, type TextObject} from "@/model";
@@ -10,42 +11,39 @@ export default (props: {
     createComputed(() => setText(props.text.text));
 
     return (
-        <span class="flex items-center">
+        <TextField
+            as="span"
+            value={text()}
+            onChange={setText}
+            readOnly={!props.setText}
+            class="flex items-center"
+        >
             <span>"</span>
-            <input
-                value={text()}
-                readOnly={!props.setText}
+            <TextField.Input
                 spellcheck={false}
                 onKeyDown={e => {
                     if (e.key === "Enter") {
                         e.currentTarget.blur();
                     }
                 }}
-                onBlur={
-                    props.setText
-                    && (() => {
-                        const newText = text();
+                onBlur={() => {
+                    if (!props.setText) return;
 
-                        if (newText.length === 0) {
-                            // A text object must never be empty.
-                            setText(props.text.text);
-                            return;
-                        }
+                    const newText = text();
 
-                        if (newText !== props.text.text) {
-                            props.setText?.({
-                                type: ObjectType.Text,
-                                text: newText,
-                            });
-                        }
-                    })
-                }
-                onInput={e => {
-                    setText(e.currentTarget.value);
+                    if (newText.length === 0) {
+                        // A text object must never be empty.
+                        setText(props.text.text);
+                        return;
+                    }
+
+                    if (newText !== props.text.text) {
+                        props.setText({type: ObjectType.Text, text: newText});
+                    }
                 }}
                 class="block field-sizing-content"
             />
             <span>"</span>
-        </span>
+        </TextField>
     );
 };
