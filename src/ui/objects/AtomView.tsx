@@ -1,7 +1,13 @@
 import AtomIcon from "lucide-solid/icons/atom";
-import {createEffect, createResource, Suspense} from "solid-js";
+import {
+    createComputed,
+    createEffect,
+    createResource,
+    createSignal,
+} from "solid-js";
 
 import {useAppState} from "@/context";
+import {ObjectType} from "@/model";
 import {Atom} from "@/model/atoms";
 
 import {
@@ -10,7 +16,12 @@ import {
     noteAtomNamesConnection,
 } from "./atomNames";
 
-export default (props: {atom: Atom}) => {
+const MAX_ATOM_VALUE = (1n << 128n) - 1n;
+
+export default (props: {
+    atom: Atom;
+    setAtom: ((newAtom: Atom) => void) | undefined;
+}) => {
     const appState = useAppState();
 
     const [names] = createResource(
@@ -41,10 +52,62 @@ export default (props: {atom: Atom}) => {
         return formatAtomNames(atomNames);
     };
 
+    const [text, setText] = createSignal("");
+    const [editing, setEditing] = createSignal(false);
+
+    createComputed(() => {
+        if (!editing()) setText(String(props.atom.value));
+    });
+
+    const displayedText = () => (editing() ? text() : label());
+
     return (
         <span class="flex items-center gap-1">
             <AtomIcon />
-            <Suspense fallback={String(props.atom.value)}>{label()}</Suspense>
+            <input
+                value={displayedText()}
+                readOnly={!props.setAtom}
+                spellcheck={false}
+                title={label()}
+                onFocus={() => {
+                    if (!props.setAtom) return;
+
+                    setText(String(props.atom.value));
+                    setEditing(true);
+                }}
+                onKeyDown={e => {
+                    if (e.key === "Enter") {
+                        e.currentTarget.blur();
+                    } else if (e.key === "Escape") {
+                        setText(String(props.atom.value));
+                        e.currentTarget.blur();
+                    }
+                }}
+                onBlur={() => {
+                    const newText = text().trim();
+
+                    if (props.setAtom && newText.length > 0) {
+                        try {
+                            const value = BigInt(newText);
+
+                            if (value >= 0n && value <= MAX_ATOM_VALUE) {
+                                if (value !== props.atom.value) {
+                                    props.setAtom({
+                                        type: ObjectType.Atom,
+                                        value,
+                                    });
+                                }
+                            }
+                        } catch {}
+                    }
+
+                    setEditing(false);
+                }}
+                onInput={e => {
+                    setText(e.currentTarget.value);
+                }}
+                class="block field-sizing-content"
+            />
         </span>
     );
 };

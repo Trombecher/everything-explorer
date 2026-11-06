@@ -177,6 +177,10 @@ const handleKeyDown = (
         // Replace with atom
 
         setObject?.({type: ObjectType.Atom, value: 0n});
+    } else if (e.key === "t") {
+        // Replace with text
+
+        setObject?.({type: ObjectType.Text, text: ""});
     }
 };
 
@@ -289,7 +293,9 @@ export const ObjectView = (props: {
         >
             <Switch>
                 <Match when={variant(props.object, ObjectType.Atom)}>
-                    {atom => <AtomView atom={atom()} />}
+                    {atom => (
+                        <AtomView atom={atom()} setAtom={props.setObject} />
+                    )}
                 </Match>
                 <Match when={variant(props.object, ObjectType.Integer)}>
                     {integer => (
