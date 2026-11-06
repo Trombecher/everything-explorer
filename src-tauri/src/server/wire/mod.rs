@@ -4,6 +4,7 @@ mod tests;
 use std::{fmt, str::FromStr};
 
 use everything::{
+    knowledge::Statement,
     model::{Atom, ByteSet, CharacterSet, Construction, Object, Set, TextSet},
     num_bigint::BigInt,
 };
@@ -111,6 +112,15 @@ pub struct JsonConstructionValuesRequest {
     pub constructor: JsonObject,
 }
 
+/// The JSON representation of a statement, i.e. that an atom has an object as
+/// a property.
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct JsonStatement {
+    pub atom: JsonAtom,
+    pub object: JsonObject,
+}
+
 /// Errors that can occur when converting a [`JsonObject`] into an [`Object`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum JsonObjectError {
@@ -155,6 +165,26 @@ impl TryFrom<JsonObject> for Object {
                 Self::Set(Set::from(objects.as_mut_slice()))
             }
         })
+    }
+}
+
+impl TryFrom<JsonStatement> for Statement {
+    type Error = JsonObjectError;
+
+    fn try_from(value: JsonStatement) -> Result<Self, Self::Error> {
+        Ok(Self {
+            atom: Atom(value.atom.0),
+            object: Object::try_from(value.object)?,
+        })
+    }
+}
+
+impl From<Statement> for JsonStatement {
+    fn from(value: Statement) -> Self {
+        Self {
+            atom: JsonAtom(value.atom.0),
+            object: JsonObject::from(value.object),
+        }
     }
 }
 

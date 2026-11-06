@@ -1,12 +1,13 @@
 import z from "zod";
 
-import {ObjectType, type Object} from "@/model";
+import {ObjectType, type Object, type Statement} from "@/model";
 import type {Atom} from "@/model/atoms";
 
 import {
     jsonObjectToObject,
     jsonObjectsSchema,
     objectToJsonObject,
+    statementToJsonStatement,
 } from "./wire";
 
 const knownAtomsEndpointResponse = z.array(z.string());
@@ -82,6 +83,40 @@ export class ConnectionClient {
         return jsonObjectsSchema
             .parse(await response.json())
             .map(jsonObjectToObject);
+    }
+
+    /**
+     * Adds the given statement to the knowledge base.
+     */
+    public async addStatement(statement: Statement): Promise<void> {
+        const response = await fetch(`${this.url}/api/v1/addStatement`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(statementToJsonStatement(statement)),
+        });
+
+        if (!response.ok) {
+            throw new Error(
+                `failed to add statement (${response.status}): ${await response.text()}`,
+            );
+        }
+    }
+
+    /**
+     * Removes the given statement from the knowledge base.
+     */
+    public async removeStatement(statement: Statement): Promise<void> {
+        const response = await fetch(`${this.url}/api/v1/removeStatement`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(statementToJsonStatement(statement)),
+        });
+
+        if (!response.ok) {
+            throw new Error(
+                `failed to remove statement (${response.status}): ${await response.text()}`,
+            );
+        }
     }
 
     /**

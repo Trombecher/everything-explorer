@@ -8,8 +8,8 @@ use axum::{
     http::{HeaderValue, Method, header},
     routing::{get, post},
 };
-use everything::knowledge::Knowledge;
-use everything_db::PersistantKnowledge;
+use everything::knowledge::{Knowledge, Statement};
+use everything_db::{PersistantKnowledge, StatementChange};
 use tauri::async_runtime::JoinHandle;
 use tokio::sync::{Mutex, oneshot};
 use tower_http::cors::CorsLayer;
@@ -40,6 +40,20 @@ impl WebServerState {
     pub async fn set_knowledge(&self, knowledge: PersistantKnowledge) {
         *self.persistant_knowledge.lock().await = knowledge;
     }
+
+    pub async fn add_statement(&self, statement: Statement) -> Result<(), everything_db::Error> {
+        self.persistant_knowledge
+            .lock()
+            .await
+            .store(std::iter::once(StatementChange::Add(&statement)))
+    }
+
+    pub async fn remove_statement(&self, statement: Statement) -> Result<(), everything_db::Error> {
+        self.persistant_knowledge
+            .lock()
+            .await
+            .store(std::iter::once(StatementChange::Remove(&statement)))
+    }
 }
 
 pub struct PrivateKnowledgeServer {
@@ -69,6 +83,8 @@ impl PrivateKnowledgeServer {
                 "/api/v1/constructionValues",
                 post(routes_v1::construction_values_of_object),
             )
+            .route("/api/v1/addStatement", post(routes_v1::add_statement))
+            .route("/api/v1/removeStatement", post(routes_v1::remove_statement))
             .layer(cors)
             .with_state(Arc::clone(&state));
 

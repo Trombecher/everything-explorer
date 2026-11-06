@@ -1,11 +1,11 @@
 use std::sync::Arc;
 
 use axum::{Json, extract::State, http::StatusCode, response::IntoResponse};
-use everything::model::Object;
+use everything::{knowledge::Statement, model::Object};
 
 use crate::server::{
     WebServerState,
-    wire::{JsonConstructionValuesRequest, JsonObject},
+    wire::{JsonConstructionValuesRequest, JsonObject, JsonStatement},
 };
 
 pub async fn serving_knowledge_base_path(
@@ -60,4 +60,34 @@ pub async fn known_atoms(State(state): State<Arc<WebServerState>>) -> Json<Vec<S
             .map(|atom| atom.0.to_string())
             .collect(),
     )
+}
+
+pub async fn add_statement(
+    State(state): State<Arc<WebServerState>>,
+    Json(json): Json<JsonStatement>,
+) -> Result<StatusCode, (StatusCode, String)> {
+    let statement =
+        Statement::try_from(json).map_err(|error| (StatusCode::BAD_REQUEST, error.to_string()))?;
+
+    state
+        .add_statement(statement)
+        .await
+        .map_err(|error| (StatusCode::INTERNAL_SERVER_ERROR, error.to_string()))?;
+
+    Ok(StatusCode::NO_CONTENT)
+}
+
+pub async fn remove_statement(
+    State(state): State<Arc<WebServerState>>,
+    Json(json): Json<JsonStatement>,
+) -> Result<StatusCode, (StatusCode, String)> {
+    let statement =
+        Statement::try_from(json).map_err(|error| (StatusCode::BAD_REQUEST, error.to_string()))?;
+
+    state
+        .remove_statement(statement)
+        .await
+        .map_err(|error| (StatusCode::INTERNAL_SERVER_ERROR, error.to_string()))?;
+
+    Ok(StatusCode::NO_CONTENT)
 }

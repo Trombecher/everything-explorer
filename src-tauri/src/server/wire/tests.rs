@@ -135,6 +135,47 @@ fn construction_values_requests_deserialize() {
 }
 
 #[test]
+fn statements_deserialize_and_convert() {
+    let json: JsonStatement = serde_json::from_str(
+        r#"{
+            "atom": "1",
+            "object": {"type": "construction", "constructor": {"type": "atom", "value": "2"}, "value": {"type": "atom", "value": "3"}}
+        }"#,
+    )
+    .expect("the statement deserializes");
+
+    assert_eq!(
+        Statement::try_from(json).expect("the statement converts"),
+        Statement {
+            atom: Atom(1),
+            object: Object::Construction(Construction::new(Atom(2).into(), Object::Atom(Atom(3)),)),
+        }
+    );
+}
+
+#[test]
+fn statements_round_trip() {
+    let statement = Statement {
+        atom: Atom(1),
+        object: Object::Construction(Construction::new(
+            Atom(2).into(),
+            Object::Set(Set::Character(CharacterSet { representing: 'a' })),
+        )),
+    };
+
+    let json = JsonStatement::from(statement.clone());
+    let encoded = serde_json::to_string(&json).expect("the statement serializes");
+    let decoded: JsonStatement =
+        serde_json::from_str(&encoded).expect("the statement deserializes");
+
+    assert_eq!(decoded, json);
+    assert_eq!(
+        Statement::try_from(decoded).expect("the statement converts"),
+        statement
+    );
+}
+
+#[test]
 fn invalid_atom_ids_are_rejected() {
     assert!(
         serde_json::from_str::<JsonObject>(r#"{"type":"atom","value":"not an atom"}"#).is_err()

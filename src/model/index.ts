@@ -52,6 +52,14 @@ export type Object =
     | CharacterObject
     | ByteObject;
 
+/**
+ * A statement states that an atom has an object as a property.
+ */
+export type Statement = {
+    readonly atom: Atom;
+    readonly object: Object;
+};
+
 export const construction = (
     constructor: Object,
     value: Object,
