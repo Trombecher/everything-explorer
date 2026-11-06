@@ -52,7 +52,7 @@ export const nodeChildCount = (nodeType: NodeType): number => {
     }
 };
 
-export const NotANode = Symbol();
+export const NotANode = Symbol("NotANode");
 
 const objectNodeCache = new WeakMap<Object, Node | typeof NotANode>();
 
@@ -63,9 +63,12 @@ const objectNodeCache = new WeakMap<Object, Node | typeof NotANode>();
  */
 export const objectToNode = (object: Object): Node | typeof NotANode => {
     const cachedNode = objectNodeCache.get(object);
-    if (cachedNode) return cachedNode;
+    if (cachedNode !== undefined) {
+        return cachedNode;
+    }
 
     const node = objectToNodeWithoutCache(object);
+    console.log("object:", object, "node:", node);
     objectNodeCache.set(object, node);
     return node;
 };
@@ -143,7 +146,7 @@ const objectToNodeWithoutCache = (object: Object): Node | typeof NotANode => {
         }
     }
 
-    return NotANode;
+    return finalNode ?? NotANode;
 };
 
 const withoutAtomConstructors = (
