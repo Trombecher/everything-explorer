@@ -49,7 +49,7 @@ export default (props: {
     };
 
     return (
-        <span class="flex items-center gap-1">
+        <>
             <AtomIcon />
             <BigIntTextField
                 value={props.atom.value}
@@ -63,6 +63,6 @@ export default (props: {
                 isValid={value => value >= 0n && value <= MAX_ATOM_VALUE}
                 title={label()}
             />
-        </span>
+        </>
     );
 };

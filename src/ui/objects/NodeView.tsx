@@ -12,6 +12,7 @@ import type {DeepReadonly} from "@/util";
 import {variant} from "@/util";
 
 import MapsToIcon from "../reuse/MapsToIcon";
+import type {LayoutMode} from "./layout";
 import {GAP, ICON_WIDTH, measureText} from "./layout";
 import ObjectView from "./ObjectView";
 import {useObjectSelection, type ObjectSelectionPath} from "./selection";
@@ -23,7 +24,7 @@ const BinaryOperationView = (props: {
     path: ObjectSelectionPath;
     childCount: number;
     budget: number;
-    column: boolean;
+    layoutModeOfEnclosingObjectView: LayoutMode;
     setObject?: ((newObject: Object) => void) | undefined;
 }) => {
     const objectSelection = useObjectSelection();
@@ -57,7 +58,7 @@ const BinaryOperationView = (props: {
                     })
                 }
                 path={[...props.path, 0]}
-                budget={props.budget}
+                widthBudgetInPixels={props.budget}
             />
             {props.icon}
             <ObjectView
@@ -90,8 +91,8 @@ const BinaryOperationView = (props: {
                     })
                 }
                 path={[...props.path, 1]}
-                budget={
-                    props.column
+                widthBudgetInPixels={
+                    props.layoutModeOfEnclosingObjectView
                         ? props.budget
                         : props.budget - props.iconWidth - GAP
                 }
@@ -106,15 +107,9 @@ const NodeView = (props: {
     path: DeepReadonly<ObjectSelectionPath>;
     childCount: number;
 
-    /**
-     * Available width for the content of the enclosing object view.
-     */
-    budget: number;
+    widthBudgetInPixels: number;
 
-    /**
-     * Whether the enclosing object view is laid out as a column.
-     */
-    column: boolean;
+    layoutModeOfEnclosingObjectView: LayoutMode;
 }) => {
     const objectSelection = useObjectSelection();
 
@@ -149,8 +144,8 @@ const NodeView = (props: {
                                 })
                             }
                             path={[...props.path, 0]}
-                            budget={
-                                props.budget
+                            widthBudgetInPixels={
+                                props.widthBudgetInPixels
                                 - measureText("x")
                                 - ICON_WIDTH.mapsTo
                                 - 2 * GAP
@@ -167,8 +162,10 @@ const NodeView = (props: {
                         node={plusNode()}
                         childCount={props.childCount}
                         path={props.path}
-                        budget={props.budget}
-                        column={props.column}
+                        budget={props.widthBudgetInPixels}
+                        layoutModeOfEnclosingObjectView={
+                            props.layoutModeOfEnclosingObjectView
+                        }
                         setObject={props.setObject}
                     />
                 )}
@@ -201,7 +198,9 @@ const NodeView = (props: {
                                 })
                             }
                             path={[...props.path, 0]}
-                            budget={props.budget - ICON_WIDTH.box - GAP}
+                            widthBudgetInPixels={
+                                props.widthBudgetInPixels - ICON_WIDTH.box - GAP
+                            }
                         />
                     </>
                 )}
@@ -214,8 +213,10 @@ const NodeView = (props: {
                         node={timesNode()}
                         childCount={props.childCount}
                         path={props.path}
-                        budget={props.budget}
-                        column={props.column}
+                        budget={props.widthBudgetInPixels}
+                        layoutModeOfEnclosingObjectView={
+                            props.layoutModeOfEnclosingObjectView
+                        }
                         setObject={props.setObject}
                     />
                 )}

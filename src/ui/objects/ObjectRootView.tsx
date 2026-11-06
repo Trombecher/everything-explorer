@@ -19,7 +19,7 @@ export default (props: {
             value={new ObjectSelection(objectSelection, setObjectSelection)}
         >
             <ObjectView
-                budget={props.budget}
+                widthBudgetInPixels={props.budget}
                 object={props.object}
                 path={[]}
                 siblingCount={1}

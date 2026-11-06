@@ -52,15 +52,33 @@ export const nodeChildCount = (nodeType: NodeType): number => {
     }
 };
 
-export const objectToNode = (object: Object): Node | undefined => {
-    if (object.type !== ObjectType.Set) return;
+export const NotANode = Symbol();
+
+const objectNodeCache = new WeakMap<Object, Node | typeof NotANode>();
+
+/**
+ * Converts an object to a {@link Node `Node`}. The result is cached.
+ *
+ * This function is cheap on cache hit.
+ */
+export const objectToNode = (object: Object): Node | typeof NotANode => {
+    const cachedNode = objectNodeCache.get(object);
+    if (cachedNode) return cachedNode;
+
+    const node = objectToNodeWithoutCache(object);
+    objectNodeCache.set(object, node);
+    return node;
+};
+
+const objectToNodeWithoutCache = (object: Object): Node | typeof NotANode => {
+    if (object.type !== ObjectType.Set) return NotANode;
 
     let some: Object | undefined;
     let finalNode: Node | undefined;
 
     some = singleSetAtomValue(object, Atom.NodeFunction.value);
     if (some) {
-        if (finalNode) return undefined;
+        if (finalNode) return NotANode;
 
         finalNode = {
             type: NodeType.Function,
@@ -73,7 +91,7 @@ export const objectToNode = (object: Object): Node | undefined => {
 
     some = singleSetAtomValue(object, Atom.NodeLiteral.value);
     if (some) {
-        if (finalNode) return undefined;
+        if (finalNode) return NotANode;
 
         finalNode = {
             type: NodeType.Literal,
@@ -89,7 +107,7 @@ export const objectToNode = (object: Object): Node | undefined => {
         const second = singleSetAtomValue(object, Atom.NodeAddSecond.value);
 
         if (second) {
-            if (finalNode) return undefined;
+            if (finalNode) return NotANode;
 
             finalNode = {
                 type: NodeType.Plus,
@@ -111,7 +129,7 @@ export const objectToNode = (object: Object): Node | undefined => {
         );
 
         if (second) {
-            if (finalNode) return undefined;
+            if (finalNode) return NotANode;
 
             finalNode = {
                 type: NodeType.Times,
@@ -125,7 +143,7 @@ export const objectToNode = (object: Object): Node | undefined => {
         }
     }
 
-    return finalNode;
+    return NotANode;
 };
 
 const withoutAtomConstructors = (

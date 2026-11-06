@@ -149,7 +149,7 @@ export default () => {
                             });
                         }}
                         path={[]}
-                        budget={budget()}
+                        widthBudgetInPixels={budget()}
                         replaceParentWithThis={() => {
                             // Do nothing, there is no parent.
                         }}

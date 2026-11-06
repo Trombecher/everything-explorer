@@ -1,5 +1,11 @@
 import {ObjectType, type Object} from "@/model";
-import {type Node, NodeType, objectToNode} from "@/model/nodes";
+import {
+    type Node,
+    nodeChildCount as childCountOfNode,
+    NodeType,
+    NotANode,
+    objectToNode,
+} from "@/model/nodes";
 
 import {atomDisplayText, atomNamesRevision} from "./atomNames";
 
@@ -87,52 +93,44 @@ export const measureText = (text: string): number => {
 
 const leafWidth = (text: string): number => CHROME_X + measureText(text);
 
-const rowWidth = (items: readonly number[]): number =>
+const rowWidth = (childWidths: readonly number[]): number =>
     CHROME_X
-    + items.reduce((sum, width) => sum + width, 0)
-    + GAP * Math.max(0, items.length - 1);
+    + childWidths.reduce((sum, width) => sum + width, 0)
+    + GAP * Math.max(0, childWidths.length - 1);
 
-const nodeCache = new WeakMap<Object, Node | undefined>();
-
-/**
- * Cached `objectToNode` that is shared with the width model.
- */
-export const nodeFor = (object: Object): Node | undefined => {
-    if (nodeCache.has(object)) return nodeCache.get(object);
-
-    const node = objectToNode(object);
-    nodeCache.set(object, node);
-    return node;
-};
-
-const nodeWidth = (node: Node): number => {
+const calculateRowLayoutWidthOfNode = (node: Node): number => {
     switch (node.type) {
         case NodeType.Function:
             return rowWidth([
                 measureText("x"),
                 ICON_WIDTH.mapsTo,
-                naturalWidth(node.body),
+                calculateRowLayoutWidthOfObject(node.body),
             ]);
         case NodeType.Literal:
-            return rowWidth([ICON_WIDTH.box, naturalWidth(node.object)]);
+            return rowWidth([
+                ICON_WIDTH.box,
+                calculateRowLayoutWidthOfObject(node.object),
+            ]);
         case NodeType.Plus:
             return rowWidth([
-                naturalWidth(node.first),
+                calculateRowLayoutWidthOfObject(node.first),
                 ICON_WIDTH.plus,
-                naturalWidth(node.second),
+                calculateRowLayoutWidthOfObject(node.second),
             ]);
         case NodeType.Times:
             return rowWidth([
-                naturalWidth(node.first),
+                calculateRowLayoutWidthOfObject(node.first),
                 ICON_WIDTH.dot,
-                naturalWidth(node.second),
+                calculateRowLayoutWidthOfObject(node.second),
             ]);
     }
 };
 
-const computeNaturalWidth = (object: Object): number => {
-    const node = nodeFor(object);
-    if (node) return nodeWidth(node);
+const calculateRowLayoutWidthOfObjectWithoutCache = (
+    object: Object,
+): number => {
+    const node = objectToNode(object);
+    if (node !== NotANode) return calculateRowLayoutWidthOfNode(node);
 
     switch (object.type) {
         case ObjectType.Set: {
@@ -141,7 +139,7 @@ const computeNaturalWidth = (object: Object): number => {
             object.elements.forEach((element, index) => {
                 const comma =
                     index < object.elements.length - 1 ? measureText(",") : 0;
-                items.push(naturalWidth(element) + comma);
+                items.push(calculateRowLayoutWidthOfObject(element) + comma);
             });
 
             items.push(ICON_WIDTH.brace);
@@ -150,8 +148,8 @@ const computeNaturalWidth = (object: Object): number => {
         case ObjectType.Construction:
             return rowWidth([
                 ICON_WIDTH.dotDot,
-                naturalWidth(object.constructor),
-                naturalWidth(object.value),
+                calculateRowLayoutWidthOfObject(object.constructor),
+                calculateRowLayoutWidthOfObject(object.value),
             ]);
         case ObjectType.Atom:
             return rowWidth([
@@ -173,7 +171,7 @@ const computeNaturalWidth = (object: Object): number => {
     }
 };
 
-const naturalWidthCache = new WeakMap<
+const rowLayoutWidthCache = new WeakMap<
     Object,
     {revision: number; width: number}
 >();
@@ -181,12 +179,61 @@ const naturalWidthCache = new WeakMap<
 /**
  * Natural (single row) width of an object view in px.
  */
-export const naturalWidth = (object: Object): number => {
+export const calculateRowLayoutWidthOfObject = (object: Object): number => {
     const revision = atomNamesRevision();
-    const cached = naturalWidthCache.get(object);
+    const cached = rowLayoutWidthCache.get(object);
     if (cached?.revision === revision) return cached.width;
 
-    const width = computeNaturalWidth(object);
-    naturalWidthCache.set(object, {revision, width});
+    const width = calculateRowLayoutWidthOfObjectWithoutCache(object);
+    rowLayoutWidthCache.set(object, {revision, width});
     return width;
+};
+
+export namespace LayoutMode {
+    export const Row = Symbol("LayoutMode.Row");
+    export const Column = Symbol("LayoutMode.Column");
+}
+
+export type LayoutMode = typeof LayoutMode.Column | typeof LayoutMode.Row;
+
+/**
+ * Counts the view-specific children of the given object.
+ *
+ * This function is rather cheap to compute.
+ */
+export const childCountOfObject = (object: Object): number => {
+    const node = objectToNode(object);
+    if (node !== NotANode) return childCountOfNode(node.type);
+
+    switch (object.type) {
+        case ObjectType.Atom:
+            return 0;
+        case ObjectType.Byte:
+            return 0;
+        case ObjectType.Character:
+            return 0;
+        case ObjectType.Construction:
+            return 2;
+        case ObjectType.Integer:
+            return 0;
+        case ObjectType.Set:
+            return object.elements.length;
+        case ObjectType.Text:
+            return 0;
+    }
+};
+
+export const calculateLayoutModeOfObject = (
+    object: Object,
+    widthBudgetInPixels: number,
+): LayoutMode => {
+    if (
+        childCountOfObject(object) >= 2
+        && calculateRowLayoutWidthOfObject(object) > widthBudgetInPixels
+    ) {
+        // Object has two or more children and exceeds width budget.
+        return LayoutMode.Column;
+    } else {
+        return LayoutMode.Row;
+    }
 };

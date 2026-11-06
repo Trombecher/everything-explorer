@@ -50,7 +50,7 @@ export default (props: {
                         }
                     }}
                     path={[...props.path, 0]}
-                    budget={props.budget - ICON_WIDTH.dotDot - GAP}
+                    widthBudgetInPixels={props.budget - ICON_WIDTH.dotDot - GAP}
                 />
             </span>
             <ObjectView
@@ -78,7 +78,7 @@ export default (props: {
                     }
                 }}
                 path={[...props.path, 1]}
-                budget={props.budget}
+                widthBudgetInPixels={props.budget}
             />
         </>
     );

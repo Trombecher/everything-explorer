@@ -5,6 +5,7 @@ import {type SetObject, ObjectType} from "@/model";
 import type {DeepReadonly} from "@/util";
 
 import LeftBraceIcon from "../reuse/LeftBraceIcon";
+import type {LayoutMode} from "./layout";
 import {GAP, ICON_WIDTH, measureText} from "./layout";
 import ObjectView from "./ObjectView";
 import type {ObjectSelectionPath} from "./selection";
@@ -15,22 +16,16 @@ export default (props: {
     setSet: ((newSet: Object | undefined) => void) | undefined;
     path: DeepReadonly<ObjectSelectionPath>;
 
-    /**
-     * Available width for the content of the enclosing object view.
-     */
-    budget: number;
+    widthBudgetInPixels: number;
 
-    /**
-     * Whether the enclosing object view is laid out as a column.
-     */
-    column: boolean;
+    layoutModeOfEnclodingObjectView: LayoutMode;
 }) => {
     const objectSelection = useObjectSelection();
 
     const elementBudget = (index: number) =>
-        (props.column
-            ? props.budget
-            : props.budget - 2 * ICON_WIDTH.brace - 2 * GAP)
+        (props.layoutModeOfEnclodingObjectView
+            ? props.widthBudgetInPixels
+            : props.widthBudgetInPixels - 2 * ICON_WIDTH.brace - 2 * GAP)
         - (index < props.set.elements.length - 1 ? measureText(",") : 0);
 
     return (
@@ -86,7 +81,7 @@ export default (props: {
                                 })
                             }
                             path={[...props.path, i]}
-                            budget={elementBudget(i)}
+                            widthBudgetInPixels={elementBudget(i)}
                         />
                         {i < props.set.elements.length - 1 ? "," : ""}
                     </span>

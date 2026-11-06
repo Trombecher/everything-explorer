@@ -60,7 +60,6 @@ export default (props: {
 
     return (
         <TextField
-            as="span"
             value={displayedText()}
             onChange={newText => {
                 setText(newText);
@@ -68,7 +67,7 @@ export default (props: {
             }}
             validationState={invalid() ? "invalid" : undefined}
             readOnly={!props.setValue}
-            class="inline-flex min-w-0"
+            class="block min-w-0"
         >
             <TextField.Input
                 spellcheck={false}
@@ -82,7 +81,8 @@ export default (props: {
                 }}
                 onKeyDown={e => {
                     if (e.key === "Enter") {
-                        e.currentTarget.blur();
+                        // Focus object.
+                        e.currentTarget.parentElement?.parentElement?.focus();
                     } else if (e.key === "Escape") {
                         setText(String(props.value));
                         setInvalid(false);
