@@ -1,15 +1,15 @@
 import {createSignal} from "solid-js";
 
-import type {Object} from "@/model";
+import type {EverythingObject} from "@/model";
 
 import ObjectView from "./ObjectView";
 import type {ObjectSelectionPathInfo} from "./selection";
 import {ObjectSelection, ObjectSelectionContext} from "./selection";
 
 export default (props: {
-    object: Object;
+    object: EverythingObject;
     widthBudgetInPixels: number;
-    setObject: ((newObject: Object | undefined) => void) | undefined;
+    setObject: ((newObject: EverythingObject | undefined) => void) | undefined;
 }) => {
     const [objectSelection, setObjectSelection] =
         createSignal<ObjectSelectionPathInfo>({effectiveLength: 0, path: []});

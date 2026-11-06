@@ -1,4 +1,4 @@
-import type {Construction, Object} from "@/model";
+import type {Construction, EverythingObject} from 
 import type {DeepReadonly} from "@/util";
 
 import DotDotIcon from "../reuse/DotDotIcon";

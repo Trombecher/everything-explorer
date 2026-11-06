@@ -10,17 +10,17 @@ export namespace ObjectType {
     export const Byte = Symbol("ObjectType.Byte");
 }
 
-export type ObjectType = Object["type"];
+export type ObjectType = EverythingObject["type"];
 
-export type SetObject = {
+export type EverythingSet = {
     readonly type: typeof ObjectType.Set;
-    readonly elements: readonly Object[];
+    readonly elements: readonly EverythingObject[];
 };
 
 export type Construction = {
     readonly type: typeof ObjectType.Construction;
-    readonly constructor: Object;
-    readonly value: Object;
+    readonly constructor: EverythingObject;
+    readonly value: EverythingObject;
 };
 
 export type TextObject = {
@@ -43,9 +43,9 @@ export type ByteObject = {
     readonly value: number;
 };
 
-export type Object =
+export type EverythingObject =
     | Atom
-    | SetObject
+    | EverythingSet
     | Construction
     | TextObject
     | IntegerObject
@@ -57,21 +57,23 @@ export type Object =
  */
 export type Statement = {
     readonly atom: Atom;
-    readonly object: Object;
+    readonly object: EverythingObject;
 };
 
 export const construction = (
-    constructor: Object,
-    value: Object,
+    constructor: EverythingObject,
+    value: EverythingObject,
 ): Construction => ({type: ObjectType.Construction, constructor, value});
 
 export const defaultObject = {
     type: ObjectType.Set,
     elements: [],
-} as const satisfies Object;
+} as const satisfies EverythingObject;
 
-const deduplicateObjects = (objects: readonly Object[]): Object[] => {
-    const unique: Object[] = [];
+const deduplicateObjects = (
+    objects: readonly EverythingObject[],
+): EverythingObject[] => {
+    const unique: EverythingObject[] = [];
     for (const object of objects) {
         if (!unique.some(existing => objectsEqual(existing, object))) {
             unique.push(object);
@@ -86,7 +88,10 @@ const deduplicateObjects = (objects: readonly Object[]): Object[] => {
  * sets are only equal if their elements are the same, regardless of their order
  * and duplicates.
  */
-export const objectsEqual = (left: Object, right: Object): boolean => {
+export const objectsEqual = (
+    left: EverythingObject,
+    right: EverythingObject,
+): boolean => {
     switch (left.type) {
         case ObjectType.Atom:
             return right.type === ObjectType.Atom && left.value === right.value;

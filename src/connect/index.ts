@@ -1,6 +1,6 @@
 import z from "zod";
 
-import {ObjectType, type Object, type Statement} from "@/model";
+import {ObjectType, type EverythingObject, type Statement} from "@/model";
 import type {Atom} from "@/model/atoms";
 
 import {
@@ -37,7 +37,9 @@ export class ConnectionClient {
     /**
      * Returns the values of the given object in the knowledge base.
      */
-    public async valuesOfObject(object: Object): Promise<Object[]> {
+    public async valuesOfObject(
+        object: EverythingObject,
+    ): Promise<EverythingObject[]> {
         const response = await fetch(`${this.url}/api/v1/valuesOf`, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
@@ -59,20 +61,17 @@ export class ConnectionClient {
      * Returns all values `x` such that `constructor x` is a value of `object`.
      */
     public async constructionValuesOfObject(
-        object: Object,
-        constructor: Object,
-    ): Promise<Object[]> {
-        const response = await fetch(
-            `${this.url}/api/v1/constructionValues`,
-            {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    object: objectToJsonObject(object),
-                    constructor: objectToJsonObject(constructor),
-                }),
-            },
-        );
+        object: EverythingObject,
+        constructor: EverythingObject,
+    ): Promise<EverythingObject[]> {
+        const response = await fetch(`${this.url}/api/v1/constructionValues`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                object: objectToJsonObject(object),
+                constructor: objectToJsonObject(constructor),
+            }),
+        });
 
         if (!response.ok) {
             throw new Error(

@@ -1,6 +1,6 @@
 import {createEffect, Match, Switch} from "solid-js";
 
-import {defaultObject, ObjectType, type Object} from "@/model";
+import {defaultObject, ObjectType, type EverythingObject} from "@/model";
 import type {Node} from "@/model/nodes";
 import {nodeToObject, NodeType, NotANode, objectToNode} from "@/model/nodes";
 import type {DeepReadonly} from "@/util";
@@ -25,8 +25,8 @@ const handleKeyDown = (options: {
     event: KeyboardEvent & {currentTarget: HTMLDivElement; target: Element};
     objectSelection: ObjectSelection;
     siblingCount: number;
-    object: Object;
-    setObject: ((newObject: Object | undefined) => void) | undefined;
+    object: EverythingObject;
+    setObject: ((newObject: EverythingObject | undefined) => void) | undefined;
     replaceParentWithThis: (() => void) | undefined;
 }) => {
     if (
@@ -194,7 +194,7 @@ const handleKeyDown = (options: {
     }
 };
 
-const objectViewColorHue = (object: Object): number => {
+const objectViewColorHue = (object: EverythingObject): number => {
     const node = objectToNode(object);
 
     if (node !== NotANode) {
@@ -229,8 +229,8 @@ const objectViewColorHue = (object: Object): number => {
 };
 
 export const ObjectView = (props: {
-    object: Object;
-    setObject: ((newObject: Object | undefined) => void) | undefined;
+    object: EverythingObject;
+    setObject: ((newObject: EverythingObject | undefined) => void) | undefined;
     path: DeepReadonly<ObjectSelectionPath>;
 
     /**

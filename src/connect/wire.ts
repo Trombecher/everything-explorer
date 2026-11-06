@@ -2,7 +2,7 @@ import z from "zod";
 
 import {
     ObjectType,
-    type Object as KnowledgeObject,
+    type EverythingObject as KnowledgeObject,
     type Statement,
 } from "@/model";
 
@@ -48,8 +48,8 @@ export const jsonObjectSchema: z.ZodType<JsonObject> = z.lazy(() =>
 export const jsonObjectsSchema = z.array(jsonObjectSchema);
 
 /**
- * The JSON representation of a statement, mirroring `JsonStatement` in the
- * Rust server's wire module.
+ * The JSON representation of a statement, mirroring `JsonStatement` in the Rust
+ * server's wire module.
  */
 export type JsonStatement = {
     readonly atom: string;
@@ -133,9 +133,7 @@ export const objectToJsonObject = (object: KnowledgeObject): JsonObject => {
 /**
  * Converts a wire statement into the internal statement model.
  */
-export const jsonStatementToStatement = (
-    json: JsonStatement,
-): Statement => ({
+export const jsonStatementToStatement = (json: JsonStatement): Statement => ({
     atom: {type: ObjectType.Atom, value: BigInt(json.atom)},
     object: jsonObjectToObject(json.object),
 });

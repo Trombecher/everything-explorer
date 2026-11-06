@@ -4,7 +4,7 @@ import PlusIcon from "lucide-solid/icons/plus";
 import type {JSXElement} from "solid-js";
 import {Match, Switch} from "solid-js";
 
-import type {Object} from "@/model";
+import type {EverythingObject} from "@/model";
 import {defaultObject} from "@/model";
 import type {Node, PlusNode, TimesNode} from "@/model/nodes";
 import {nodeToObject, NodeType} from "@/model/nodes";
@@ -24,7 +24,7 @@ const BinaryOperationView = (props: {
     childCount: number;
     budget: number;
     layoutModeOfEnclosingObjectView: LayoutMode;
-    setObject?: ((newObject: Object) => void) | undefined;
+    setObject?: ((newObject: EverythingObject) => void) | undefined;
 }) => {
     const objectSelection = useObjectSelection();
 
@@ -102,7 +102,7 @@ const BinaryOperationView = (props: {
 
 const NodeView = (props: {
     node: Node;
-    setObject: ((newObject: Object) => void) | undefined;
+    setObject: ((newObject: EverythingObject) => void) | undefined;
     path: DeepReadonly<ObjectSelectionPath>;
     childCount: number;
 

@@ -1,4 +1,4 @@
-import {ObjectType, type Object} from "@/model";
+import {ObjectType, type EverythingObject} from 
 import {
     type Node,
     nodeChildCount as childCountOfNode,

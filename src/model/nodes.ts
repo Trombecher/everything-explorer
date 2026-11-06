@@ -1,4 +1,4 @@
-import type {SetObject} from ".";
+import type {EverythingSet} from ".";
 import {construction, ObjectType, type Object} from ".";
 import {Atom} from "./atoms";
 
@@ -161,7 +161,7 @@ const withoutAtomConstructors = (
     });
 
 const singleSetAtomValue = (
-    set: SetObject,
+    set: EverythingSet,
     atomValue: bigint,
 ): Object | undefined => {
     // TODO: optimize

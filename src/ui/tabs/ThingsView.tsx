@@ -18,7 +18,7 @@ import {onMount} from "solid-js";
 import {onCleanup} from "solid-js";
 
 import {useAppState} from "@/context";
-import {defaultObject, objectsEqual, type Object} from "@/model";
+import {defaultObject, objectsEqual, type EverythingObject} from "@/model";
 import {Atom} from "@/model/atoms";
 
 import {formatAtomNames} from "../objects/atomNames";
@@ -121,7 +121,7 @@ const PropertiesPanel = (props: {selectedAtom: Atom; close: () => void}) => {
      * so that adding a property is reflected immediately and duplicate
      * properties are not collapsed.
      */
-    const [properties, setProperties] = createSignal<readonly Object[]>([]);
+    const [properties, setProperties] = createSignal<readonly EverythingObject[]>([]);
 
     createEffect(() => {
         const loadedValues = values();
@@ -144,8 +144,8 @@ const PropertiesPanel = (props: {selectedAtom: Atom; close: () => void}) => {
 
     const changeProperty = (
         index: number,
-        oldObject: Object,
-        newObject: Object | undefined,
+        oldObject: EverythingObject,
+        newObject: EverythingObject | undefined,
     ) => {
         const current = clientAndAtom();
         if (!current) return;

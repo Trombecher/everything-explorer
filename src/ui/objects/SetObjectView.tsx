@@ -1,7 +1,7 @@
 import {Index} from "solid-js";
 
-import type {Object} from "@/model";
-import {type SetObject, ObjectType} from "@/model";
+import type {EverythingObject} from "@/model";
+import {type EverythingSet, ObjectType} from "@/model";
 import type {DeepReadonly} from "@/util";
 
 import LeftBraceIcon from "../reuse/LeftBraceIcon";
@@ -11,8 +11,8 @@ import type {ObjectSelectionPath} from "./selection";
 import {useObjectSelection} from "./selection";
 
 export default (props: {
-    set: SetObject;
-    setSet: ((newSet: Object | undefined) => void) | undefined;
+    set: EverythingSet;
+    setSet: ((newSet: EverythingObject | undefined) => void) | undefined;
     path: DeepReadonly<ObjectSelectionPath>;
 
     widthBudgetInPixels: number;
