@@ -1,4 +1,4 @@
-import {ObjectType, type EverythingObject} from 
+import {ObjectType, type EverythingObject} from "@/model";
 import {
     type Node,
     nodeChildCount as childCountOfNode,
@@ -127,7 +127,7 @@ const calculateRowLayoutWidthOfNode = (node: Node): number => {
 };
 
 const calculateRowLayoutWidthOfObjectWithoutCache = (
-    object: Object,
+    object: EverythingObject,
 ): number => {
     const node = objectToNode(object);
     if (node !== NotANode) return calculateRowLayoutWidthOfNode(node);
@@ -172,14 +172,16 @@ const calculateRowLayoutWidthOfObjectWithoutCache = (
 };
 
 const rowLayoutWidthCache = new WeakMap<
-    Object,
+    object,
     {revision: number; width: number}
 >();
 
 /**
  * Natural (single row) width of an object view in px.
  */
-export const calculateRowLayoutWidthOfObject = (object: Object): number => {
+export const calculateRowLayoutWidthOfObject = (
+    object: EverythingObject,
+): number => {
     const revision = atomNamesRevision();
     const cached = rowLayoutWidthCache.get(object);
     if (cached?.revision === revision) return cached.width;
@@ -201,7 +203,7 @@ export type LayoutMode = typeof LayoutMode.Column | typeof LayoutMode.Row;
  *
  * This function is rather cheap to compute.
  */
-export const childCountOfObject = (object: Object): number => {
+export const childCountOfObject = (object: EverythingObject): number => {
     const node = objectToNode(object);
     if (node !== NotANode) return childCountOfNode(node.type);
 
@@ -224,7 +226,7 @@ export const childCountOfObject = (object: Object): number => {
 };
 
 export const calculateLayoutModeOfObject = (
-    object: Object,
+    object: EverythingObject,
     widthBudgetInPixels: number,
 ): LayoutMode => {
     if (

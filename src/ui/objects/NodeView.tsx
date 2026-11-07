@@ -1,6 +1,6 @@
-import BoxIcon from "lucide-solid/icons/box";
 import DotIcon from "lucide-solid/icons/dot";
 import PlusIcon from "lucide-solid/icons/plus";
+import QuoteIcon from "lucide-solid/icons/quote";
 import type {JSXElement} from "solid-js";
 import {Match, Switch} from "solid-js";
 
@@ -172,7 +172,7 @@ const NodeView = (props: {
             <Match when={variant(props.node, NodeType.Literal)}>
                 {literalNode => (
                     <>
-                        <BoxIcon />
+                        <QuoteIcon />
                         <ObjectView
                             replaceParentWithThis={
                                 props.setObject

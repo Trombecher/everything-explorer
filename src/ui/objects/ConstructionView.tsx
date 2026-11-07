@@ -1,4 +1,4 @@
-import type {Construction, EverythingObject} from 
+import type {Construction, EverythingObject} from "@/model";
 import type {DeepReadonly} from "@/util";
 
 import DotDotIcon from "../reuse/DotDotIcon";
@@ -9,7 +9,7 @@ import {useObjectSelection} from "./selection";
 
 export default (props: {
     construction: Construction;
-    setObject: ((newObject: Object) => void) | undefined;
+    setObject: ((newObject: EverythingObject) => void) | undefined;
     path: DeepReadonly<ObjectSelectionPath>;
 
     /**
