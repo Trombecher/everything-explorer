@@ -11,8 +11,11 @@ import {
 } from "@/model/nodes";
 
 import DotDotIcon from "../reuse/DotDotIcon";
-import type {LayoutOptions} from "./layout";
-import {LayoutMode} from "./layout";
+import {
+    binaryBlockSlotWidthBudgetInPixels,
+    calculateLayoutModeOfBlock,
+    type LayoutOptions,
+} from "./layout";
 import ObjectView from "./ObjectView";
 import {useObjectSelection, type ObjectSelectionPath} from "./selection";
 
@@ -45,8 +48,7 @@ const getSecond = (block: TimesNode | PlusNode | Construction) => {
 export default (props: {
     block: TimesNode | PlusNode | Construction;
     path: ObjectSelectionPath;
-    budget: number;
-    layoutModeOfEnclosingObjectView: LayoutMode;
+    wholeWidthBudgetInPixels: number;
     setObject?: ((newObject: EverythingObject) => void) | undefined;
     layoutOptions: LayoutOptions;
 }) => {
@@ -55,10 +57,17 @@ export default (props: {
     const first = () => getFirst(props.block);
     const second = () => getSecond(props.block);
 
+    const layoutMode = () =>
+        calculateLayoutModeOfBlock(
+            props.block,
+            props.wholeWidthBudgetInPixels,
+            props.layoutOptions,
+        );
+
     return (
         <>
             <ObjectView
-                parentObjectLayoutMode={props.layoutModeOfEnclosingObjectView}
+                parentObjectLayoutMode={layoutMode()}
                 replaceParentWithThis={
                     props.setObject
                     && (() => {
@@ -99,12 +108,16 @@ export default (props: {
                     })
                 }
                 path={[...props.path, 0]}
-                widthBudgetInPixels={props.budget}
+                widthBudgetInPixels={binaryBlockSlotWidthBudgetInPixels(
+                    layoutMode(),
+                    props.wholeWidthBudgetInPixels,
+                    props.layoutOptions,
+                )}
                 layoutOptions={props.layoutOptions}
             />
             <Dynamic component={BlockIcon[props.block.type]} />
             <ObjectView
-                parentObjectLayoutMode={props.layoutModeOfEnclosingObjectView}
+                parentObjectLayoutMode={layoutMode()}
                 replaceParentWithThis={
                     props.setObject
                     && (() => {
@@ -145,11 +158,11 @@ export default (props: {
                     })
                 }
                 path={[...props.path, 1]}
-                widthBudgetInPixels={
-                    props.layoutModeOfEnclosingObjectView === LayoutMode.Column
-                        ? props.budget
-                        : props.budget - props.iconWidth - GAP
-                }
+                widthBudgetInPixels={binaryBlockSlotWidthBudgetInPixels(
+                    layoutMode(),
+                    props.wholeWidthBudgetInPixels,
+                    props.layoutOptions,
+                )}
                 layoutOptions={props.layoutOptions}
             />
         </>

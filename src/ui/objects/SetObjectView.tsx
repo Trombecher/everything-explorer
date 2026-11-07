@@ -5,10 +5,10 @@ import {type EverythingSet, ObjectType} from "@/model";
 import type {DeepReadonly} from "@/util";
 
 import LeftBraceIcon from "../reuse/LeftBraceIcon";
-import type {LayoutMode} from "./layout";
+import type {LayoutOptions} from "./layout";
 import {
+    calculateLayoutModeOfBlock,
     calculateSetElementWidthBudgetInPixels,
-    defaultBlockLayoutOptions,
 } from "./layout";
 import ObjectView from "./ObjectView";
 import type {ObjectSelectionPath} from "./selection";
@@ -21,9 +21,16 @@ export default (props: {
 
     widthBudgetInPixels: number;
 
-    layoutModeOfEnclosingObjectView: LayoutMode;
+    layoutOptions: LayoutOptions;
 }) => {
     const objectSelection = useObjectSelection();
+
+    const layoutMode = () =>
+        calculateLayoutModeOfBlock(
+            props.set,
+            props.widthBudgetInPixels,
+            props.layoutOptions,
+        );
 
     return (
         <>
@@ -32,9 +39,7 @@ export default (props: {
                 {(element, i) => (
                     <span class="flex items-center">
                         <ObjectView
-                            parentObjectLayoutMode={
-                                props.layoutModeOfEnclosingObjectView
-                            }
+                            parentObjectLayoutMode={layoutMode()}
                             replaceParentWithThis={
                                 props.setSet
                                 && (() => {
@@ -84,12 +89,10 @@ export default (props: {
                             widthBudgetInPixels={calculateSetElementWidthBudgetInPixels(
                                 props.set,
                                 props.widthBudgetInPixels,
-                                {
-                                    atomNames: new Map(),
-                                    block: defaultBlockLayoutOptions,
-                                },
+                                props.layoutOptions,
                                 i,
                             )}
+                            layoutOptions={props.layoutOptions}
                         />
                         {i < props.set.elements.length - 1 ? "," : ""}
                     </span>

@@ -1,3 +1,4 @@
+import QuoteIcon from "lucide-solid/icons/quote";
 import {createEffect, Match, Switch} from "solid-js";
 
 import {defaultObject, ObjectType, type EverythingObject} from "@/model";
@@ -10,14 +11,13 @@ import AtomView from "./AtomView";
 import BinaryOperationView from "./BinaryOperationView";
 import type {Block} from "./blocks";
 import {objectToBlock} from "./blocks";
-import ConstructionView from "./ConstructionView";
 import IntegerView from "./IntegerView";
 import type {LayoutOptions} from "./layout";
 import {
     calculateFunctionBodyWidthBudgetInPixels,
     calculateLayoutModeOfBlock,
+    calculateLiteralNodeInnerObjectWidthBudgetInPixels,
     childCountOfBlock,
-    defaultBlockLayoutOptions,
     LayoutMode,
 } from "./layout";
 import type {ObjectSelection, ObjectSelectionPath} from "./selection";
@@ -360,10 +360,7 @@ export const ObjectView = (props: {
                                 path={[...props.path, 0]}
                                 widthBudgetInPixels={calculateFunctionBodyWidthBudgetInPixels(
                                     props.widthBudgetInPixels,
-                                    {
-                                        atomNames: new Map(),
-                                        block: defaultBlockLayoutOptions,
-                                    },
+                                    props.layoutOptions,
                                 )}
                                 layoutOptions={props.layoutOptions}
                             />
@@ -373,14 +370,10 @@ export const ObjectView = (props: {
                 <Match when={variant(block(), NodeType.Plus)}>
                     {plusNode => (
                         <BinaryOperationView
-                            icon={<PlusIcon />}
-                            iconWidth={ICON_WIDTH.plus}
+                            layoutOptions={props.layoutOptions}
                             block={plusNode()}
                             path={props.path}
-                            budget={props.widthBudgetInPixels}
-                            layoutModeOfEnclosingObjectView={
-                                props.layoutModeOfEnclosingObjectView
-                            }
+                            wholeWidthBudgetInPixels={props.widthBudgetInPixels}
                             setObject={props.setObject}
                         />
                     )}
@@ -390,9 +383,8 @@ export const ObjectView = (props: {
                         <>
                             <QuoteIcon />
                             <ObjectView
-                                parentObjectLayoutMode={
-                                    props.layoutModeOfEnclosingObjectView
-                                }
+                                layoutOptions={props.layoutOptions}
+                                parentObjectLayoutMode={layoutMode()}
                                 replaceParentWithThis={
                                     props.setObject
                                     && (() => {
@@ -402,7 +394,7 @@ export const ObjectView = (props: {
                                         props.setObject?.(literalNode().object);
                                     })
                                 }
-                                siblingCount={props.childCount}
+                                siblingCount={1}
                                 object={literalNode().object}
                                 setObject={
                                     props.setObject
@@ -417,11 +409,10 @@ export const ObjectView = (props: {
                                     })
                                 }
                                 path={[...props.path, 0]}
-                                widthBudgetInPixels={
-                                    props.widthBudgetInPixels
-                                    - ICON_WIDTH.box
-                                    - GAP
-                                }
+                                widthBudgetInPixels={calculateLiteralNodeInnerObjectWidthBudgetInPixels(
+                                    props.widthBudgetInPixels,
+                                    props.layoutOptions,
+                                )}
                             />
                         </>
                     )}
@@ -429,15 +420,10 @@ export const ObjectView = (props: {
                 <Match when={variant(block(), NodeType.Times)}>
                     {timesNode => (
                         <BinaryOperationView
-                            icon={<DotIcon />}
-                            iconWidth={ICON_WIDTH.dot}
+                            layoutOptions={props.layoutOptions}
                             block={timesNode()}
-                            childCount={props.childCount}
                             path={props.path}
-                            budget={props.widthBudgetInPixels}
-                            layoutModeOfEnclosingObjectView={
-                                props.layoutModeOfEnclosingObjectView
-                            }
+                            wholeWidthBudgetInPixels={props.widthBudgetInPixels}
                             setObject={props.setObject}
                         />
                     )}
@@ -468,16 +454,18 @@ export const ObjectView = (props: {
                             setSet={props.setObject}
                             path={props.path}
                             widthBudgetInPixels={props.widthBudgetInPixels}
-                            layoutModeOfEnclosingObjectView={layoutMode()}
+                            layoutOptions={props.layoutOptions}
                         />
                     )}
                 </Match>
                 <Match when={variant(block(), ObjectType.Construction)}>
                     {construction => (
                         <BinaryOperationView
-                            budget={props.widthBudgetInPixels}
+                            wholeWidthBudgetInPixels={props.widthBudgetInPixels}
                             layoutOptions={props.layoutOptions}
                             block={construction()}
+                            path={props.path}
+                            setObject={props.setObject}
                         />
                     )}
                 </Match>

@@ -4,7 +4,7 @@ import type {EverythingObject} from "@/model";
 import {defaultObject, ObjectType} from "@/model";
 import {nodeToObject, NodeType} from "@/model/nodes";
 
-import {LayoutMode} from "../objects/layout";
+import {defaultBlockLayoutOptions, LayoutMode} from "../objects/layout";
 import ObjectView from "../objects/ObjectView";
 import type {ObjectSelectionPathInfo} from "../objects/selection";
 import {ObjectSelection, ObjectSelectionContext} from "../objects/selection";
@@ -140,6 +140,10 @@ export default () => {
             >
                 <ObjectSelectionContext.Provider value={objectSelection}>
                     <ObjectView
+                        layoutOptions={{
+                            atomNames: new Map(),
+                            block: defaultBlockLayoutOptions,
+                        }}
                         siblingCount={1}
                         object={lastHistoryEntry().object}
                         setObject={newObject => {

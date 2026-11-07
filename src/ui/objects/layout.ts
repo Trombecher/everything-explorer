@@ -371,3 +371,34 @@ export const calculateFunctionBodyWidthBudgetInPixels = (
             - blockIconWidthInPixels.mapsTo
             - measureText("x"),
     );
+
+export const binaryBlockSlotWidthBudgetInPixels = (
+    layoutModeOfBinaryBlock: LayoutMode,
+    widthBudgetInPixels: number,
+    layoutOptions: LayoutOptions,
+) => {
+    switch (layoutModeOfBinaryBlock) {
+        case LayoutMode.Column:
+            return (
+                widthBudgetInPixels
+                - layoutOptions.block.blockBorderWidthInPixels * 2
+                - layoutOptions.block.blockPaddingLeftInPixels
+                - layoutOptions.block.blockPaddingRightInPixels
+            );
+        case LayoutMode.Row:
+            // See `calculateSetElementWidthBudgetInPixels`
+            // for why this is chosen.
+            return Infinity;
+    }
+};
+
+export const calculateLiteralNodeInnerObjectWidthBudgetInPixels = (
+    widthBudgetInPixels: number,
+    layoutOptions: LayoutOptions,
+): number =>
+    widthBudgetInPixels
+    - layoutOptions.block.blockBorderWidthInPixels * 2
+    - layoutOptions.block.blockPaddingLeftInPixels
+    - layoutOptions.block.blockPaddingRightInPixels
+    - blockIconWidthInPixels.quote
+    - layoutOptions.block.itemGapInPixels;

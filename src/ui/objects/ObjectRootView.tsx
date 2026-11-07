@@ -2,7 +2,7 @@ import {createSignal} from "solid-js";
 
 import type {EverythingObject} from "@/model";
 
-import {LayoutMode} from "./layout";
+import {defaultBlockLayoutOptions, LayoutMode} from "./layout";
 import ObjectView from "./ObjectView";
 import type {ObjectSelectionPathInfo} from "./selection";
 import {ObjectSelection, ObjectSelectionContext} from "./selection";
@@ -20,6 +20,10 @@ export default (props: {
             value={new ObjectSelection(objectSelection, setObjectSelection)}
         >
             <ObjectView
+                layoutOptions={{
+                    atomNames: new Map(),
+                    block: defaultBlockLayoutOptions,
+                }}
                 widthBudgetInPixels={props.widthBudgetInPixels}
                 object={props.object}
                 path={[]}
