@@ -1,21 +1,25 @@
 import {createEffect, Match, Switch} from "solid-js";
 
 import {defaultObject, ObjectType, type EverythingObject} from "@/model";
-import type {Node} from "@/model/nodes";
 import {nodeToObject, NodeType, NotANode, objectToNode} from "@/model/nodes";
 import type {DeepReadonly} from "@/util";
 import {variant} from "@/util";
 
+import MapsToIcon from "../reuse/MapsToIcon";
 import AtomView from "./AtomView";
+import BinaryOperationView from "./BinaryOperationView";
+import type {Block} from "./blocks";
+import {objectToBlock} from "./blocks";
 import ConstructionView from "./ConstructionView";
 import IntegerView from "./IntegerView";
+import type {LayoutOptions} from "./layout";
 import {
-    CHROME_X,
+    calculateFunctionBodyWidthBudgetInPixels,
+    calculateLayoutModeOfBlock,
+    childCountOfBlock,
+    defaultBlockLayoutOptions,
     LayoutMode,
-    calculateLayoutModeOfObject,
-    childCountOfObject,
 } from "./layout";
-import NodeView from "./NodeView";
 import type {ObjectSelection, ObjectSelectionPath} from "./selection";
 import {useObjectSelection} from "./selection";
 import SetObjectView from "./SetObjectView";
@@ -49,7 +53,7 @@ const handleKeyDown = (props: {
         }
     } else if (props.event.key === "ArrowRight") {
         if (props.event.shiftKey) {
-            const childCount = childCountOfObject(props.object);
+            const childCount = childCountOfBlock(objectToBlock(props.object));
 
             if (childCount > 0) props.objectSelection.selectChild("previous");
         } else if (props.parentObjectLayoutMode === LayoutMode.Row) {
@@ -238,6 +242,17 @@ const objectViewColorHue = (object: EverythingObject): number => {
     }
 };
 
+const blockInColumnModeIsItemsCenter = (blockType: Block["type"]) => {
+    switch (blockType) {
+        case NodeType.Plus:
+        case NodeType.Times:
+        case ObjectType.Construction:
+            return true;
+        default:
+            return false;
+    }
+};
+
 export const ObjectView = (props: {
     object: EverythingObject;
     setObject: ((newObject: EverythingObject | undefined) => void) | undefined;
@@ -265,13 +280,19 @@ export const ObjectView = (props: {
      * The layout mode of the parent object.
      */
     parentObjectLayoutMode: LayoutMode;
+
+    layoutOptions: LayoutOptions;
 }) => {
     const objectSelection = useObjectSelection();
 
-    const contentBudget = () => props.widthBudgetInPixels - CHROME_X;
+    const block = () => objectToBlock(props.object);
+
     const layoutMode = () =>
-        calculateLayoutModeOfObject(props.object, props.widthBudgetInPixels);
-    const isNode = () => objectToNode(props.object) !== NotANode;
+        calculateLayoutModeOfBlock(
+            block(),
+            props.widthBudgetInPixels,
+            props.layoutOptions,
+        );
 
     return (
         <div
@@ -299,17 +320,140 @@ export const ObjectView = (props: {
             tabIndex={objectSelection.isSelected(props.path) ? 0 : -1}
             data-selected={objectSelection.dataSelected(props.path)}
             style={{
+                "border-width": `${props.layoutOptions.block.blockBorderWidthInPixels}px`,
+                gap: `${props.layoutOptions.block.itemGapInPixels}px`,
+                padding: `4px ${props.layoutOptions.block.blockPaddingRightInPixels}px 4px ${props.layoutOptions.block.blockPaddingLeftInPixels}px`,
                 "background-color": `light-dark(oklch(0.92 0.07 ${objectViewColorHue(props.object)}), oklch(0.3 0.07 ${objectViewColorHue(props.object)}))`,
             }}
-            class={`data-selected:text-always-white flex gap-1 rounded-xl border border-neutral-400 bg-neutral-100 p-1 text-neutral-800 select-none data-selected:border-blue-500 data-selected:bg-blue-500! ${layoutMode() === LayoutMode.Column ? `flex-col ${isNode() ? "items-center" : "items-start"}` : "items-center"}`}
+            class={`data-selected:text-always-white flex rounded-xl border-solid border-neutral-400 bg-neutral-100 text-neutral-800 select-none data-selected:border-blue-500 data-selected:bg-blue-500! ${layoutMode() === LayoutMode.Column ? `flex-col ${blockInColumnModeIsItemsCenter(block().type) ? "items-center" : "items-start"}` : "items-center"}`}
         >
             <Switch>
-                <Match when={variant(props.object, ObjectType.Atom)}>
+                <Match when={variant(block(), NodeType.Function)}>
+                    {functionNode => (
+                        <>
+                            <i>x</i>
+                            <MapsToIcon />
+                            <ObjectView
+                                parentObjectLayoutMode={layoutMode()}
+                                replaceParentWithThis={
+                                    props.setObject
+                                    && (() => {
+                                        if (!props.setObject) return;
+
+                                        objectSelection.selectParent();
+                                        props.setObject(functionNode().body);
+                                    })
+                                }
+                                siblingCount={1}
+                                object={functionNode().body}
+                                setObject={
+                                    props.setObject
+                                    && (newBody => {
+                                        props.setObject?.(
+                                            nodeToObject({
+                                                ...functionNode(),
+                                                body: newBody ?? defaultObject,
+                                            }),
+                                        );
+                                    })
+                                }
+                                path={[...props.path, 0]}
+                                widthBudgetInPixels={calculateFunctionBodyWidthBudgetInPixels(
+                                    props.widthBudgetInPixels,
+                                    {
+                                        atomNames: new Map(),
+                                        block: defaultBlockLayoutOptions,
+                                    },
+                                )}
+                                layoutOptions={props.layoutOptions}
+                            />
+                        </>
+                    )}
+                </Match>
+                <Match when={variant(block(), NodeType.Plus)}>
+                    {plusNode => (
+                        <BinaryOperationView
+                            icon={<PlusIcon />}
+                            iconWidth={ICON_WIDTH.plus}
+                            block={plusNode()}
+                            path={props.path}
+                            budget={props.widthBudgetInPixels}
+                            layoutModeOfEnclosingObjectView={
+                                props.layoutModeOfEnclosingObjectView
+                            }
+                            setObject={props.setObject}
+                        />
+                    )}
+                </Match>
+                <Match when={variant(block(), NodeType.Literal)}>
+                    {literalNode => (
+                        <>
+                            <QuoteIcon />
+                            <ObjectView
+                                parentObjectLayoutMode={
+                                    props.layoutModeOfEnclosingObjectView
+                                }
+                                replaceParentWithThis={
+                                    props.setObject
+                                    && (() => {
+                                        if (!props.setObject) return;
+
+                                        objectSelection.selectParent();
+                                        props.setObject?.(literalNode().object);
+                                    })
+                                }
+                                siblingCount={props.childCount}
+                                object={literalNode().object}
+                                setObject={
+                                    props.setObject
+                                    && (newObject => {
+                                        props.setObject?.(
+                                            nodeToObject({
+                                                ...literalNode(),
+                                                object:
+                                                    newObject ?? defaultObject,
+                                            }),
+                                        );
+                                    })
+                                }
+                                path={[...props.path, 0]}
+                                widthBudgetInPixels={
+                                    props.widthBudgetInPixels
+                                    - ICON_WIDTH.box
+                                    - GAP
+                                }
+                            />
+                        </>
+                    )}
+                </Match>
+                <Match when={variant(block(), NodeType.Times)}>
+                    {timesNode => (
+                        <BinaryOperationView
+                            icon={<DotIcon />}
+                            iconWidth={ICON_WIDTH.dot}
+                            block={timesNode()}
+                            childCount={props.childCount}
+                            path={props.path}
+                            budget={props.widthBudgetInPixels}
+                            layoutModeOfEnclosingObjectView={
+                                props.layoutModeOfEnclosingObjectView
+                            }
+                            setObject={props.setObject}
+                        />
+                    )}
+                </Match>
+
+                <Match when={variant(block(), ObjectType.Text)}>
+                    {text => (
+                        <TextView text={text()} setText={props.setObject} />
+                    )}
+                </Match>
+                <Match when={variant(block(), ObjectType.Atom)}>
                     {atom => (
                         <AtomView atom={atom()} setAtom={props.setObject} />
                     )}
                 </Match>
-                <Match when={variant(props.object, ObjectType.Integer)}>
+                <Match when={variant(block(), ObjectType.Integer)}>
                     {integer => (
                         <IntegerView
                             integer={integer()}
@@ -317,56 +461,31 @@ export const ObjectView = (props: {
                         />
                     )}
                 </Match>
-                <Match when={filterIsANode(objectToNode(props.object))}>
-                    {node => (
-                        <NodeView
-                            node={node()}
-                            setObject={
-                                props.setObject
-                                && (object => {
-                                    props.setObject?.(object);
-                                })
-                            }
-                            path={props.path}
-                            childCount={childCountOfObject(props.object)}
-                            widthBudgetInPixels={contentBudget()}
-                            layoutModeOfEnclosingObjectView={layoutMode()}
-                        />
-                    )}
-                </Match>
-                <Match when={variant(props.object, ObjectType.Set)}>
+                <Match when={variant(block(), ObjectType.Set)}>
                     {set => (
                         <SetObjectView
                             set={set()}
                             setSet={props.setObject}
                             path={props.path}
-                            widthBudgetInPixels={contentBudget()}
+                            widthBudgetInPixels={props.widthBudgetInPixels}
                             layoutModeOfEnclosingObjectView={layoutMode()}
                         />
                     )}
                 </Match>
-                <Match when={variant(props.object, ObjectType.Construction)}>
+                <Match when={variant(block(), ObjectType.Construction)}>
                     {construction => (
-                        <ConstructionView
-                            construction={construction()}
-                            path={props.path}
-                            setObject={props.setObject}
-                            widthBudgetInPixels={contentBudget()}
+                        <BinaryOperationView
+                            budget={props.widthBudgetInPixels}
+                            layoutOptions={props.layoutOptions}
+                            block={construction()}
                         />
                     )}
                 </Match>
-                <Match when={variant(props.object, ObjectType.Text)}>
-                    {text => (
-                        <TextView text={text()} setText={props.setObject} />
-                    )}
-                </Match>
+
                 <Match when={true}>NOT IMPL</Match>
             </Switch>
         </div>
     );
 };
-
-const filterIsANode = (maybeNode: Node | typeof NotANode): Node | undefined =>
-    maybeNode === NotANode ? undefined : maybeNode;
 
 export default ObjectView;

@@ -39,19 +39,6 @@ export type LiteralNode = {
 
 export type Node = FunctionNode | PlusNode | LiteralNode | TimesNode;
 
-export const nodeChildCount = (nodeType: NodeType): number => {
-    switch (nodeType) {
-        case NodeType.Function:
-            return 1;
-        case NodeType.Literal:
-            return 1;
-        case NodeType.Plus:
-            return 2;
-        case NodeType.Times:
-            return 2;
-    }
-};
-
 export const NotANode = Symbol("NotANode");
 
 const objectNodeCache = new WeakMap<EverythingObject, Node | typeof NotANode>();

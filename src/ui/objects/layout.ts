@@ -1,60 +1,24 @@
-import {ObjectType, type EverythingObject} from "@/model";
-import {
-    type Node,
-    nodeChildCount as childCountOfNode,
-    NodeType,
-    NotANode,
-    objectToNode,
-} from "@/model/nodes";
+import type {EverythingSet} from "@/model";
+import {ObjectType} from "@/model";
+import {NodeType} from "@/model/nodes";
 
-import {atomDisplayText, atomNamesRevision} from "./atomNames";
+import {objectToBlock, type Block} from "./blocks";
 
 /**
- * Layout model for object views.
+ * The layout mode of a block.
  *
- * Every object view lays its children out in a single row of flex items. To
- * decide whether an object has to switch to a column, we compute the width it
- * would have on a single row from the object tree. The decision therefore does
- * not depend on the rendered layout, which keeps it stable (it cannot
- * oscillate) and deterministic for a given available width.
+ * # Layout Rules Of Blocks
  *
- * Keep this in sync with ObjectView, AtomView, NodeView, SetObjectView,
- * ConstructionView and TextView.
+ * 1. Every object layout defaults to row mode, switches to column mode if it does
+ *    not fit in the available width budget.
+ * 2. All children of row mode objects must also be layed out in row mode.
  */
+export namespace LayoutMode {
+    export const Row = Symbol("LayoutMode.Row");
+    export const Column = Symbol("LayoutMode.Column");
+}
 
-/**
- * Horizontal padding and border of one object view (`p-1` + `border`).
- */
-export const CHROME_X = 2 * (4 + 1);
-
-/**
- * Width of `gap-1` between the flex items of an object view.
- */
-export const GAP = 4;
-
-/**
- * Widths of the icons used by the object views.
- */
-export const ICON_WIDTH = {
-    atom: 24,
-    brace: 12,
-    mapsTo: 32,
-    dotDot: 24,
-    box: 24,
-    plus: 24,
-    dot: 24,
-    blackboardZ: 24,
-} as const;
-
-/**
- * Horizontal padding of the integer input (`pr-2`; Preflight resets the rest).
- */
-const INTEGER_INPUT_PADDING_X = 8;
-
-/**
- * Text that ObjectView renders for object types that have no view yet.
- */
-const NOT_IMPLEMENTED_TEXT = "NOT IMPL";
+export type LayoutMode = typeof LayoutMode.Column | typeof LayoutMode.Row;
 
 let textMeasurer: HTMLSpanElement | undefined;
 
@@ -74,168 +38,336 @@ const textMeasurerElement = (): HTMLSpanElement => {
     return span;
 };
 
-const textWidthCache = new Map<string, number>();
-
 /**
  * Width of a single-line text run in the font of the object views.
  */
-export const measureText = (text: string): number => {
-    const cached = textWidthCache.get(text);
-    if (cached !== undefined) return cached;
-
+const measureText = (text: string): number => {
     const span = textMeasurerElement();
     span.textContent = text;
 
     const width = span.getBoundingClientRect().width;
-    textWidthCache.set(text, width);
     return width;
 };
 
-const leafWidth = (text: string): number => CHROME_X + measureText(text);
+const blockIconWidthInPixels = {
+    atom: 24,
+    construction: 24,
+    constructionConstructor: 24,
+    constructionValue: 24,
+    dot: 24,
+    elementOf: 24,
+    equals: 24,
+    exists: 24,
+    filter: 48,
+    forAll: 24,
+    map: 48,
+    minus: 24,
+    plus: 24,
+    quote: 24,
+    unwrap: 48,
+    wedge: 24,
+    x: 24,
+    brace: 12,
+    blackboardZ: 24,
+    mapsTo: 48,
+} as const satisfies Record<string, 12 | 24 | 32 | 40 | 48 | 56 | 64>;
 
-const rowWidth = (childWidths: readonly number[]): number =>
-    CHROME_X
-    + childWidths.reduce((sum, width) => sum + width, 0)
-    + GAP * Math.max(0, childWidths.length - 1);
-
-const calculateRowLayoutWidthOfNode = (node: Node): number => {
-    switch (node.type) {
-        case NodeType.Function:
-            return rowWidth([
-                measureText("x"),
-                ICON_WIDTH.mapsTo,
-                calculateRowLayoutWidthOfObject(node.body),
-            ]);
-        case NodeType.Literal:
-            return rowWidth([
-                ICON_WIDTH.box,
-                calculateRowLayoutWidthOfObject(node.object),
-            ]);
-        case NodeType.Plus:
-            return rowWidth([
-                calculateRowLayoutWidthOfObject(node.first),
-                ICON_WIDTH.plus,
-                calculateRowLayoutWidthOfObject(node.second),
-            ]);
-        case NodeType.Times:
-            return rowWidth([
-                calculateRowLayoutWidthOfObject(node.first),
-                ICON_WIDTH.dot,
-                calculateRowLayoutWidthOfObject(node.second),
-            ]);
-    }
+export type LayoutOptions = {
+    readonly block: BlockLayoutOptions;
+    readonly atomNames: ReadonlyMap<bigint, string>;
 };
 
-const calculateRowLayoutWidthOfObjectWithoutCache = (
-    object: EverythingObject,
+export type BlockLayoutOptions = {
+    readonly itemGapInPixels: number;
+    readonly blockBorderWidthInPixels: number;
+    readonly blockPaddingLeftInPixels: number;
+    readonly blockPaddingRightInPixels: number;
+    readonly setElementIndentInPixels: number;
+    readonly integerInputPaddingX: number;
+};
+
+const rowLayoutWidth = (
+    itemWidthsInPixels: readonly number[],
+    options: LayoutOptions,
+): number =>
+    options.block.blockBorderWidthInPixels
+    + options.block.blockPaddingLeftInPixels
+    + itemWidthsInPixels.reduce((sum, widthInPixels) => sum + widthInPixels, 0)
+    + options.block.itemGapInPixels * Math.max(0, itemWidthsInPixels.length - 1)
+    + options.block.blockPaddingRightInPixels
+    + options.block.blockBorderWidthInPixels;
+
+/**
+ * Text that ObjectView renders for object types that have no view yet.
+ */
+const NOT_IMPLEMENTED_TEXT = "NOT IMPL";
+
+export const defaultBlockLayoutOptions = {
+    blockBorderWidthInPixels: 1,
+    blockPaddingLeftInPixels: 4,
+    blockPaddingRightInPixels: 4,
+    integerInputPaddingX: 8,
+    itemGapInPixels: 8,
+    setElementIndentInPixels: 16,
+} as const satisfies BlockLayoutOptions;
+
+const calculateRowLayoutWidthOfBlockWithoutCache = (
+    block: Block,
+    options: LayoutOptions,
 ): number => {
-    const node = objectToNode(object);
-    if (node !== NotANode) return calculateRowLayoutWidthOfNode(node);
-
-    switch (object.type) {
+    switch (block.type) {
+        case NodeType.Function:
+            return rowLayoutWidth(
+                [
+                    blockIconWidthInPixels.x,
+                    blockIconWidthInPixels.mapsTo,
+                    calculateRowLayoutWidthOfBlock(
+                        objectToBlock(block.body),
+                        options,
+                    ),
+                ],
+                options,
+            );
+        case NodeType.Literal:
+            return rowLayoutWidth(
+                [
+                    blockIconWidthInPixels.quote,
+                    calculateRowLayoutWidthOfBlock(
+                        objectToBlock(block.object),
+                        options,
+                    ),
+                ],
+                options,
+            );
+        case NodeType.Plus:
+            return rowLayoutWidth(
+                [
+                    calculateRowLayoutWidthOfBlock(
+                        objectToBlock(block.first),
+                        options,
+                    ),
+                    blockIconWidthInPixels.plus,
+                    calculateRowLayoutWidthOfBlock(
+                        objectToBlock(block.second),
+                        options,
+                    ),
+                ],
+                options,
+            );
+        case NodeType.Times:
+            return rowLayoutWidth(
+                [
+                    calculateRowLayoutWidthOfBlock(
+                        objectToBlock(block.first),
+                        options,
+                    ),
+                    blockIconWidthInPixels.dot,
+                    calculateRowLayoutWidthOfBlock(
+                        objectToBlock(block.second),
+                        options,
+                    ),
+                ],
+                options,
+            );
         case ObjectType.Set: {
-            const items: number[] = [ICON_WIDTH.brace];
-
-            object.elements.forEach((element, index) => {
-                const comma =
-                    index < object.elements.length - 1 ? measureText(",") : 0;
-                items.push(calculateRowLayoutWidthOfObject(element) + comma);
-            });
-
-            items.push(ICON_WIDTH.brace);
-            return rowWidth(items);
+            return rowLayoutWidth(
+                [
+                    blockIconWidthInPixels.brace,
+                    ...block.elements.map(
+                        (element, index) =>
+                            calculateRowLayoutWidthOfBlock(element, options)
+                            + (index < block.elements.length - 1
+                                ? measureText(",")
+                                : 0),
+                    ),
+                    blockIconWidthInPixels.brace,
+                ],
+                options,
+            );
         }
         case ObjectType.Construction:
-            return rowWidth([
-                ICON_WIDTH.dotDot,
-                calculateRowLayoutWidthOfObject(object.constructor),
-                calculateRowLayoutWidthOfObject(object.value),
-            ]);
+            return rowLayoutWidth(
+                [
+                    blockIconWidthInPixels.construction,
+                    calculateRowLayoutWidthOfBlock(
+                        objectToBlock(block.constructor),
+                        options,
+                    ),
+                    calculateRowLayoutWidthOfBlock(
+                        objectToBlock(block.value),
+                        options,
+                    ),
+                ],
+                options,
+            );
         case ObjectType.Atom:
-            return rowWidth([
-                ICON_WIDTH.atom,
-                measureText(atomDisplayText(object)),
-            ]);
+            const atomName = options.atomNames.get(block.value);
+
+            return rowLayoutWidth(
+                [
+                    blockIconWidthInPixels.atom,
+                    measureText(atomName ?? String(block.value)),
+                ],
+                options,
+            );
         case ObjectType.Integer:
-            return rowWidth([
-                ICON_WIDTH.blackboardZ,
-                measureText(String(object.value)) + INTEGER_INPUT_PADDING_X,
-            ]);
+            return rowLayoutWidth(
+                [
+                    blockIconWidthInPixels.blackboardZ,
+                    measureText(String(block.value))
+                        + options.block.integerInputPaddingX,
+                ],
+                options,
+            );
         case ObjectType.Text:
-            return rowWidth([
-                measureText('"') + measureText(object.text) + measureText('"'),
-            ]);
+            return rowLayoutWidth(
+                [measureText('"') + measureText(block.text) + measureText('"')],
+                options,
+            );
         case ObjectType.Character:
         case ObjectType.Byte:
-            return leafWidth(NOT_IMPLEMENTED_TEXT);
+            return (
+                measureText(NOT_IMPLEMENTED_TEXT)
+                + options.block.blockBorderWidthInPixels * 2
+                + options.block.blockPaddingLeftInPixels
+                + options.block.blockPaddingRightInPixels
+            );
     }
 };
 
+/**
+ * (Very important) cache of block widths in row mode.
+ */
 const rowLayoutWidthCache = new WeakMap<
-    object,
-    {revision: number; width: number}
+    LayoutOptions,
+    WeakMap<Block, number>
 >();
 
-/**
- * Natural (single row) width of an object view in px.
- */
-export const calculateRowLayoutWidthOfObject = (
-    object: EverythingObject,
+export const calculateRowLayoutWidthOfBlock = (
+    block: Block,
+    layoutOptions: LayoutOptions,
 ): number => {
-    const revision = atomNamesRevision();
-    const cached = rowLayoutWidthCache.get(object);
-    if (cached?.revision === revision) return cached.width;
+    let layoutWidthsCache = rowLayoutWidthCache.get(layoutOptions);
 
-    const width = calculateRowLayoutWidthOfObjectWithoutCache(object);
-    rowLayoutWidthCache.set(object, {revision, width});
+    if (layoutWidthsCache === undefined) {
+        layoutWidthsCache = new WeakMap();
+        rowLayoutWidthCache.set(layoutOptions, layoutWidthsCache);
+    }
+
+    const cachedWidth = layoutWidthsCache.get(block);
+    if (cachedWidth !== undefined) return cachedWidth;
+
+    const width = calculateRowLayoutWidthOfBlockWithoutCache(
+        block,
+        layoutOptions,
+    );
+    layoutWidthsCache.set(block, width);
     return width;
 };
 
-export namespace LayoutMode {
-    export const Row = Symbol("LayoutMode.Row");
-    export const Column = Symbol("LayoutMode.Column");
-}
-
-export type LayoutMode = typeof LayoutMode.Column | typeof LayoutMode.Row;
-
-/**
- * Counts the view-specific children of the given object.
- *
- * This function is rather cheap to compute.
- */
-export const childCountOfObject = (object: EverythingObject): number => {
-    const node = objectToNode(object);
-    if (node !== NotANode) return childCountOfNode(node.type);
-
-    switch (object.type) {
+export const childCountOfBlock = (block: Block): number => {
+    switch (block.type) {
         case ObjectType.Atom:
-            return 0;
         case ObjectType.Byte:
-            return 0;
         case ObjectType.Character:
-            return 0;
-        case ObjectType.Construction:
-            return 2;
         case ObjectType.Integer:
-            return 0;
-        case ObjectType.Set:
-            return object.elements.length;
         case ObjectType.Text:
             return 0;
+        case NodeType.Function:
+        case NodeType.Literal:
+            return 1;
+        case ObjectType.Construction:
+        case NodeType.Plus:
+        case NodeType.Times:
+            return 2;
+        case ObjectType.Set:
+            return block.elements.length;
     }
 };
 
-export const calculateLayoutModeOfObject = (
-    object: EverythingObject,
+/**
+ * Calculates the layout mode for the given block, width budget and layout
+ * options.
+ */
+export const calculateLayoutModeOfBlock = (
+    block: Block,
     widthBudgetInPixels: number,
+    layoutOptions: LayoutOptions,
 ): LayoutMode => {
+    if (widthBudgetInPixels === Infinity) {
+        // There is infinite space for this block,
+        // so we can just choose row layout.
+        return LayoutMode.Row;
+    }
+
     if (
-        childCountOfObject(object) >= 2
-        && calculateRowLayoutWidthOfObject(object) > widthBudgetInPixels
+        childCountOfBlock(block) >= 2
+        && calculateRowLayoutWidthOfBlock(block, layoutOptions)
+            > widthBudgetInPixels
     ) {
-        // Object has two or more children and exceeds width budget.
+        // Block has two or more children and exceeds width budget.
         return LayoutMode.Column;
     } else {
         return LayoutMode.Row;
     }
 };
+
+export const calculateSetElementWidthBudgetInPixels = (
+    set: EverythingSet,
+    widthBudgetInPixelsForSet: number,
+    layoutOptions: LayoutOptions,
+    elementIndex: number,
+): number => {
+    switch (
+        calculateLayoutModeOfBlock(
+            set,
+            widthBudgetInPixelsForSet,
+            layoutOptions,
+        )
+    ) {
+        case LayoutMode.Column: {
+            // {
+            //   element,
+            //   ...
+            // }
+
+            const isNotLastElement = elementIndex < set.elements.length - 1;
+
+            const chrome =
+                layoutOptions.block.blockBorderWidthInPixels * 2
+                + layoutOptions.block.blockPaddingLeftInPixels
+                + layoutOptions.block.blockPaddingRightInPixels
+                + layoutOptions.block.setElementIndentInPixels
+                + (isNotLastElement ? measureText(",") : 0);
+
+            return Math.max(0, widthBudgetInPixelsForSet - chrome);
+        }
+        case LayoutMode.Row: {
+            // { element, ... }
+
+            // The layout algorithm has determined that this set can be
+            // layed out in row mode within the available width budget.
+            //
+            // Under the second rule of block layout, this means that all descendants
+            // must be in row mode and everything fits. Therefore, we can
+            // tell each child, it has infinite space because it can't
+            // exceed this space.
+            return Infinity;
+        }
+    }
+};
+
+export const calculateFunctionBodyWidthBudgetInPixels = (
+    widthBudgetInPixelsForFunction: number,
+    layoutOptions: LayoutOptions,
+) =>
+    Math.max(
+        0,
+        widthBudgetInPixelsForFunction
+            - layoutOptions.block.blockBorderWidthInPixels * 2
+            - layoutOptions.block.blockPaddingLeftInPixels
+            - layoutOptions.block.blockPaddingRightInPixels
+            - layoutOptions.block.itemGapInPixels * 2
+            - blockIconWidthInPixels.mapsTo
+            - measureText("x"),
+    );
