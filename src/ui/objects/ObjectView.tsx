@@ -21,176 +21,186 @@ import {useObjectSelection} from "./selection";
 import SetObjectView from "./SetObjectView";
 import TextView from "./TextView";
 
-const handleKeyDown = (options: {
+const handleKeyDown = (props: {
     event: KeyboardEvent & {currentTarget: HTMLDivElement; target: Element};
     objectSelection: ObjectSelection;
     siblingCount: number;
     object: EverythingObject;
     setObject: ((newObject: EverythingObject | undefined) => void) | undefined;
     replaceParentWithThis: (() => void) | undefined;
+    parentObjectLayoutMode: LayoutMode;
 }) => {
     if (
-        options.event.target.tagName === "INPUT"
-        || options.event.target !== options.event.currentTarget
-        || options.event.ctrlKey
+        props.event.target.tagName === "INPUT"
+        || props.event.target !== props.event.currentTarget
+        || props.event.ctrlKey
     )
         return;
 
-    options.event.preventDefault();
+    props.event.preventDefault();
 
-    if (options.event.key === "ArrowRight") {
-        if (options.event.shiftKey) {
-            const childCount = childCountOfObject(options.object);
+    if (props.event.key === "ArrowUp") {
+        if (props.parentObjectLayoutMode === LayoutMode.Column) {
+            props.objectSelection.selectPreviousSibling();
+        }
+    } else if (props.event.key === "ArrowDown") {
+        if (props.parentObjectLayoutMode === LayoutMode.Column) {
+            props.objectSelection.selectNextSibling(props.siblingCount);
+        }
+    } else if (props.event.key === "ArrowRight") {
+        if (props.event.shiftKey) {
+            const childCount = childCountOfObject(props.object);
 
-            if (childCount > 0) options.objectSelection.selectChild("previous");
-        } else {
-            options.objectSelection.selectNextSibling(options.siblingCount);
+            if (childCount > 0) props.objectSelection.selectChild("previous");
+        } else if (props.parentObjectLayoutMode === LayoutMode.Row) {
+            props.objectSelection.selectNextSibling(props.siblingCount);
         }
-    } else if (options.event.key === "ArrowLeft") {
-        if (options.event.shiftKey) {
-            options.objectSelection.selectParent();
-        } else {
-            options.objectSelection.selectPreviousSibling();
+    } else if (props.event.key === "ArrowLeft") {
+        if (props.event.shiftKey) {
+            props.objectSelection.selectParent();
+        } else if (props.parentObjectLayoutMode === LayoutMode.Row) {
+            // Only allow left sibling selection if the layout mode is Row.
+            props.objectSelection.selectPreviousSibling();
         }
-    } else if (options.event.key === "Enter") {
-        if (!options.setObject) return;
+    } else if (props.event.key === "Enter") {
+        if (!props.setObject) return;
 
         // Try to add new empty set to object.
 
-        if (options.object.type === ObjectType.Set) {
-            options.objectSelection.selectChild(options.object.elements.length);
+        if (props.object.type === ObjectType.Set) {
+            props.objectSelection.selectChild(props.object.elements.length);
 
-            options.setObject({
+            props.setObject({
                 type: ObjectType.Set,
                 elements: [
-                    ...options.object.elements,
+                    ...props.object.elements,
                     {type: ObjectType.Set, elements: []},
                 ],
             });
         } else if (
-            options.object.type === ObjectType.Atom
-            || options.object.type === ObjectType.Integer
+            props.object.type === ObjectType.Atom
+            || props.object.type === ObjectType.Integer
         ) {
             // Focus field
-            const input = options.event.currentTarget.querySelector("input");
+            const input = props.event.currentTarget.querySelector("input");
 
             if (input) {
                 input.focus();
                 input.select();
             }
         }
-    } else if (options.event.key === "Backspace" && !options.event.shiftKey) {
+    } else if (props.event.key === "Backspace" && !props.event.shiftKey) {
         // Replace parent with this object.
 
-        options.replaceParentWithThis?.();
-    } else if (options.event.key === "Delete") {
+        props.replaceParentWithThis?.();
+    } else if (props.event.key === "Delete") {
         // Delete whole object (or replace with empty set).
 
-        options.setObject?.(undefined);
-    } else if (options.event.key === "Backspace") {
-        if (!options.setObject) return;
+        props.setObject?.(undefined);
+    } else if (props.event.key === "Backspace") {
+        if (!props.setObject) return;
 
         // Delete object but retain a child if possible.
 
-        const node = objectToNode(options.object);
+        const node = objectToNode(props.object);
 
         if (node !== NotANode) {
             switch (node.type) {
                 case NodeType.Function: {
                     // Retain body.
 
-                    options.setObject(node.body);
+                    props.setObject(node.body);
                     break;
                 }
                 case NodeType.Literal: {
                     // Retain literal.
 
-                    options.setObject(node.object);
+                    props.setObject(node.object);
                     break;
                 }
                 case NodeType.Plus: {
                     // Retain first operand.
 
-                    options.setObject(node.first);
+                    props.setObject(node.first);
                     break;
                 }
             }
         } else {
             // We just delete everything.
 
-            options.setObject?.(undefined);
+            props.setObject?.(undefined);
         }
-    } else if (options.event.key === "+") {
-        options.setObject?.(
+    } else if (props.event.key === "+") {
+        props.setObject?.(
             nodeToObject({
                 type: NodeType.Plus,
-                first: options.object,
+                first: props.object,
                 second: defaultObject,
                 rest: [],
             }),
         );
 
-        options.objectSelection.selectChild(1);
-    } else if (options.event.key === " ") {
-        options.setObject?.({
+        props.objectSelection.selectChild(1);
+    } else if (props.event.key === " ") {
+        props.setObject?.({
             type: ObjectType.Construction,
-            constructor: options.object,
+            constructor: props.object,
             value: defaultObject,
         });
 
-        options.objectSelection.selectChild(1);
-    } else if (options.event.key === "l") {
-        if (!options.setObject) return;
+        props.objectSelection.selectChild(1);
+    } else if (props.event.key === "l") {
+        if (!props.setObject) return;
 
-        options.setObject(
+        props.setObject(
             nodeToObject({
                 type: NodeType.Literal,
-                object: options.object,
+                object: props.object,
                 rest: [],
             }),
         );
 
-        options.objectSelection.selectChild(0);
-    } else if (options.event.key === "f") {
-        if (!options.setObject) return;
+        props.objectSelection.selectChild(0);
+    } else if (props.event.key === "f") {
+        if (!props.setObject) return;
 
-        options.setObject(
+        props.setObject(
             nodeToObject({
                 type: NodeType.Function,
-                body: options.object,
+                body: props.object,
                 rest: [],
             }),
         );
 
-        options.objectSelection.selectChild(0);
-    } else if ("0123456789".includes(options.event.key)) {
-        if (!options.setObject) return;
+        props.objectSelection.selectChild(0);
+    } else if ("0123456789".includes(props.event.key)) {
+        if (!props.setObject) return;
 
         // Replace with number.
 
-        options.setObject({
+        props.setObject({
             type: ObjectType.Integer,
-            value: BigInt(options.event.key),
+            value: BigInt(props.event.key),
         });
-    } else if (options.event.key === "*") {
-        options.setObject?.(
+    } else if (props.event.key === "*") {
+        props.setObject?.(
             nodeToObject({
                 type: NodeType.Times,
-                first: options.object,
+                first: props.object,
                 second: defaultObject,
                 rest: [],
             }),
         );
 
-        options.objectSelection.selectChild(1);
-    } else if (options.event.key === "a") {
+        props.objectSelection.selectChild(1);
+    } else if (props.event.key === "a") {
         // Replace with atom
 
-        options.setObject?.({type: ObjectType.Atom, value: 0n});
-    } else if (options.event.key === "t") {
+        props.setObject?.({type: ObjectType.Atom, value: 0n});
+    } else if (props.event.key === "t") {
         // Replace with text
 
-        options.setObject?.({type: ObjectType.Text, text: ""});
+        props.setObject?.({type: ObjectType.Text, text: ""});
     }
 };
 
@@ -250,6 +260,11 @@ export const ObjectView = (props: {
      * The object view calling this function is selected.
      */
     replaceParentWithThis: (() => void) | undefined;
+
+    /**
+     * The layout mode of the parent object.
+     */
+    parentObjectLayoutMode: LayoutMode;
 }) => {
     const objectSelection = useObjectSelection();
 
@@ -268,6 +283,7 @@ export const ObjectView = (props: {
                     objectSelection: objectSelection,
                     replaceParentWithThis: props.replaceParentWithThis,
                     setObject: props.setObject,
+                    parentObjectLayoutMode: props.parentObjectLayoutMode,
                 })
             }
             ref={div => {
@@ -335,7 +351,7 @@ export const ObjectView = (props: {
                             construction={construction()}
                             path={props.path}
                             setObject={props.setObject}
-                            budget={contentBudget()}
+                            widthBudgetInPixels={contentBudget()}
                         />
                     )}
                 </Match>

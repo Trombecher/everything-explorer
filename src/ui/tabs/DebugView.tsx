@@ -1,15 +1,16 @@
 import {createSignal, onCleanup, onMount} from "solid-js";
 
-import type {Object} from "@/model";
+import type {EverythingObject} from "@/model";
 import {defaultObject, ObjectType} from "@/model";
 import {nodeToObject, NodeType} from "@/model/nodes";
 
+import {LayoutMode} from "../objects/layout";
 import ObjectView from "../objects/ObjectView";
 import type {ObjectSelectionPathInfo} from "../objects/selection";
 import {ObjectSelection, ObjectSelectionContext} from "../objects/selection";
 import Swatch from "../Swatch";
 
-const createInitialObject2 = (): Object => ({
+const createInitialObject2 = (): EverythingObject => ({
     type: ObjectType.Set,
     elements: [
         nodeToObject({
@@ -41,7 +42,7 @@ const createInitialObject2 = (): Object => ({
 });
 
 type HistoryEntry = {
-    readonly object: Object;
+    readonly object: EverythingObject;
     readonly selectionPathInfo: ObjectSelectionPathInfo;
 };
 
@@ -153,6 +154,7 @@ export default () => {
                         replaceParentWithThis={() => {
                             // Do nothing, there is no parent.
                         }}
+                        parentObjectLayoutMode={LayoutMode.Row}
                     />
                 </ObjectSelectionContext.Provider>
             </div>

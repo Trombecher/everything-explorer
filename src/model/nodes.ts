@@ -1,5 +1,5 @@
 import type {EverythingSet} from ".";
-import {construction, ObjectType, type Object} from ".";
+import {construction, ObjectType, type EverythingObject} from ".";
 import {Atom} from "./atoms";
 
 export namespace NodeType {
@@ -13,28 +13,28 @@ export type NodeType = Node["type"];
 
 export type TimesNode = {
     readonly type: typeof NodeType.Times;
-    readonly first: Object;
-    readonly second: Object;
-    readonly rest: readonly Object[];
+    readonly first: EverythingObject;
+    readonly second: EverythingObject;
+    readonly rest: readonly EverythingObject[];
 };
 
 export type FunctionNode = {
     readonly type: typeof NodeType.Function;
-    readonly body: Object;
-    readonly rest: readonly Object[];
+    readonly body: EverythingObject;
+    readonly rest: readonly EverythingObject[];
 };
 
 export type PlusNode = {
     readonly type: typeof NodeType.Plus;
-    readonly first: Object;
-    readonly second: Object;
-    readonly rest: readonly Object[];
+    readonly first: EverythingObject;
+    readonly second: EverythingObject;
+    readonly rest: readonly EverythingObject[];
 };
 
 export type LiteralNode = {
     readonly type: typeof NodeType.Literal;
-    readonly object: Object;
-    readonly rest: readonly Object[];
+    readonly object: EverythingObject;
+    readonly rest: readonly EverythingObject[];
 };
 
 export type Node = FunctionNode | PlusNode | LiteralNode | TimesNode;
@@ -54,14 +54,16 @@ export const nodeChildCount = (nodeType: NodeType): number => {
 
 export const NotANode = Symbol("NotANode");
 
-const objectNodeCache = new WeakMap<Object, Node | typeof NotANode>();
+const objectNodeCache = new WeakMap<EverythingObject, Node | typeof NotANode>();
 
 /**
  * Converts an object to a {@link Node `Node`}. The result is cached.
  *
  * This function is cheap on cache hit.
  */
-export const objectToNode = (object: Object): Node | typeof NotANode => {
+export const objectToNode = (
+    object: EverythingObject,
+): Node | typeof NotANode => {
     const cachedNode = objectNodeCache.get(object);
     if (cachedNode !== undefined) {
         return cachedNode;
@@ -72,10 +74,12 @@ export const objectToNode = (object: Object): Node | typeof NotANode => {
     return node;
 };
 
-const objectToNodeWithoutCache = (object: Object): Node | typeof NotANode => {
+const objectToNodeWithoutCache = (
+    object: EverythingObject,
+): Node | typeof NotANode => {
     if (object.type !== ObjectType.Set) return NotANode;
 
-    let some: Object | undefined;
+    let some: EverythingObject | undefined;
     let finalNode: Node | undefined;
 
     some = singleSetAtomValue(object, Atom.NodeFunction.value);
@@ -149,9 +153,9 @@ const objectToNodeWithoutCache = (object: Object): Node | typeof NotANode => {
 };
 
 const withoutAtomConstructors = (
-    elements: readonly Object[],
+    elements: readonly EverythingObject[],
     withoutAtomValues: readonly bigint[],
-): Object[] =>
+): EverythingObject[] =>
     elements.filter(element => {
         return (
             element.type !== ObjectType.Construction
@@ -163,7 +167,7 @@ const withoutAtomConstructors = (
 const singleSetAtomValue = (
     set: EverythingSet,
     atomValue: bigint,
-): Object | undefined => {
+): EverythingObject | undefined => {
     // TODO: optimize
 
     const [element1, element2] = set.elements
@@ -176,15 +180,18 @@ const singleSetAtomValue = (
         })
         .map(
             element =>
-                (element as Object & {type: typeof ObjectType.Construction})
-                    .value,
+                (
+                    element as EverythingObject & {
+                        type: typeof ObjectType.Construction;
+                    }
+                ).value,
         );
 
     if (element2) return;
     return element1;
 };
 
-export const nodeToObject = (node: Node): Object => {
+export const nodeToObject = (node: Node): EverythingObject => {
     switch (node.type) {
         case NodeType.Times:
             return {

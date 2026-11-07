@@ -31,6 +31,7 @@ const BinaryOperationView = (props: {
     return (
         <>
             <ObjectView
+                parentObjectLayoutMode={props.layoutModeOfEnclosingObjectView}
                 replaceParentWithThis={
                     props.setObject
                     && (() => {
@@ -61,6 +62,7 @@ const BinaryOperationView = (props: {
             />
             {props.icon}
             <ObjectView
+                parentObjectLayoutMode={props.layoutModeOfEnclosingObjectView}
                 replaceParentWithThis={
                     props.setObject
                     && (() => {
@@ -120,6 +122,9 @@ const NodeView = (props: {
                         <i>x</i>
                         <MapsToIcon />
                         <ObjectView
+                            parentObjectLayoutMode={
+                                props.layoutModeOfEnclosingObjectView
+                            }
                             replaceParentWithThis={
                                 props.setObject
                                 && (() => {
@@ -174,6 +179,9 @@ const NodeView = (props: {
                     <>
                         <QuoteIcon />
                         <ObjectView
+                            parentObjectLayoutMode={
+                                props.layoutModeOfEnclosingObjectView
+                            }
                             replaceParentWithThis={
                                 props.setObject
                                 && (() => {

@@ -2,6 +2,7 @@ import {createSignal} from "solid-js";
 
 import type {EverythingObject} from "@/model";
 
+import {LayoutMode} from "./layout";
 import ObjectView from "./ObjectView";
 import type {ObjectSelectionPathInfo} from "./selection";
 import {ObjectSelection, ObjectSelectionContext} from "./selection";
@@ -25,6 +26,7 @@ export default (props: {
                 siblingCount={1}
                 replaceParentWithThis={undefined}
                 setObject={props.setObject}
+                parentObjectLayoutMode={LayoutMode.Row}
             />
         </ObjectSelectionContext.Provider>
     );

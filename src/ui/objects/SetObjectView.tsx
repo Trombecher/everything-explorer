@@ -34,6 +34,9 @@ export default (props: {
                 {(element, i) => (
                     <span class="flex items-center">
                         <ObjectView
+                            parentObjectLayoutMode={
+                                props.layoutModeOfEnclosingObjectView
+                            }
                             replaceParentWithThis={
                                 props.setSet
                                 && (() => {

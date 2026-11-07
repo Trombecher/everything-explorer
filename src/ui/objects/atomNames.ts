@@ -1,12 +1,12 @@
 import {createSignal} from "solid-js";
 
-import {ObjectType, type Object} from "@/model";
+import {ObjectType, type EverythingObject} from "@/model";
 import type {Atom} from "@/model/atoms";
 
 /**
  * Formats the values of the `name` construction of an atom for display.
  */
-export const formatAtomNames = (names: readonly Object[]): string =>
+export const formatAtomNames = (names: readonly EverythingObject[]): string =>
     names
         .map(object => {
             if (object.type === ObjectType.Text) return object.text;
@@ -14,7 +14,7 @@ export const formatAtomNames = (names: readonly Object[]): string =>
         })
         .join(", ");
 
-const namesCache = new Map<bigint, readonly Object[]>();
+const namesCache = new Map<bigint, readonly EverythingObject[]>();
 
 const [revision, setRevision] = createSignal(0);
 
@@ -51,7 +51,10 @@ export const noteAtomNamesConnection = (url: string) => {
     setRevision(revision => revision + 1);
 };
 
-export const cacheAtomNames = (atom: Atom, names: readonly Object[]) => {
+export const cacheAtomNames = (
+    atom: Atom,
+    names: readonly EverythingObject[],
+) => {
     namesCache.set(atom.value, names);
     setRevision(revision => revision + 1);
 };

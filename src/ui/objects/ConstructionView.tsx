@@ -2,7 +2,7 @@ import type {Construction, EverythingObject} from "@/model";
 import type {DeepReadonly} from "@/util";
 
 import DotDotIcon from "../reuse/DotDotIcon";
-import {GAP, ICON_WIDTH} from "./layout";
+import {calculateLayoutModeOfObject, GAP, ICON_WIDTH} from "./layout";
 import ObjectView from "./ObjectView";
 import type {ObjectSelectionPath} from "./selection";
 import {useObjectSelection} from "./selection";
@@ -15,15 +15,21 @@ export default (props: {
     /**
      * Available width for the content of the enclosing object view.
      */
-    budget: number;
+    widthBudgetInPixels: number;
 }) => {
     const objectSelection = useObjectSelection();
+    const objectLayoutMode = () =>
+        calculateLayoutModeOfObject(
+            props.construction,
+            props.widthBudgetInPixels,
+        );
 
     return (
         <>
             <span class="flex items-center gap-1">
                 <DotDotIcon />
                 <ObjectView
+                    parentObjectLayoutMode={objectLayoutMode()}
                     replaceParentWithThis={
                         props.setObject
                         && (() => {
@@ -50,10 +56,13 @@ export default (props: {
                         }
                     }}
                     path={[...props.path, 0]}
-                    widthBudgetInPixels={props.budget - ICON_WIDTH.dotDot - GAP}
+                    widthBudgetInPixels={
+                        props.widthBudgetInPixels - ICON_WIDTH.dotDot - GAP
+                    }
                 />
             </span>
             <ObjectView
+                parentObjectLayoutMode={objectLayoutMode()}
                 replaceParentWithThis={
                     props.setObject
                     && (() => {
@@ -78,7 +87,7 @@ export default (props: {
                     }
                 }}
                 path={[...props.path, 1]}
-                widthBudgetInPixels={props.budget}
+                widthBudgetInPixels={props.widthBudgetInPixels}
             />
         </>
     );
