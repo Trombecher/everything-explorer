@@ -1,12 +1,12 @@
 import AtomIcon from "lucide-solid/icons/atom";
-import {createResource} from "solid-js";
+import {createEffect} from "solid-js";
 
 import {useAppState} from "@/context";
 import {ObjectType} from "@/model";
-import {Atom} from "@/model/atoms";
+import type {Atom} from "@/model/atoms";
 import BigIntTextField from "@/ui/reuse/BigIntTextField";
 
-import {formatAtomNames} from "./formatAtomNames";
+import {useAtomNames} from "./atomNames";
 
 const MAX_ATOM_VALUE = (1n << 128n) - 1n;
 
@@ -15,25 +15,14 @@ export default (props: {
     setAtom: ((newAtom: Atom) => void) | undefined;
 }) => {
     const appState = useAppState();
+    const atomNames = useAtomNames();
 
-    const [names] = createResource(
-        () => {
-            const connectionClient = appState.connectionClient();
-            return connectionClient && {connectionClient, atom: props.atom};
-        },
-        ({connectionClient, atom}) =>
-            connectionClient.constructionValuesOfObject(atom, Atom.Name),
-    );
+    createEffect(() => {
+        const connectionClient = appState.connectionClient();
+        if (connectionClient) atomNames.ensure(connectionClient, props.atom);
+    });
 
-    const label = () => {
-        const atomNames = names();
-
-        if (!atomNames || atomNames.length === 0) {
-            return String(props.atom.value);
-        }
-
-        return formatAtomNames(atomNames);
-    };
+    const label = () => atomNames.displayText(props.atom);
 
     return (
         <>

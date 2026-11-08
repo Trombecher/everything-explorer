@@ -1,7 +1,8 @@
-import {createSignal} from "solid-js";
+import {createComputed, createSignal} from "solid-js";
 
 import type {EverythingObject} from "@/model";
 
+import {useAtomNames} from "./atomNames";
 import {
     defaultBlockLayoutOptions,
     LayoutMode,
@@ -17,12 +18,24 @@ export default (props: {
     widthBudgetInPixels: number;
     setObject: ((newObject: EverythingObject | undefined) => void) | undefined;
 }) => {
+    const atomNames = useAtomNames();
+
     const [objectSelection, setObjectSelection] =
         createSignal<ObjectSelectionPathInfo>({effectiveLength: 0, path: []});
 
     const [layoutOptions, setLayoutOptions] = createSignal<LayoutOptions>({
-        atomNames: new Map(),
+        atomNames: atomNames.map(),
         block: defaultBlockLayoutOptions,
+    });
+
+    createComputed(() => {
+        const names = atomNames.map();
+
+        setLayoutOptions(previous =>
+            previous.atomNames === names
+                ? previous
+                : {atomNames: names, block: previous.block},
+        );
     });
 
     const layoutOptionsContext = {get: layoutOptions, set: setLayoutOptions};

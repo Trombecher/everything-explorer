@@ -1,9 +1,10 @@
-import {createSignal, onCleanup, onMount} from "solid-js";
+import {createComputed, createSignal, onCleanup, onMount} from "solid-js";
 
 import type {EverythingObject} from "@/model";
 import {defaultObject, ObjectType} from "@/model";
 import {nodeToObject, NodeType} from "@/model/nodes";
 
+import {useAtomNames} from "../objects/atomNames";
 import {
     defaultBlockLayoutOptions,
     LayoutMode,
@@ -106,9 +107,21 @@ export default () => {
 
     let objectContainer: HTMLDivElement | undefined;
 
+    const atomNames = useAtomNames();
+
     const [layoutOptions, setLayoutOptions] = createSignal<LayoutOptions>({
-        atomNames: new Map(),
+        atomNames: atomNames.map(),
         block: defaultBlockLayoutOptions,
+    });
+
+    createComputed(() => {
+        const names = atomNames.map();
+
+        setLayoutOptions(previous =>
+            previous.atomNames === names
+                ? previous
+                : {atomNames: names, block: previous.block},
+        );
     });
 
     const layoutOptionsContext = {get: layoutOptions, set: setLayoutOptions};

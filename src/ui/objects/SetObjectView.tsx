@@ -56,6 +56,11 @@ export default (props: {
                                 props.setSet
                                 && (newElement => {
                                     if (newElement === undefined) {
+                                        const isOnlyElement =
+                                            props.set.elements.length === 1;
+                                        const isLastElement =
+                                            i === props.set.elements.length - 1;
+
                                         props.setSet?.({
                                             type: ObjectType.Set,
                                             elements: props.set.elements.filter(
@@ -63,15 +68,18 @@ export default (props: {
                                             ),
                                         });
 
-                                        if (props.set.elements.length === 0) {
-                                            // we remove the last sibling
+                                        if (isOnlyElement) {
+                                            // The set becomes empty, so the
+                                            // element selection is invalid.
                                             objectSelection.selectParent();
-                                        } else if (
-                                            props.set.elements.length === i
-                                        ) {
-                                            // we remove the last element of the siblings.
+                                        } else if (isLastElement) {
+                                            // The selection would point past
+                                            // the last element.
                                             objectSelection.selectPreviousSibling();
                                         }
+                                        // Otherwise the selection keeps its
+                                        // index, which now refers to the next
+                                        // element.
                                     } else {
                                         // Change element
                                         props.setSet?.({

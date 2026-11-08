@@ -402,11 +402,12 @@ export const binaryBlockSlotWidthBudgetInPixels = (
 ) => {
     switch (layoutModeOfBinaryBlock) {
         case LayoutMode.Column:
-            return (
+            return Math.max(
+                0,
                 widthBudgetInPixels
-                - layoutOptions.block.blockBorderWidthInPixels * 2
-                - layoutOptions.block.blockPaddingLeftInPixels
-                - layoutOptions.block.blockPaddingRightInPixels
+                    - layoutOptions.block.blockBorderWidthInPixels * 2
+                    - layoutOptions.block.blockPaddingLeftInPixels
+                    - layoutOptions.block.blockPaddingRightInPixels,
             );
         case LayoutMode.Row:
             // See `calculateSetElementWidthBudgetInPixels`
@@ -419,9 +420,12 @@ export const calculateLiteralNodeInnerObjectWidthBudgetInPixels = (
     widthBudgetInPixels: number,
     layoutOptions: LayoutOptions,
 ): number =>
-    widthBudgetInPixels
-    - layoutOptions.block.blockBorderWidthInPixels * 2
-    - layoutOptions.block.blockPaddingLeftInPixels
-    - layoutOptions.block.blockPaddingRightInPixels
-    - blockIconWidthInPixels.quote
-    - layoutOptions.block.itemGapInPixels;
+    Math.max(
+        0,
+        widthBudgetInPixels
+            - layoutOptions.block.blockBorderWidthInPixels * 2
+            - layoutOptions.block.blockPaddingLeftInPixels
+            - layoutOptions.block.blockPaddingRightInPixels
+            - blockIconWidthInPixels.quote
+            - layoutOptions.block.itemGapInPixels,
+    );

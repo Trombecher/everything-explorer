@@ -7,6 +7,7 @@ import type {InternalAppState} from "./state/app";
 import {AppState} from "./state/app";
 import {localStorageAppStateKey, serializeAppState} from "./state/stored";
 import App from "./ui/App";
+import {AtomNames, AtomNamesContext} from "./ui/objects/atomNames";
 
 export const loadedInitialState: {state: InternalAppState | undefined} = {
     state: undefined,
@@ -19,6 +20,12 @@ export default () => {
 
     const appState = new AppState(loadedInitialState.state);
     loadedInitialState.state = undefined;
+
+    const atomNames = new AtomNames();
+
+    createEffect(() => {
+        atomNames.noteConnection(appState.connectionClient());
+    });
 
     // State sync.
     if (backend.isApp()) {
@@ -38,7 +45,9 @@ export default () => {
 
     return (
         <AppStateContext.Provider value={appState}>
-            <App />
+            <AtomNamesContext.Provider value={atomNames}>
+                <App />
+            </AtomNamesContext.Provider>
         </AppStateContext.Provider>
     );
 };
