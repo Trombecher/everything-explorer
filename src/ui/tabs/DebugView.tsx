@@ -5,9 +5,7 @@ import {defaultObject, ObjectType} from "@/model";
 import {nodeToObject, NodeType} from "@/model/nodes";
 
 import {ObjectHistory} from "../objects/history";
-import {LayoutMode} from "../objects/layout";
-import ObjectView from "../objects/ObjectView";
-import {ObjectSelectionContext} from "../objects/selection";
+import ObjectRootView from "../objects/ObjectRootView";
 import Swatch from "../Swatch";
 
 const createInitialObject2 = (): EverythingObject => ({
@@ -65,50 +63,17 @@ export default () => {
     });
 
     return (
-        <div
-            class="mx-auto my-2 max-w-3xl min-w-0 grow rounded-4xl border border-neutral-200 bg-white p-4"
-            tabIndex={0}
-            onKeyDown={e => {
-                if (!e.ctrlKey) return;
-
-                const key = e.key.toLowerCase();
-                const undo = key === "z" && !e.shiftKey;
-                const redo = (key === "z" && e.shiftKey) || key === "y";
-
-                if (!undo && !redo) return;
-
-                e.preventDefault();
-                e.stopImmediatePropagation();
-                e.stopPropagation();
-
-                if (undo) objectHistory.undo();
-                else objectHistory.redo();
-            }}
-        >
+        <div class="mx-auto my-2 max-w-3xl min-w-0 grow rounded-4xl border border-neutral-200 bg-white p-4">
             <div
-                class="w-full"
+                class="flex justify-start overflow-x-auto"
                 ref={el => {
                     objectContainer = el;
                 }}
             >
-                <ObjectSelectionContext.Provider
-                    value={objectHistory.objectSelection}
-                >
-                    <ObjectView
-                        indentLeft={false}
-                        siblingCount={1}
-                        object={objectHistory.current().object}
-                        setObject={newObject => {
-                            objectHistory.push(newObject ?? defaultObject);
-                        }}
-                        path={[]}
-                        widthBudgetInPixels={budget()}
-                        replaceParentWithThis={() => {
-                            // Do nothing, there is no parent.
-                        }}
-                        parentObjectLayoutMode={LayoutMode.Row}
-                    />
-                </ObjectSelectionContext.Provider>
+                <ObjectRootView
+                    history={objectHistory}
+                    widthBudgetInPixels={budget()}
+                />
             </div>
             <Swatch />
         </div>
