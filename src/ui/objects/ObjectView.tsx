@@ -26,6 +26,23 @@ import {useObjectSelection} from "./selection";
 import SetObjectView from "./SetObjectView";
 import TextView from "./TextView";
 
+const isHandledKey = (key: string): boolean =>
+    key === "ArrowUp"
+    || key === "ArrowDown"
+    || key === "ArrowRight"
+    || key === "ArrowLeft"
+    || key === "Enter"
+    || key === "Backspace"
+    || key === "Delete"
+    || key === "+"
+    || key === " "
+    || key === "*"
+    || key === "l"
+    || key === "f"
+    || key === "a"
+    || key === "t"
+    || (key.length === 1 && "0123456789".includes(key));
+
 const handleKeyDown = (props: {
     event: KeyboardEvent & {currentTarget: HTMLDivElement; target: Element};
     objectSelection: ObjectSelection;
@@ -38,7 +55,12 @@ const handleKeyDown = (props: {
     if (
         props.event.target.tagName === "INPUT"
         || props.event.target !== props.event.currentTarget
+        // Do not consume shortcuts of the browser or the OS.
         || props.event.ctrlKey
+        || props.event.metaKey
+        || props.event.altKey
+        // Do not consume keys we have no use for (Tab, F5, ...).
+        || !isHandledKey(props.event.key)
     )
         return;
 
@@ -136,7 +158,9 @@ const handleKeyDown = (props: {
             props.setObject?.(undefined);
         }
     } else if (props.event.key === "+") {
-        props.setObject?.(
+        if (!props.setObject) return;
+
+        props.setObject(
             nodeToObject({
                 type: NodeType.Plus,
                 first: props.object,
@@ -147,7 +171,9 @@ const handleKeyDown = (props: {
 
         props.objectSelection.selectChild(1);
     } else if (props.event.key === " ") {
-        props.setObject?.({
+        if (!props.setObject) return;
+
+        props.setObject({
             type: ObjectType.Construction,
             constructor: props.object,
             value: defaultObject,
@@ -188,7 +214,9 @@ const handleKeyDown = (props: {
             value: BigInt(props.event.key),
         });
     } else if (props.event.key === "*") {
-        props.setObject?.(
+        if (!props.setObject) return;
+
+        props.setObject(
             nodeToObject({
                 type: NodeType.Times,
                 first: props.object,

@@ -19,9 +19,9 @@ import {onCleanup} from "solid-js";
 
 import {useAppState} from "@/context";
 import {defaultObject, objectsEqual, type EverythingObject} from "@/model";
-import {Atom} from "@/model/atoms";
+import type {Atom} from "@/model/atoms";
 
-import {formatAtomNames} from "../objects/formatAtomNames";
+import {useAtomNames} from "../objects/atomNames";
 import ObjectRootView from "../objects/ObjectRootView";
 import Button from "../reuse/Button";
 
@@ -89,6 +89,7 @@ const REMOVE_BUTTON_SPACE = 48;
 
 const PropertiesPanel = (props: {selectedAtom: Atom; close: () => void}) => {
     const appState = useAppState();
+    const atomNames = useAtomNames();
 
     const clientAndAtom = () => {
         const connectionClient = appState.connectionClient();
@@ -101,14 +102,13 @@ const PropertiesPanel = (props: {selectedAtom: Atom; close: () => void}) => {
         );
     };
 
-    const [names] = createResource(
-        clientAndAtom,
-        ({connectionClient, selectedAtom}) =>
-            connectionClient.constructionValuesOfObject(
-                selectedAtom,
-                Atom.Name,
-            ),
-    );
+    createEffect(() => {
+        const current = clientAndAtom();
+
+        if (current) {
+            atomNames.ensure(current.connectionClient, current.selectedAtom);
+        }
+    });
 
     const [values] = createResource(
         clientAndAtom,
@@ -137,11 +137,21 @@ const PropertiesPanel = (props: {selectedAtom: Atom; close: () => void}) => {
 
         const {connectionClient, selectedAtom} = current;
 
-        setProperties(previous => [...previous, defaultObject]);
+        // A fresh object so a failed request can be rolled back unambiguously
+        // (all added properties would otherwise share `defaultObject`).
+        const optimisticObject: EverythingObject = {...defaultObject};
+
+        setProperties(previous => [...previous, optimisticObject]);
 
         void connectionClient
             .addStatement({atom: selectedAtom, object: defaultObject})
-            .catch(error => console.error("failed to add property", error));
+            .catch(error => {
+                console.error("failed to add property", error);
+
+                setProperties(previous =>
+                    previous.filter(object => object !== optimisticObject),
+                );
+            });
     };
 
     const changeProperty = (
@@ -153,6 +163,8 @@ const PropertiesPanel = (props: {selectedAtom: Atom; close: () => void}) => {
         if (!current) return;
 
         const {connectionClient, selectedAtom} = current;
+
+        const propertiesBeforeChange = properties();
 
         setProperties(previous => {
             if (newObject === undefined) {
@@ -185,6 +197,10 @@ const PropertiesPanel = (props: {selectedAtom: Atom; close: () => void}) => {
                 });
             } catch (error) {
                 console.error("failed to update property", error);
+
+                // Roll the optimistic update back. The server state is
+                // unchanged or only partially changed.
+                setProperties(propertiesBeforeChange);
             }
         })();
     };
@@ -203,7 +219,7 @@ const PropertiesPanel = (props: {selectedAtom: Atom; close: () => void}) => {
             <div class="flex items-center gap-2 p-2">
                 <TablePropertiesIcon />
                 <h2 class="text-xl font-semibold text-black">
-                    Properties of {formatAtomNames(names() ?? [])}
+                    Properties of {atomNames.displayText(props.selectedAtom)}
                 </h2>
             </div>
             <KobalteButton
@@ -287,14 +303,12 @@ const AtomCard = (props: {
     setSelectedAtom: Setter<Atom | undefined>;
 }) => {
     const appState = useAppState();
-    const [names] = createResource(
-        () => {
-            const connectionClient = appState.connectionClient();
-            return connectionClient && {connectionClient, atom: props.atom};
-        },
-        ({connectionClient, atom}) =>
-            connectionClient.constructionValuesOfObject(atom, Atom.Name),
-    );
+    const atomNames = useAtomNames();
+
+    createEffect(() => {
+        const connectionClient = appState.connectionClient();
+        if (connectionClient) atomNames.ensure(connectionClient, props.atom);
+    });
 
     return (
         <KobalteButton
@@ -309,9 +323,7 @@ const AtomCard = (props: {
             class={`flex h-48 w-48 flex-col overflow-hidden rounded-4xl border p-4 text-left ${props.selectedAtom === props.atom ? "border-blue-500 bg-blue-400/20" : "border-neutral-200 bg-neutral-100 hover:bg-neutral-200"}`}
         >
             <span class="block text-center text-lg font-medium">
-                <Suspense fallback={<>loading...</>}>
-                    {formatAtomNames(names() ?? [])}
-                </Suspense>
+                {atomNames.displayText(props.atom)}
             </span>
         </KobalteButton>
     );
