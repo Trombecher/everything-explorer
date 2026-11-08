@@ -21,7 +21,7 @@ import {useAppState} from "@/context";
 import {defaultObject, objectsEqual, type EverythingObject} from "@/model";
 import {Atom} from "@/model/atoms";
 
-import {formatAtomNames} from "../objects/atomNames";
+import {formatAtomNames} from "../objects/formatAtomNames";
 import ObjectRootView from "../objects/ObjectRootView";
 import Button from "../reuse/Button";
 
@@ -121,7 +121,9 @@ const PropertiesPanel = (props: {selectedAtom: Atom; close: () => void}) => {
      * so that adding a property is reflected immediately and duplicate
      * properties are not collapsed.
      */
-    const [properties, setProperties] = createSignal<readonly EverythingObject[]>([]);
+    const [properties, setProperties] = createSignal<
+        readonly EverythingObject[]
+    >([]);
 
     createEffect(() => {
         const loadedValues = values();

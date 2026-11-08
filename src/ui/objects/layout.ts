@@ -49,6 +49,22 @@ const measureText = (text: string): number => {
     return width;
 };
 
+/**
+ * Widths of the fixed punctuation that several blocks measure. Only these
+ * static strings are cached: caching dynamic text would keep an unbounded
+ * number of strings alive.
+ */
+const staticTextWidthCache = new Map<string, number>();
+
+const measureStaticText = (text: "," | '"'): number => {
+    const cached = staticTextWidthCache.get(text);
+    if (cached !== undefined) return cached;
+
+    const width = measureText(text);
+    staticTextWidthCache.set(text, width);
+    return width;
+};
+
 const blockIconWidthInPixels = {
     atom: 24,
     construction: 24,
@@ -69,7 +85,7 @@ const blockIconWidthInPixels = {
     x: 24,
     brace: 12,
     blackboardZ: 24,
-    mapsTo: 48,
+    mapsTo: 32,
 } as const satisfies Record<string, 12 | 24 | 32 | 40 | 48 | 56 | 64>;
 
 export type LayoutOptions = {
@@ -180,7 +196,7 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                                 options,
                             )
                             + (index < block.elements.length - 1
-                                ? measureText(",")
+                                ? measureStaticText(",")
                                 : 0),
                     ),
                     blockIconWidthInPixels.brace,
@@ -224,7 +240,11 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
             );
         case ObjectType.Text:
             return rowLayoutWidth(
-                [measureText('"') + measureText(block.text) + measureText('"')],
+                [
+                    measureStaticText('"')
+                        + measureText(block.text)
+                        + measureStaticText('"'),
+                ],
                 options,
             );
         case ObjectType.Character:
@@ -341,7 +361,7 @@ export const calculateSetElementWidthBudgetInPixels = (
                 + layoutOptions.block.blockPaddingLeftInPixels
                 + layoutOptions.block.blockPaddingRightInPixels
                 + layoutOptions.block.setElementIndentInPixels
-                + (isNotLastElement ? measureText(",") : 0);
+                + (isNotLastElement ? measureStaticText(",") : 0);
 
             return Math.max(0, widthBudgetInPixelsForSet - chrome);
         }
@@ -372,7 +392,7 @@ export const calculateFunctionBodyWidthBudgetInPixels = (
             - layoutOptions.block.blockPaddingRightInPixels
             - layoutOptions.block.itemGapInPixels * 2
             - blockIconWidthInPixels.mapsTo
-            - measureText("x"),
+            - blockIconWidthInPixels.x,
     );
 
 export const binaryBlockSlotWidthBudgetInPixels = (

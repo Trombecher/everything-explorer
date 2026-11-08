@@ -1,4 +1,5 @@
 import QuoteIcon from "lucide-solid/icons/quote";
+import XIcon from "lucide-solid/icons/x";
 import {createEffect, Match, Switch} from "solid-js";
 
 import {defaultObject, ObjectType, type EverythingObject} from "@/model";
@@ -337,7 +338,7 @@ export const ObjectView = (props: {
                 <Match when={variant(block(), NodeType.Function)}>
                     {functionNode => (
                         <>
-                            <i>x</i>
+                            <XIcon />
                             <MapsToIcon />
                             <ObjectView
                                 indentLeft={false}
