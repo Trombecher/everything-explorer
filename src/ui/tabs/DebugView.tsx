@@ -1,16 +1,10 @@
-import {createComputed, createSignal, onCleanup, onMount} from "solid-js";
+import {createSignal, onCleanup, onMount} from "solid-js";
 
 import type {EverythingObject} from "@/model";
 import {defaultObject, ObjectType} from "@/model";
 import {nodeToObject, NodeType} from "@/model/nodes";
 
-import {useAtomNames} from "../objects/atomNames";
-import {
-    defaultBlockLayoutOptions,
-    LayoutMode,
-    type LayoutOptions,
-} from "../objects/layout";
-import {LayoutOptionsContext} from "../objects/layoutOptions";
+import {LayoutMode} from "../objects/layout";
 import ObjectView from "../objects/ObjectView";
 import type {ObjectSelectionPathInfo} from "../objects/selection";
 import {ObjectSelection, ObjectSelectionContext} from "../objects/selection";
@@ -107,25 +101,6 @@ export default () => {
 
     let objectContainer: HTMLDivElement | undefined;
 
-    const atomNames = useAtomNames();
-
-    const [layoutOptions, setLayoutOptions] = createSignal<LayoutOptions>({
-        atomNames: atomNames.map(),
-        block: defaultBlockLayoutOptions,
-    });
-
-    createComputed(() => {
-        const names = atomNames.map();
-
-        setLayoutOptions(previous =>
-            previous.atomNames === names
-                ? previous
-                : {atomNames: names, block: previous.block},
-        );
-    });
-
-    const layoutOptionsContext = {get: layoutOptions, set: setLayoutOptions};
-
     onMount(() => {
         if (!objectContainer) return;
 
@@ -164,26 +139,24 @@ export default () => {
                 }}
             >
                 <ObjectSelectionContext.Provider value={objectSelection}>
-                    <LayoutOptionsContext.Provider value={layoutOptionsContext}>
-                        <ObjectView
-                            indentLeft={false}
-                            siblingCount={1}
-                            object={lastHistoryEntry().object}
-                            setObject={newObject => {
-                                pushHistoryEntry({
-                                    object: newObject ?? defaultObject,
-                                    selectionPathInfo:
-                                        lastHistoryEntry().selectionPathInfo,
-                                });
-                            }}
-                            path={[]}
-                            widthBudgetInPixels={budget()}
-                            replaceParentWithThis={() => {
-                                // Do nothing, there is no parent.
-                            }}
-                            parentObjectLayoutMode={LayoutMode.Row}
-                        />
-                    </LayoutOptionsContext.Provider>
+                    <ObjectView
+                        indentLeft={false}
+                        siblingCount={1}
+                        object={lastHistoryEntry().object}
+                        setObject={newObject => {
+                            pushHistoryEntry({
+                                object: newObject ?? defaultObject,
+                                selectionPathInfo:
+                                    lastHistoryEntry().selectionPathInfo,
+                            });
+                        }}
+                        path={[]}
+                        widthBudgetInPixels={budget()}
+                        replaceParentWithThis={() => {
+                            // Do nothing, there is no parent.
+                        }}
+                        parentObjectLayoutMode={LayoutMode.Row}
+                    />
                 </ObjectSelectionContext.Provider>
             </div>
             <Swatch />

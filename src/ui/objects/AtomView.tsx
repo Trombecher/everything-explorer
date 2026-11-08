@@ -1,12 +1,12 @@
 import AtomIcon from "lucide-solid/icons/atom";
 import {createEffect} from "solid-js";
 
-import {useAppState} from "@/context";
 import {ObjectType} from "@/model";
 import type {Atom} from "@/model/atoms";
 import BigIntTextField from "@/ui/reuse/BigIntTextField";
 
-import {useAtomNames} from "./atomNames";
+import {useLayoutOptions} from "./layoutOptions";
+import {useAtomName} from "./useAtomName";
 
 const MAX_ATOM_VALUE = (1n << 128n) - 1n;
 
@@ -14,15 +14,26 @@ export default (props: {
     atom: Atom;
     setAtom: ((newAtom: Atom) => void) | undefined;
 }) => {
-    const appState = useAppState();
-    const atomNames = useAtomNames();
+    const layoutOptions = useLayoutOptions();
+    const name = useAtomName(() => props.atom);
+
+    const label = () => name() ?? String(props.atom.value);
 
     createEffect(() => {
-        const connectionClient = appState.connectionClient();
-        if (connectionClient) atomNames.ensure(connectionClient, props.atom);
-    });
+        const text = name();
+        if (text === undefined) return;
 
-    const label = () => atomNames.displayText(props.atom);
+        const value = props.atom.value;
+
+        layoutOptions.set(previous =>
+            previous.atomNames.get(value) === text
+                ? previous
+                : {
+                      ...previous,
+                      atomNames: new Map(previous.atomNames).set(value, text),
+                  },
+        );
+    });
 
     return (
         <>

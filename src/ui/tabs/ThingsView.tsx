@@ -21,8 +21,8 @@ import {useAppState} from "@/context";
 import {defaultObject, objectsEqual, type EverythingObject} from "@/model";
 import type {Atom} from "@/model/atoms";
 
-import {useAtomNames} from "../objects/atomNames";
 import ObjectRootView from "../objects/ObjectRootView";
+import {useAtomName} from "../objects/useAtomName";
 import Button from "../reuse/Button";
 
 export default () => {
@@ -89,7 +89,7 @@ const REMOVE_BUTTON_SPACE = 48;
 
 const PropertiesPanel = (props: {selectedAtom: Atom; close: () => void}) => {
     const appState = useAppState();
-    const atomNames = useAtomNames();
+    const name = useAtomName(() => props.selectedAtom);
 
     const clientAndAtom = () => {
         const connectionClient = appState.connectionClient();
@@ -101,14 +101,6 @@ const PropertiesPanel = (props: {selectedAtom: Atom; close: () => void}) => {
             }
         );
     };
-
-    createEffect(() => {
-        const current = clientAndAtom();
-
-        if (current) {
-            atomNames.ensure(current.connectionClient, current.selectedAtom);
-        }
-    });
 
     const [values] = createResource(
         clientAndAtom,
@@ -219,7 +211,7 @@ const PropertiesPanel = (props: {selectedAtom: Atom; close: () => void}) => {
             <div class="flex items-center gap-2 p-2">
                 <TablePropertiesIcon />
                 <h2 class="text-xl font-semibold text-black">
-                    Properties of {atomNames.displayText(props.selectedAtom)}
+                    Properties of {name() ?? String(props.selectedAtom.value)}
                 </h2>
             </div>
             <KobalteButton
@@ -302,13 +294,7 @@ const AtomCard = (props: {
     selectedAtom: Atom | undefined;
     setSelectedAtom: Setter<Atom | undefined>;
 }) => {
-    const appState = useAppState();
-    const atomNames = useAtomNames();
-
-    createEffect(() => {
-        const connectionClient = appState.connectionClient();
-        if (connectionClient) atomNames.ensure(connectionClient, props.atom);
-    });
+    const name = useAtomName(() => props.atom);
 
     return (
         <KobalteButton
@@ -323,7 +309,7 @@ const AtomCard = (props: {
             class={`flex h-48 w-48 flex-col overflow-hidden rounded-4xl border p-4 text-left ${props.selectedAtom === props.atom ? "border-blue-500 bg-blue-400/20" : "border-neutral-200 bg-neutral-100 hover:bg-neutral-200"}`}
         >
             <span class="block text-center text-lg font-medium">
-                {atomNames.displayText(props.atom)}
+                {name() ?? String(props.atom.value)}
             </span>
         </KobalteButton>
     );
