@@ -1,9 +1,13 @@
 import type {Accessor, Setter} from "solid-js";
-import {createSignal, onCleanup, onMount} from "solid-js";
+import {createEffect, createSignal, on, onCleanup, onMount} from "solid-js";
 import {type SetStoreFunction, createStore} from "solid-js/store";
 
 import * as backend from "@/backend/api";
 import {ConnectionClient} from "@/connect";
+import {
+    defaultBlockLayoutOptions,
+    type LayoutOptions,
+} from "@/ui/objects/layout";
 
 import {Language, translate} from "../i18n";
 import type {Phrase} from "../i18n/phrases";
@@ -114,6 +118,14 @@ export class AppState {
     public readonly connectionClient: Accessor<undefined | ConnectionClient>;
     private readonly setConnectionClient: Setter<undefined | ConnectionClient>;
 
+    /**
+     * Layout options of all object views.
+     *
+     * This is runtime state, not part of the persisted app state.
+     */
+    public readonly layoutOptions: Accessor<LayoutOptions>;
+    public readonly setLayoutOptions: Setter<LayoutOptions>;
+
     public readonly browserLanguage: () => BrowserLanguage;
 
     constructor(initial: InternalAppState) {
@@ -150,6 +162,32 @@ export class AppState {
 
         this.connectionClient = connectionClient;
         this.setConnectionClient = setConnectionClient;
+
+        // Layout options
+
+        const [layoutOptions, setLayoutOptions] = createSignal<LayoutOptions>({
+            atomNames: new Map(),
+            block: defaultBlockLayoutOptions,
+        });
+
+        this.layoutOptions = layoutOptions;
+        this.setLayoutOptions = setLayoutOptions;
+
+        // Atom names belong to a specific knowledge base, so drop them when
+        // reconnecting.
+        createEffect(
+            on(
+                connectionClient,
+                () => {
+                    setLayoutOptions(previous =>
+                        previous.atomNames.size === 0
+                            ? previous
+                            : {...previous, atomNames: new Map()},
+                    );
+                },
+                {defer: true},
+            ),
+        );
     }
 
     public async disconnect() {

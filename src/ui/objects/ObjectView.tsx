@@ -2,6 +2,7 @@ import QuoteIcon from "lucide-solid/icons/quote";
 import XIcon from "lucide-solid/icons/x";
 import {createEffect, Match, Switch} from "solid-js";
 
+import {useAppState} from "@/context";
 import {defaultObject, ObjectType, type EverythingObject} from "@/model";
 import {nodeToObject, NodeType, NotANode, objectToNode} from "@/model/nodes";
 import type {DeepReadonly} from "@/util";
@@ -20,7 +21,6 @@ import {
     childCountOfBlock,
     LayoutMode,
 } from "./layout";
-import {useLayoutOptions} from "./layoutOptions";
 import type {ObjectSelection, ObjectSelectionPath} from "./selection";
 import {useObjectSelection} from "./selection";
 import SetObjectView from "./SetObjectView";
@@ -316,16 +316,16 @@ export const ObjectView = (props: {
     indentLeft: boolean;
 }) => {
     const objectSelection = useObjectSelection();
-    const layoutOptions = useLayoutOptions();
+    const appState = useAppState();
 
     const block = () => objectToBlock(props.object);
-    const blockOptions = () => layoutOptions.get().block;
+    const blockOptions = () => appState.layoutOptions().block;
 
     const layoutMode = () =>
         calculateLayoutModeOfBlock(
             block(),
             props.widthBudgetInPixels,
-            layoutOptions.get(),
+            appState.layoutOptions(),
         );
 
     return (
@@ -396,7 +396,7 @@ export const ObjectView = (props: {
                                 path={[...props.path, 0]}
                                 widthBudgetInPixels={calculateFunctionBodyWidthBudgetInPixels(
                                     props.widthBudgetInPixels,
-                                    layoutOptions.get(),
+                                    appState.layoutOptions(),
                                 )}
                             />
                         </>
@@ -445,7 +445,7 @@ export const ObjectView = (props: {
                                 path={[...props.path, 0]}
                                 widthBudgetInPixels={calculateLiteralNodeInnerObjectWidthBudgetInPixels(
                                     props.widthBudgetInPixels,
-                                    layoutOptions.get(),
+                                    appState.layoutOptions(),
                                 )}
                             />
                         </>

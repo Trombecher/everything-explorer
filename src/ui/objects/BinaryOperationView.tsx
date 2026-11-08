@@ -2,6 +2,7 @@ import DotIcon from "lucide-solid/icons/dot";
 import PlusIcon from "lucide-solid/icons/plus";
 import {Dynamic} from "solid-js/web";
 
+import {useAppState} from "@/context";
 import {ObjectType, type Construction, type EverythingObject} from "@/model";
 import {
     nodeToObject,
@@ -15,7 +16,6 @@ import {
     binaryBlockSlotWidthBudgetInPixels,
     calculateLayoutModeOfBlock,
 } from "./layout";
-import {useLayoutOptions} from "./layoutOptions";
 import ObjectView from "./ObjectView";
 import {useObjectSelection, type ObjectSelectionPath} from "./selection";
 
@@ -52,7 +52,7 @@ export default (props: {
     setObject?: ((newObject: EverythingObject) => void) | undefined;
 }) => {
     const objectSelection = useObjectSelection();
-    const layoutOptions = useLayoutOptions();
+    const appState = useAppState();
 
     const first = () => getFirst(props.block);
     const second = () => getSecond(props.block);
@@ -61,7 +61,7 @@ export default (props: {
         calculateLayoutModeOfBlock(
             props.block,
             props.wholeWidthBudgetInPixels,
-            layoutOptions.get(),
+            appState.layoutOptions(),
         );
 
     return (
@@ -112,7 +112,7 @@ export default (props: {
                 widthBudgetInPixels={binaryBlockSlotWidthBudgetInPixels(
                     layoutMode(),
                     props.wholeWidthBudgetInPixels,
-                    layoutOptions.get(),
+                    appState.layoutOptions(),
                 )}
             />
             <Dynamic component={BlockIcon[props.block.type]} />
@@ -162,7 +162,7 @@ export default (props: {
                 widthBudgetInPixels={binaryBlockSlotWidthBudgetInPixels(
                     layoutMode(),
                     props.wholeWidthBudgetInPixels,
-                    layoutOptions.get(),
+                    appState.layoutOptions(),
                 )}
             />
         </>

@@ -1,5 +1,6 @@
 import {Index} from "solid-js";
 
+import {useAppState} from "@/context";
 import type {EverythingObject} from "@/model";
 import {type EverythingSet, ObjectType} from "@/model";
 import type {DeepReadonly} from "@/util";
@@ -10,7 +11,6 @@ import {
     calculateSetElementWidthBudgetInPixels,
     LayoutMode,
 } from "./layout";
-import {useLayoutOptions} from "./layoutOptions";
 import ObjectView from "./ObjectView";
 import type {ObjectSelectionPath} from "./selection";
 import {useObjectSelection} from "./selection";
@@ -23,13 +23,13 @@ export default (props: {
     widthBudgetInPixels: number;
 }) => {
     const objectSelection = useObjectSelection();
-    const layoutOptions = useLayoutOptions();
+    const appState = useAppState();
 
     const layoutMode = () =>
         calculateLayoutModeOfBlock(
             props.set,
             props.widthBudgetInPixels,
-            layoutOptions.get(),
+            appState.layoutOptions(),
         );
 
     return (
@@ -98,7 +98,7 @@ export default (props: {
                             widthBudgetInPixels={calculateSetElementWidthBudgetInPixels(
                                 props.set,
                                 props.widthBudgetInPixels,
-                                layoutOptions.get(),
+                                appState.layoutOptions(),
                                 i,
                             )}
                         />

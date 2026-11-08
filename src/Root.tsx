@@ -7,7 +7,6 @@ import type {InternalAppState} from "./state/app";
 import {AppState} from "./state/app";
 import {localStorageAppStateKey, serializeAppState} from "./state/stored";
 import App from "./ui/App";
-import LayoutOptionsProvider from "./ui/objects/LayoutOptionsProvider";
 
 export const loadedInitialState: {state: InternalAppState | undefined} = {
     state: undefined,
@@ -39,9 +38,7 @@ export default () => {
 
     return (
         <AppStateContext.Provider value={appState}>
-            <LayoutOptionsProvider>
-                <App />
-            </LayoutOptionsProvider>
+            <App />
         </AppStateContext.Provider>
     );
 };
