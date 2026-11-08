@@ -69,13 +69,20 @@ export default () => {
             class="mx-auto my-2 max-w-3xl min-w-0 grow rounded-4xl border border-neutral-200 bg-white p-4"
             tabIndex={0}
             onKeyDown={e => {
-                if (e.key === "z" && e.ctrlKey) {
-                    e.preventDefault();
-                    e.stopImmediatePropagation();
-                    e.stopPropagation();
+                if (!e.ctrlKey) return;
 
-                    if (objectHistory.canUndo()) objectHistory.undo();
-                }
+                const key = e.key.toLowerCase();
+                const undo = key === "z" && !e.shiftKey;
+                const redo = (key === "z" && e.shiftKey) || key === "y";
+
+                if (!undo && !redo) return;
+
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                e.stopPropagation();
+
+                if (undo) objectHistory.undo();
+                else objectHistory.redo();
             }}
         >
             <div

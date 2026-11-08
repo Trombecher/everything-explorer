@@ -11,45 +11,57 @@ export type ObjectHistoryEntry = {
     readonly selectionPathInfo: ObjectSelectionPathInfo;
 };
 
-const lastEntry = (
-    entries: readonly ObjectHistoryEntry[],
-): ObjectHistoryEntry => {
-    const last = entries.at(-1);
-    if (!last) throw new Error("object history is empty");
+type ObjectHistoryState = {
+    readonly entries: readonly ObjectHistoryEntry[];
 
-    return last;
+    /**
+     * The number of entries that are part of the current history.
+     *
+     * The current entry is the one at index `virtualLength - 1`. Any entries
+     * after it are redoable and become active again by redoing.
+     */
+    readonly virtualLength: number;
+};
+
+const currentEntry = (state: ObjectHistoryState): ObjectHistoryEntry => {
+    const entry = state.entries[state.virtualLength - 1];
+    if (!entry) throw new Error("object history is empty");
+
+    return entry;
 };
 
 /**
- * An undo history of object edits.
+ * An undo/redo history of object edits.
  *
  * Every edit pushes a new entry that captures the edited object together with
- * the selection at that point in time. Undoing drops the newest entry and thus
- * restores the previous object and its selection.
+ * the selection at that point in time. Undoing moves back to the previous entry
+ * and redoing moves forward again. Pushing an edit after undoing discards the
+ * entries that could have been redone.
  */
 export class ObjectHistory {
-    private readonly entries: Accessor<readonly ObjectHistoryEntry[]>;
-    private readonly setEntries: Setter<readonly ObjectHistoryEntry[]>;
+    private readonly state: Accessor<ObjectHistoryState>;
+    private readonly setState: Setter<ObjectHistoryState>;
 
     /**
-     * The selection of the newest entry. Selection changes only affect the
-     * newest entry, so older entries keep the selection they had when they were
-     * created.
+     * The selection of the current entry. Selection changes only affect the
+     * current entry, so other entries keep the selection they had when they
+     * were created.
      */
     public readonly objectSelection: ObjectSelection;
 
     constructor(initialObject: EverythingObject) {
-        const [entries, setEntries] = createSignal<
-            readonly ObjectHistoryEntry[]
-        >([
-            {
-                object: initialObject,
-                selectionPathInfo: {effectiveLength: 0, path: []},
-            },
-        ]);
+        const [state, setState] = createSignal<ObjectHistoryState>({
+            entries: [
+                {
+                    object: initialObject,
+                    selectionPathInfo: {effectiveLength: 0, path: []},
+                },
+            ],
+            virtualLength: 1,
+        });
 
-        this.entries = entries;
-        this.setEntries = setEntries;
+        this.state = state;
+        this.setState = setState;
 
         this.objectSelection = new ObjectSelection(
             () => this.current().selectionPathInfo,
@@ -66,45 +78,69 @@ export class ObjectHistory {
     }
 
     /**
-     * The newest entry. This is the entry currently shown.
+     * The entry currently shown.
      */
     public current(): ObjectHistoryEntry {
-        return lastEntry(this.entries());
+        return currentEntry(this.state());
     }
 
     public canUndo(): boolean {
-        return this.entries().length > 1;
+        return this.state().virtualLength > 1;
+    }
+
+    public canRedo(): boolean {
+        const state = this.state();
+
+        return state.virtualLength < state.entries.length;
     }
 
     /**
      * Pushes an edit of the current object. The current selection is carried
-     * over to the new entry.
+     * over to the new entry. Redoable entries are discarded.
      */
     public push(object: EverythingObject) {
-        this.setEntries(entries => [
-            ...entries,
-            {object, selectionPathInfo: lastEntry(entries).selectionPathInfo},
-        ]);
+        this.setState(state => ({
+            entries: [
+                ...state.entries.slice(0, state.virtualLength),
+                {
+                    object,
+                    selectionPathInfo: currentEntry(state).selectionPathInfo,
+                },
+            ],
+            virtualLength: state.virtualLength + 1,
+        }));
     }
 
     /**
-     * Drops the newest entry, restoring the previous object and selection.
-     *
-     * Does nothing if there is no previous entry.
+     * Moves back to the previous entry. Does nothing if there is none.
      */
     public undo() {
-        this.setEntries(entries =>
-            entries.length > 1 ? entries.slice(0, -1) : entries,
+        this.setState(state =>
+            state.virtualLength > 1
+                ? {...state, virtualLength: state.virtualLength - 1}
+                : state,
+        );
+    }
+
+    /**
+     * Moves forward to the next entry. Does nothing if there is none.
+     */
+    public redo() {
+        this.setState(state =>
+            state.virtualLength < state.entries.length
+                ? {...state, virtualLength: state.virtualLength + 1}
+                : state,
         );
     }
 
     private updateCurrent(
         transform: (entry: ObjectHistoryEntry) => ObjectHistoryEntry,
     ) {
-        this.setEntries(entries =>
-            entries.map((entry, i) =>
-                i === entries.length - 1 ? transform(entry) : entry,
+        this.setState(state => ({
+            ...state,
+            entries: state.entries.map((entry, i) =>
+                i === state.virtualLength - 1 ? transform(entry) : entry,
             ),
-        );
+        }));
     }
 }
