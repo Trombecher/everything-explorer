@@ -67,6 +67,7 @@ export default (props: {
     return (
         <>
             <ObjectView
+                indentLeft={false}
                 parentObjectLayoutMode={layoutMode()}
                 replaceParentWithThis={
                     props.setObject
@@ -117,6 +118,7 @@ export default (props: {
             />
             <Dynamic component={BlockIcon[props.block.type]} />
             <ObjectView
+                indentLeft={false}
                 parentObjectLayoutMode={layoutMode()}
                 replaceParentWithThis={
                     props.setObject

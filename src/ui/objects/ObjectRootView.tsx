@@ -20,6 +20,7 @@ export default (props: {
             value={new ObjectSelection(objectSelection, setObjectSelection)}
         >
             <ObjectView
+                indentLeft={false}
                 layoutOptions={{
                     atomNames: new Map(),
                     block: defaultBlockLayoutOptions,

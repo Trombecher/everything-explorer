@@ -175,7 +175,10 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                     blockIconWidthInPixels.brace,
                     ...block.elements.map(
                         (element, index) =>
-                            calculateRowLayoutWidthOfBlock(element, options)
+                            calculateRowLayoutWidthOfBlock(
+                                objectToBlock(element),
+                                options,
+                            )
                             + (index < block.elements.length - 1
                                 ? measureText(",")
                                 : 0),

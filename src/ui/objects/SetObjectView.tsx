@@ -9,6 +9,7 @@ import type {LayoutOptions} from "./layout";
 import {
     calculateLayoutModeOfBlock,
     calculateSetElementWidthBudgetInPixels,
+    LayoutMode,
 } from "./layout";
 import ObjectView from "./ObjectView";
 import type {ObjectSelectionPath} from "./selection";
@@ -39,6 +40,7 @@ export default (props: {
                 {(element, i) => (
                     <span class="flex items-center">
                         <ObjectView
+                            indentLeft={layoutMode() === LayoutMode.Column}
                             parentObjectLayoutMode={layoutMode()}
                             replaceParentWithThis={
                                 props.setSet

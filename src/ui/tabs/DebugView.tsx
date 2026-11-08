@@ -140,6 +140,7 @@ export default () => {
             >
                 <ObjectSelectionContext.Provider value={objectSelection}>
                     <ObjectView
+                        indentLeft={false}
                         layoutOptions={{
                             atomNames: new Map(),
                             block: defaultBlockLayoutOptions,

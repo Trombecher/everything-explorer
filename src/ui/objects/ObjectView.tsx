@@ -282,6 +282,11 @@ export const ObjectView = (props: {
     parentObjectLayoutMode: LayoutMode;
 
     layoutOptions: LayoutOptions;
+
+    /**
+     * Whether to apply margin-left for indentation.
+     */
+    indentLeft: boolean;
 }) => {
     const objectSelection = useObjectSelection();
 
@@ -320,6 +325,7 @@ export const ObjectView = (props: {
             tabIndex={objectSelection.isSelected(props.path) ? 0 : -1}
             data-selected={objectSelection.dataSelected(props.path)}
             style={{
+                "margin-left": `${props.indentLeft ? props.layoutOptions.block.setElementIndentInPixels : 0}px`,
                 "border-width": `${props.layoutOptions.block.blockBorderWidthInPixels}px`,
                 gap: `${props.layoutOptions.block.itemGapInPixels}px`,
                 padding: `4px ${props.layoutOptions.block.blockPaddingRightInPixels}px 4px ${props.layoutOptions.block.blockPaddingLeftInPixels}px`,
@@ -334,6 +340,7 @@ export const ObjectView = (props: {
                             <i>x</i>
                             <MapsToIcon />
                             <ObjectView
+                                indentLeft={false}
                                 parentObjectLayoutMode={layoutMode()}
                                 replaceParentWithThis={
                                     props.setObject
@@ -383,6 +390,7 @@ export const ObjectView = (props: {
                         <>
                             <QuoteIcon />
                             <ObjectView
+                                indentLeft={false}
                                 layoutOptions={props.layoutOptions}
                                 parentObjectLayoutMode={layoutMode()}
                                 replaceParentWithThis={
