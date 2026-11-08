@@ -4,10 +4,10 @@ import type {EverythingObject} from "@/model";
 import {defaultObject, ObjectType} from "@/model";
 import {nodeToObject, NodeType} from "@/model/nodes";
 
+import {ObjectHistory} from "../objects/history";
 import {LayoutMode} from "../objects/layout";
 import ObjectView from "../objects/ObjectView";
-import type {ObjectSelectionPathInfo} from "../objects/selection";
-import {ObjectSelection, ObjectSelectionContext} from "../objects/selection";
+import {ObjectSelectionContext} from "../objects/selection";
 import Swatch from "../Swatch";
 
 const createInitialObject2 = (): EverythingObject => ({
@@ -41,63 +41,9 @@ const createInitialObject2 = (): EverythingObject => ({
     ],
 });
 
-type HistoryEntry = {
-    readonly object: EverythingObject;
-    readonly selectionPathInfo: ObjectSelectionPathInfo;
-};
-
 export default () => {
-    const [history, setHistory] = createSignal<readonly HistoryEntry[]>([
-        {
-            object: createInitialObject2(),
-            selectionPathInfo: {effectiveLength: 0, path: []},
-        },
-    ]);
+    const objectHistory = new ObjectHistory(createInitialObject2());
     const [budget, setBudget] = createSignal(Number.POSITIVE_INFINITY);
-
-    const lastHistoryEntry = () => {
-        const last = history().at(-1);
-        if (!last) throw new Error(":(");
-
-        return last;
-    };
-
-    const modifyLast = (modifier: (entry: HistoryEntry) => HistoryEntry) => {
-        setHistory(history =>
-            history.map((entry, i) =>
-                i === history.length - 1 ? modifier(entry) : entry,
-            ),
-        );
-    };
-
-    const popLastHistoryEntry = () => {
-        setHistory(history =>
-            history.filter((_, i) => i !== history.length - 1),
-        );
-    };
-
-    const pushHistoryEntry = (entry: HistoryEntry) => {
-        setHistory(history => [...history, entry]);
-    };
-
-    const objectSelection = new ObjectSelection(
-        () => lastHistoryEntry().selectionPathInfo,
-        selectionPathInfoTransform => {
-            if (typeof selectionPathInfoTransform === "function") {
-                modifyLast(entry => ({
-                    ...entry,
-                    selectionPathInfo: selectionPathInfoTransform(
-                        entry.selectionPathInfo,
-                    ),
-                }));
-            } else {
-                modifyLast(entry => ({
-                    ...entry,
-                    selectionPathInfo: selectionPathInfoTransform,
-                }));
-            }
-        },
-    );
 
     let objectContainer: HTMLDivElement | undefined;
 
@@ -128,7 +74,7 @@ export default () => {
                     e.stopImmediatePropagation();
                     e.stopPropagation();
 
-                    if (history().length > 1) popLastHistoryEntry();
+                    if (objectHistory.canUndo()) objectHistory.undo();
                 }
             }}
         >
@@ -138,17 +84,15 @@ export default () => {
                     objectContainer = el;
                 }}
             >
-                <ObjectSelectionContext.Provider value={objectSelection}>
+                <ObjectSelectionContext.Provider
+                    value={objectHistory.objectSelection}
+                >
                     <ObjectView
                         indentLeft={false}
                         siblingCount={1}
-                        object={lastHistoryEntry().object}
+                        object={objectHistory.current().object}
                         setObject={newObject => {
-                            pushHistoryEntry({
-                                object: newObject ?? defaultObject,
-                                selectionPathInfo:
-                                    lastHistoryEntry().selectionPathInfo,
-                            });
+                            objectHistory.push(newObject ?? defaultObject);
                         }}
                         path={[]}
                         widthBudgetInPixels={budget()}
