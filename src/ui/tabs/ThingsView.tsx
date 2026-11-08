@@ -10,20 +10,23 @@ import {
     createResource,
     createSignal,
     For,
+    Index,
+    on,
     Show,
     Suspense,
 } from "solid-js";
-import {Index} from "solid-js";
-import {onMount} from "solid-js";
-import {onCleanup} from "solid-js";
 
 import {useAppState} from "@/context";
-import {defaultObject, objectsEqual, type EverythingObject} from "@/model";
+import {defaultObject} from "@/model";
 import type {Atom} from "@/model/atoms";
 
-import ObjectRootView from "../objects/ObjectRootView";
+import {handleHistoryKeyDown, ObjectHistory} from "../objects/history";
+import {LayoutMode} from "../objects/layout";
+import ObjectView from "../objects/ObjectView";
+import {ObjectSelectionContext} from "../objects/selection";
 import {useAtomName} from "../objects/useAtomName";
 import Button from "../reuse/Button";
+import WidthMeasurer from "../reuse/WidthMeasurer";
 
 export default () => {
     const appState = useAppState();
@@ -109,105 +112,85 @@ const PropertiesPanel = (props: {selectedAtom: Atom; close: () => void}) => {
     );
 
     /**
-     * The properties shown in the UI. This is kept separate from the resource
-     * so that adding a property is reflected immediately and duplicate
-     * properties are not collapsed.
+     * All properties share one selection and one edit history.
+     *
+     * Selection paths start with the property index, so at most one property
+     * can be selected at a time.
      */
-    const [properties, setProperties] = createSignal<
-        readonly EverythingObject[]
-    >([]);
+    const history = new ObjectHistory([]);
+
+    /**
+     * The object list that is known to match the server. Used to derive the
+     * statements that must be added or removed after every edit.
+     */
+    let syncedObjects = history.objects();
 
     createEffect(() => {
         const loadedValues = values();
 
-        if (loadedValues) setProperties(loadedValues);
+        if (!loadedValues) return;
+
+        syncedObjects = loadedValues;
+        history.reset(loadedValues);
     });
 
-    const addProperty = () => {
-        const current = clientAndAtom();
-        if (!current) return;
+    createEffect(
+        on(history.objects, objects => {
+            if (objects === syncedObjects) return;
 
-        const {connectionClient, selectedAtom} = current;
+            const previous = syncedObjects;
+            syncedObjects = objects;
 
-        // A fresh object so a failed request can be rolled back unambiguously
-        // (all added properties would otherwise share `defaultObject`).
-        const optimisticObject: EverythingObject = {...defaultObject};
+            const current = clientAndAtom();
+            if (!current) return;
 
-        setProperties(previous => [...previous, optimisticObject]);
+            const {connectionClient, selectedAtom} = current;
 
-        void connectionClient
-            .addStatement({atom: selectedAtom, object: defaultObject})
-            .catch(error => {
-                console.error("failed to add property", error);
+            void (async () => {
+                try {
+                    // Add first so a failed add does not lose existing
+                    // statements.
+                    for (const object of objects) {
+                        if (!previous.includes(object)) {
+                            await connectionClient.addStatement({
+                                atom: selectedAtom,
+                                object,
+                            });
+                        }
+                    }
 
-                setProperties(previous =>
-                    previous.filter(object => object !== optimisticObject),
-                );
-            });
-    };
-
-    const changeProperty = (
-        index: number,
-        oldObject: EverythingObject,
-        newObject: EverythingObject | undefined,
-    ) => {
-        const current = clientAndAtom();
-        if (!current) return;
-
-        const {connectionClient, selectedAtom} = current;
-
-        const propertiesBeforeChange = properties();
-
-        setProperties(previous => {
-            if (newObject === undefined) {
-                return previous.filter((_, i) => i !== index);
-            }
-
-            return previous.map((object, i) =>
-                i === index ? newObject : object,
-            );
-        });
-
-        if (newObject !== undefined && objectsEqual(oldObject, newObject)) {
-            return;
-        }
-
-        void (async () => {
-            try {
-                // Add first so a failed add does not lose the existing
-                // statement.
-                if (newObject !== undefined) {
-                    await connectionClient.addStatement({
-                        atom: selectedAtom,
-                        object: newObject,
-                    });
+                    for (const object of previous) {
+                        if (!objects.includes(object)) {
+                            await connectionClient.removeStatement({
+                                atom: selectedAtom,
+                                object,
+                            });
+                        }
+                    }
+                } catch (error) {
+                    console.error("failed to update properties", error);
                 }
+            })();
+        }),
+    );
 
-                await connectionClient.removeStatement({
-                    atom: selectedAtom,
-                    object: oldObject,
-                });
-            } catch (error) {
-                console.error("failed to update property", error);
+    const addProperty = () => {
+        if (!clientAndAtom()) return;
 
-                // Roll the optimistic update back. The server state is
-                // unchanged or only partially changed.
-                setProperties(propertiesBeforeChange);
-            }
-        })();
+        // A fresh object so it is not confused with any other property.
+        history.pushObjects([...history.objects(), {...defaultObject}]);
     };
 
     const removeProperty = (index: number) => {
-        const oldObject = properties()[index];
-        if (!oldObject) return;
-
-        changeProperty(index, oldObject, undefined);
+        history.pushObjects(history.objects().filter((_, i) => i !== index));
     };
 
-    const [budget, setBudget] = createSignal(Number.POSITIVE_INFINITY);
-
     return (
-        <div class="relative flex w-full flex-col gap-2 rounded-4xl border border-neutral-200 bg-white p-2">
+        <div
+            class="relative flex w-full flex-col gap-2 rounded-4xl border border-neutral-200 bg-white p-2"
+            tabIndex={0}
+            onKeyDown={event => handleHistoryKeyDown(event, history)}
+        >
             <div class="flex items-center gap-2 p-2">
                 <TablePropertiesIcon />
                 <h2 class="text-xl font-semibold text-black">
@@ -234,57 +217,61 @@ const PropertiesPanel = (props: {selectedAtom: Atom; close: () => void}) => {
                 </Button>
             </div>
 
-            <div
-                ref={div => {
-                    onMount(() => {
-                        const updateBudget = () => {
-                            const width =
-                                div.getBoundingClientRect().width ?? 0;
-
-                            if (width > 0) setBudget(width);
-                        };
-
-                        updateBudget();
-
-                        const resizeObserver = new ResizeObserver(updateBudget);
-                        resizeObserver.observe(div);
-
-                        onCleanup(() => resizeObserver.disconnect());
-                    });
-                }}
-            >
-                <Show when={values()} fallback={<>loading properties...</>}>
-                    <Index each={properties()}>
-                        {(object, index) => (
-                            <div class="flex items-center gap-2">
-                                <div class="min-w-0 flex-1">
-                                    <ObjectRootView
-                                        widthBudgetInPixels={
-                                            budget() - REMOVE_BUTTON_SPACE
-                                        }
-                                        object={object()}
-                                        setObject={newObject => {
-                                            changeProperty(
-                                                index,
-                                                object(),
-                                                newObject,
-                                            );
-                                        }}
-                                    />
-                                </div>
-                                <KobalteButton
-                                    class="shrink-0 rounded-2xl p-2 text-neutral-500 hover:bg-neutral-100 hover:text-red-500"
-                                    title="Remove property"
-                                    aria-label="Remove property"
-                                    onClick={() => removeProperty(index)}
-                                >
-                                    <XIcon />
-                                </KobalteButton>
-                            </div>
-                        )}
-                    </Index>
-                </Show>
-            </div>
+            <WidthMeasurer>
+                {widthBudgetInPixels => (
+                    <ObjectSelectionContext.Provider
+                        value={history.objectSelection}
+                    >
+                        <Show
+                            when={values()}
+                            fallback={<>loading properties...</>}
+                        >
+                            <Index each={history.objects()}>
+                                {(object, index) => (
+                                    <div class="flex items-center gap-2">
+                                        <div class="min-w-0 flex-1">
+                                            <ObjectView
+                                                indentLeft={false}
+                                                widthBudgetInPixels={Math.max(
+                                                    widthBudgetInPixels
+                                                        - REMOVE_BUTTON_SPACE,
+                                                    0,
+                                                )}
+                                                object={object()}
+                                                path={[index]}
+                                                siblingCount={1}
+                                                replaceParentWithThis={
+                                                    undefined
+                                                }
+                                                setObject={newObject => {
+                                                    history.pushObject(
+                                                        index,
+                                                        newObject
+                                                            ?? defaultObject,
+                                                    );
+                                                }}
+                                                parentObjectLayoutMode={
+                                                    LayoutMode.Row
+                                                }
+                                            />
+                                        </div>
+                                        <KobalteButton
+                                            class="shrink-0 rounded-2xl p-2 text-neutral-500 hover:bg-neutral-100 hover:text-red-500"
+                                            title="Remove property"
+                                            aria-label="Remove property"
+                                            onClick={() =>
+                                                removeProperty(index)
+                                            }
+                                        >
+                                            <XIcon />
+                                        </KobalteButton>
+                                    </div>
+                                )}
+                            </Index>
+                        </Show>
+                    </ObjectSelectionContext.Provider>
+                )}
+            </WidthMeasurer>
         </div>
     );
 };

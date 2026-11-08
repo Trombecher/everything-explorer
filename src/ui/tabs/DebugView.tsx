@@ -1,11 +1,12 @@
-import {createSignal, onCleanup, onMount} from "solid-js";
-
 import type {EverythingObject} from "@/model";
 import {defaultObject, ObjectType} from "@/model";
 import {nodeToObject, NodeType} from "@/model/nodes";
 
-import {ObjectHistory} from "../objects/history";
-import ObjectRootView from "../objects/ObjectRootView";
+import {handleHistoryKeyDown, ObjectHistory} from "../objects/history";
+import {LayoutMode} from "../objects/layout";
+import ObjectView from "../objects/ObjectView";
+import {ObjectSelectionContext} from "../objects/selection";
+import WidthMeasurer from "../reuse/WidthMeasurer";
 import Swatch from "../Swatch";
 
 const createInitialObject2 = (): EverythingObject => ({
@@ -40,41 +41,37 @@ const createInitialObject2 = (): EverythingObject => ({
 });
 
 export default () => {
-    const objectHistory = new ObjectHistory(createInitialObject2());
-    const [budget, setBudget] = createSignal(Number.POSITIVE_INFINITY);
-
-    let objectContainer: HTMLDivElement | undefined;
-
-    onMount(() => {
-        if (!objectContainer) return;
-
-        const updateBudget = () => {
-            const width = objectContainer?.getBoundingClientRect().width ?? 0;
-
-            if (width > 0) setBudget(width);
-        };
-
-        updateBudget();
-
-        const resizeObserver = new ResizeObserver(updateBudget);
-        resizeObserver.observe(objectContainer);
-
-        onCleanup(() => resizeObserver.disconnect());
-    });
+    const objectHistory = new ObjectHistory([createInitialObject2()]);
 
     return (
-        <div class="mx-auto my-2 max-w-3xl min-w-0 grow rounded-4xl border border-neutral-200 bg-white p-4">
-            <div
-                class="flex justify-start overflow-x-auto"
-                ref={el => {
-                    objectContainer = el;
-                }}
-            >
-                <ObjectRootView
-                    history={objectHistory}
-                    widthBudgetInPixels={budget()}
-                />
-            </div>
+        <div
+            class="mx-auto my-2 max-w-3xl min-w-0 grow rounded-4xl border border-neutral-200 bg-white p-4"
+            tabIndex={0}
+            onKeyDown={event => handleHistoryKeyDown(event, objectHistory)}
+        >
+            <WidthMeasurer class="w-full">
+                {widthBudgetInPixels => (
+                    <ObjectSelectionContext.Provider
+                        value={objectHistory.objectSelection}
+                    >
+                        <ObjectView
+                            indentLeft={false}
+                            siblingCount={1}
+                            object={objectHistory.object(0)}
+                            setObject={newObject => {
+                                objectHistory.pushObject(
+                                    0,
+                                    newObject ?? defaultObject,
+                                );
+                            }}
+                            path={[]}
+                            widthBudgetInPixels={widthBudgetInPixels}
+                            replaceParentWithThis={undefined}
+                            parentObjectLayoutMode={LayoutMode.Row}
+                        />
+                    </ObjectSelectionContext.Provider>
+                )}
+            </WidthMeasurer>
             <Swatch />
         </div>
     );
