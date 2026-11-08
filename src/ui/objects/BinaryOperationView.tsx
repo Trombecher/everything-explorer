@@ -14,8 +14,8 @@ import DotDotIcon from "../reuse/DotDotIcon";
 import {
     binaryBlockSlotWidthBudgetInPixels,
     calculateLayoutModeOfBlock,
-    type LayoutOptions,
 } from "./layout";
+import {useLayoutOptions} from "./layoutOptions";
 import ObjectView from "./ObjectView";
 import {useObjectSelection, type ObjectSelectionPath} from "./selection";
 
@@ -50,9 +50,9 @@ export default (props: {
     path: ObjectSelectionPath;
     wholeWidthBudgetInPixels: number;
     setObject?: ((newObject: EverythingObject) => void) | undefined;
-    layoutOptions: LayoutOptions;
 }) => {
     const objectSelection = useObjectSelection();
+    const layoutOptions = useLayoutOptions();
 
     const first = () => getFirst(props.block);
     const second = () => getSecond(props.block);
@@ -61,7 +61,7 @@ export default (props: {
         calculateLayoutModeOfBlock(
             props.block,
             props.wholeWidthBudgetInPixels,
-            props.layoutOptions,
+            layoutOptions.get(),
         );
 
     return (
@@ -112,9 +112,8 @@ export default (props: {
                 widthBudgetInPixels={binaryBlockSlotWidthBudgetInPixels(
                     layoutMode(),
                     props.wholeWidthBudgetInPixels,
-                    props.layoutOptions,
+                    layoutOptions.get(),
                 )}
-                layoutOptions={props.layoutOptions}
             />
             <Dynamic component={BlockIcon[props.block.type]} />
             <ObjectView
@@ -163,9 +162,8 @@ export default (props: {
                 widthBudgetInPixels={binaryBlockSlotWidthBudgetInPixels(
                     layoutMode(),
                     props.wholeWidthBudgetInPixels,
-                    props.layoutOptions,
+                    layoutOptions.get(),
                 )}
-                layoutOptions={props.layoutOptions}
             />
         </>
     );

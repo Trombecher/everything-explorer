@@ -13,7 +13,6 @@ import BinaryOperationView from "./BinaryOperationView";
 import type {Block} from "./blocks";
 import {objectToBlock} from "./blocks";
 import IntegerView from "./IntegerView";
-import type {LayoutOptions} from "./layout";
 import {
     calculateFunctionBodyWidthBudgetInPixels,
     calculateLayoutModeOfBlock,
@@ -21,6 +20,7 @@ import {
     childCountOfBlock,
     LayoutMode,
 } from "./layout";
+import {useLayoutOptions} from "./layoutOptions";
 import type {ObjectSelection, ObjectSelectionPath} from "./selection";
 import {useObjectSelection} from "./selection";
 import SetObjectView from "./SetObjectView";
@@ -282,22 +282,22 @@ export const ObjectView = (props: {
      */
     parentObjectLayoutMode: LayoutMode;
 
-    layoutOptions: LayoutOptions;
-
     /**
      * Whether to apply margin-left for indentation.
      */
     indentLeft: boolean;
 }) => {
     const objectSelection = useObjectSelection();
+    const layoutOptions = useLayoutOptions();
 
     const block = () => objectToBlock(props.object);
+    const blockOptions = () => layoutOptions.get().block;
 
     const layoutMode = () =>
         calculateLayoutModeOfBlock(
             block(),
             props.widthBudgetInPixels,
-            props.layoutOptions,
+            layoutOptions.get(),
         );
 
     return (
@@ -326,10 +326,10 @@ export const ObjectView = (props: {
             tabIndex={objectSelection.isSelected(props.path) ? 0 : -1}
             data-selected={objectSelection.dataSelected(props.path)}
             style={{
-                "margin-left": `${props.indentLeft ? props.layoutOptions.block.setElementIndentInPixels : 0}px`,
-                "border-width": `${props.layoutOptions.block.blockBorderWidthInPixels}px`,
-                gap: `${props.layoutOptions.block.itemGapInPixels}px`,
-                padding: `4px ${props.layoutOptions.block.blockPaddingRightInPixels}px 4px ${props.layoutOptions.block.blockPaddingLeftInPixels}px`,
+                "margin-left": `${props.indentLeft ? blockOptions().setElementIndentInPixels : 0}px`,
+                "border-width": `${blockOptions().blockBorderWidthInPixels}px`,
+                gap: `${blockOptions().itemGapInPixels}px`,
+                padding: `4px ${blockOptions().blockPaddingRightInPixels}px 4px ${blockOptions().blockPaddingLeftInPixels}px`,
                 "background-color": `light-dark(oklch(0.92 0.07 ${objectViewColorHue(props.object)}), oklch(0.3 0.07 ${objectViewColorHue(props.object)}))`,
             }}
             class={`data-selected:text-always-white flex rounded-xl border-solid border-neutral-400 bg-neutral-100 text-neutral-800 select-none data-selected:border-blue-500 data-selected:bg-blue-500! ${layoutMode() === LayoutMode.Column ? `flex-col ${blockInColumnModeIsItemsCenter(block().type) ? "items-center" : "items-start"}` : "items-center"}`}
@@ -368,9 +368,8 @@ export const ObjectView = (props: {
                                 path={[...props.path, 0]}
                                 widthBudgetInPixels={calculateFunctionBodyWidthBudgetInPixels(
                                     props.widthBudgetInPixels,
-                                    props.layoutOptions,
+                                    layoutOptions.get(),
                                 )}
-                                layoutOptions={props.layoutOptions}
                             />
                         </>
                     )}
@@ -378,7 +377,6 @@ export const ObjectView = (props: {
                 <Match when={variant(block(), NodeType.Plus)}>
                     {plusNode => (
                         <BinaryOperationView
-                            layoutOptions={props.layoutOptions}
                             block={plusNode()}
                             path={props.path}
                             wholeWidthBudgetInPixels={props.widthBudgetInPixels}
@@ -392,7 +390,6 @@ export const ObjectView = (props: {
                             <QuoteIcon />
                             <ObjectView
                                 indentLeft={false}
-                                layoutOptions={props.layoutOptions}
                                 parentObjectLayoutMode={layoutMode()}
                                 replaceParentWithThis={
                                     props.setObject
@@ -420,7 +417,7 @@ export const ObjectView = (props: {
                                 path={[...props.path, 0]}
                                 widthBudgetInPixels={calculateLiteralNodeInnerObjectWidthBudgetInPixels(
                                     props.widthBudgetInPixels,
-                                    props.layoutOptions,
+                                    layoutOptions.get(),
                                 )}
                             />
                         </>
@@ -429,7 +426,6 @@ export const ObjectView = (props: {
                 <Match when={variant(block(), NodeType.Times)}>
                     {timesNode => (
                         <BinaryOperationView
-                            layoutOptions={props.layoutOptions}
                             block={timesNode()}
                             path={props.path}
                             wholeWidthBudgetInPixels={props.widthBudgetInPixels}
@@ -463,7 +459,6 @@ export const ObjectView = (props: {
                             setSet={props.setObject}
                             path={props.path}
                             widthBudgetInPixels={props.widthBudgetInPixels}
-                            layoutOptions={props.layoutOptions}
                         />
                     )}
                 </Match>
@@ -471,7 +466,6 @@ export const ObjectView = (props: {
                     {construction => (
                         <BinaryOperationView
                             wholeWidthBudgetInPixels={props.widthBudgetInPixels}
-                            layoutOptions={props.layoutOptions}
                             block={construction()}
                             path={props.path}
                             setObject={props.setObject}

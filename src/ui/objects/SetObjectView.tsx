@@ -5,12 +5,12 @@ import {type EverythingSet, ObjectType} from "@/model";
 import type {DeepReadonly} from "@/util";
 
 import LeftBraceIcon from "../reuse/LeftBraceIcon";
-import type {LayoutOptions} from "./layout";
 import {
     calculateLayoutModeOfBlock,
     calculateSetElementWidthBudgetInPixels,
     LayoutMode,
 } from "./layout";
+import {useLayoutOptions} from "./layoutOptions";
 import ObjectView from "./ObjectView";
 import type {ObjectSelectionPath} from "./selection";
 import {useObjectSelection} from "./selection";
@@ -21,16 +21,15 @@ export default (props: {
     path: DeepReadonly<ObjectSelectionPath>;
 
     widthBudgetInPixels: number;
-
-    layoutOptions: LayoutOptions;
 }) => {
     const objectSelection = useObjectSelection();
+    const layoutOptions = useLayoutOptions();
 
     const layoutMode = () =>
         calculateLayoutModeOfBlock(
             props.set,
             props.widthBudgetInPixels,
-            props.layoutOptions,
+            layoutOptions.get(),
         );
 
     return (
@@ -91,10 +90,9 @@ export default (props: {
                             widthBudgetInPixels={calculateSetElementWidthBudgetInPixels(
                                 props.set,
                                 props.widthBudgetInPixels,
-                                props.layoutOptions,
+                                layoutOptions.get(),
                                 i,
                             )}
-                            layoutOptions={props.layoutOptions}
                         />
                         {i < props.set.elements.length - 1 ? "," : ""}
                     </span>
