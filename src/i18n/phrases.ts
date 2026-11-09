@@ -5,6 +5,7 @@ export namespace Phrase {
 
     export type TranslationArguments = RequireArgsForEveryPhrase<{
         [AppSettings]: undefined;
+        [Compact]: undefined;
         [Greeting]: {forName: string};
         [InstanceProperties]: undefined;
         [Things]: undefined;
@@ -22,6 +23,7 @@ export namespace Phrase {
     }>;
 
     export const AppSettings = Symbol();
+    export const Compact = Symbol();
     export const Greeting = Symbol();
     export const InstanceProperties = Symbol();
     export const Things = Symbol();
@@ -40,6 +42,7 @@ export namespace Phrase {
 
 export type Phrase =
     | typeof Phrase.AppSettings
+    | typeof Phrase.Compact
     | typeof Phrase.Greeting
     | typeof Phrase.InstanceProperties
     | typeof Phrase.Things

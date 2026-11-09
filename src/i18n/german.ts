@@ -3,6 +3,7 @@ import {Phrase} from "./phrases";
 
 export const german = {
     [Phrase.AppSettings]: () => "App Einstellungen",
+    [Phrase.Compact]: () => "Kompakt",
     [Phrase.Greeting]: ({forName}) => `Hallo, ${forName}!`,
     [Phrase.InstanceProperties]: () => "Instanzeigenschaften",
     [Phrase.Things]: () => "Dinge",

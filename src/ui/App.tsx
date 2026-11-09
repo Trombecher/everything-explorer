@@ -6,10 +6,10 @@ import type {ThemeSetting} from "@/state/theme";
 import {Theme} from "@/state/theme";
 
 import {useAppState} from "../context";
-import {Phrase} from "../i18n/phrases";
 import SideBar from "./sidebar/SideBar";
 import DebugView from "./tabs/DebugView";
 import Home from "./tabs/HomeView";
+import InstancePropertiesView from "./tabs/InstancePropertiesView";
 import SettingsView from "./tabs/SettingsView";
 import AllAtoms from "./tabs/ThingsView";
 
@@ -61,7 +61,7 @@ export default () => {
                 <Match
                     when={appState.state.currentTab === Tab.InstanceProperties}
                 >
-                    {appState.translate(Phrase.Greeting, {forName: "Tobias"})}
+                    <InstancePropertiesView />
                 </Match>
                 <Match when={appState.state.currentTab === Tab.AppSettings}>
                     <SettingsView />
