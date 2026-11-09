@@ -16,7 +16,22 @@ export default () => {
                     {appState.translate(Phrase.InstanceProperties, undefined)}
                 </h2>
             </div>
-            <Button>{appState.translate(Phrase.Compact, undefined)}</Button>
+            <Button
+                disabled={appState.connectionClient() === undefined}
+                onClick={() => {
+                    const connectionClient = appState.connectionClient();
+                    if (!connectionClient) return;
+
+                    void connectionClient.compact().catch(error => {
+                        console.error(
+                            "failed to compact knowledge base",
+                            error,
+                        );
+                    });
+                }}
+            >
+                {appState.translate(Phrase.Compact, undefined)}
+            </Button>
         </div>
     );
 };
