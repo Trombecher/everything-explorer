@@ -236,7 +236,31 @@ const PropertiesPanel = (props: {selectedAtom: Atom; close: () => void}) => {
         <div
             class="relative flex w-full flex-col gap-2 rounded-4xl border border-neutral-200 bg-white p-2"
             tabIndex={0}
-            onKeyDown={event => handleHistoryKeyDown(event, history)}
+            onKeyDown={event => {
+                handleHistoryKeyDown(event, history);
+
+                // Up/down navigation from the panel itself (e.g. right after
+                // opening it) selects the first/last property. Navigation
+                // between selected properties is handled by the object views.
+                if (
+                    event.target !== event.currentTarget
+                    || event.ctrlKey
+                    || event.metaKey
+                    || event.altKey
+                )
+                    return;
+
+                const propertyCount = history.objects().length;
+                if (propertyCount === 0) return;
+
+                if (event.key === "ArrowDown") {
+                    event.preventDefault();
+                    history.objectSelection.setPath([0]);
+                } else if (event.key === "ArrowUp") {
+                    event.preventDefault();
+                    history.objectSelection.setPath([propertyCount - 1]);
+                }
+            }}
         >
             <div class="flex items-center gap-2 p-2">
                 <TablePropertiesIcon />
@@ -286,7 +310,9 @@ const PropertiesPanel = (props: {selectedAtom: Atom; close: () => void}) => {
                                                 )}
                                                 object={object()}
                                                 path={[index]}
-                                                siblingCount={1}
+                                                siblingCount={
+                                                    history.objects().length
+                                                }
                                                 replaceParentWithThis={
                                                     undefined
                                                 }
@@ -304,7 +330,7 @@ const PropertiesPanel = (props: {selectedAtom: Atom; close: () => void}) => {
                                                     );
                                                 }}
                                                 parentObjectLayoutMode={
-                                                    LayoutMode.Row
+                                                    LayoutMode.Column
                                                 }
                                             />
                                         </div>
