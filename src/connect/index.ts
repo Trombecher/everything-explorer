@@ -119,6 +119,21 @@ export class ConnectionClient {
     }
 
     /**
+     * Compacts the knowledge base, dropping the change log.
+     */
+    public async compact(): Promise<void> {
+        const response = await fetch(`${this.url}/api/v1/compact`, {
+            method: "POST",
+        });
+
+        if (!response.ok) {
+            throw new Error(
+                `failed to compact knowledge base (${response.status}): ${await response.text()}`,
+            );
+        }
+    }
+
+    /**
      * Returns the path of the knowledge base file the server is serving.
      */
     public async servingPath(): Promise<string> {

@@ -54,6 +54,10 @@ impl WebServerState {
             .await
             .store(std::iter::once(StatementChange::Remove(&statement)))
     }
+
+    pub async fn compact(&self) -> Result<(), everything_db::Error> {
+        self.persistant_knowledge.lock().await.compact()
+    }
 }
 
 pub struct PrivateKnowledgeServer {
@@ -85,6 +89,7 @@ impl PrivateKnowledgeServer {
             )
             .route("/api/v1/addStatement", post(routes_v1::add_statement))
             .route("/api/v1/removeStatement", post(routes_v1::remove_statement))
+            .route("/api/v1/compact", post(routes_v1::compact))
             .layer(cors)
             .with_state(Arc::clone(&state));
 

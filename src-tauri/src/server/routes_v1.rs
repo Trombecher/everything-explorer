@@ -91,3 +91,14 @@ pub async fn remove_statement(
 
     Ok(StatusCode::NO_CONTENT)
 }
+
+pub async fn compact(
+    State(state): State<Arc<WebServerState>>,
+) -> Result<StatusCode, (StatusCode, String)> {
+    state
+        .compact()
+        .await
+        .map_err(|error| (StatusCode::INTERNAL_SERVER_ERROR, error.to_string()))?;
+
+    Ok(StatusCode::NO_CONTENT)
+}
