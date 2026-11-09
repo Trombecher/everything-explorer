@@ -7,13 +7,13 @@ import XIcon from "lucide-solid/icons/x";
 import type {Setter} from "solid-js";
 import {
     createEffect,
+    createMemo,
     createResource,
     createSignal,
     For,
     Index,
     on,
     Show,
-    Suspense,
 } from "solid-js";
 
 import {useAppState} from "@/context";
@@ -27,6 +27,7 @@ import {ObjectSelectionContext} from "../objects/selection";
 import {useAtomName} from "../objects/useAtomName";
 import Button from "../reuse/Button";
 import WidthMeasurer from "../reuse/WidthMeasurer";
+import AddThingDialog from "./AddThingDialog";
 
 export default () => {
     const appState = useAppState();
@@ -36,7 +37,61 @@ export default () => {
         client => client.knownAtoms(100),
     );
 
+    /**
+     * Atoms that were added in this view. Until they have at least one
+     * statement they are not returned by the server and are lost on reload.
+     */
+    const [addedAtoms, setAddedAtoms] = createSignal<readonly Atom[]>([]);
+
+    const displayedAtoms = createMemo(() => {
+        const loaded = atoms.latest ?? [];
+        const added = addedAtoms();
+
+        if (added.length === 0) return loaded;
+
+        const displayed = [...loaded];
+        for (const atom of added) {
+            if (!displayed.some(existing => existing.value === atom.value)) {
+                displayed.push(atom);
+            }
+        }
+
+        return displayed.sort((left, right) =>
+            left.value < right.value ? -1 : left.value > right.value ? 1 : 0,
+        );
+    });
+
+    const isNew = (atom: Atom) =>
+        addedAtoms().some(added => added.value === atom.value)
+        && !(atoms.latest ?? []).some(
+            existing => existing.value === atom.value,
+        );
+
+    // Locally added atoms belong to the current knowledge base, so drop them
+    // when the knowledge base changes.
+    createEffect(
+        on(
+            () => appState.connectionClient(),
+            () => setAddedAtoms([]),
+            {defer: true},
+        ),
+    );
+
     const [selectedAtom, setSelectedAtom] = createSignal<undefined | Atom>();
+
+    const addThing = (atom: Atom) => {
+        const existing = displayedAtoms().find(
+            candidate => candidate.value === atom.value,
+        );
+
+        if (existing) {
+            setSelectedAtom(existing);
+            return;
+        }
+
+        setAddedAtoms(previous => [...previous, atom]);
+        setSelectedAtom(atom);
+    };
 
     return (
         <div class="flex grow gap-2 py-2">
@@ -52,24 +107,25 @@ export default () => {
                             class="block min-w-0 grow py-2 pr-3 pl-2 outline-none"
                         />
                     </label>
-                    <Button class="flex gap-2">
-                        <PlusIcon />
-                        Add
-                    </Button>
+                    <AddThingDialog
+                        disabled={appState.connectionClient() === undefined}
+                        onAdd={addThing}
+                    />
                 </div>
 
                 <div class="mt-4 flex flex-wrap gap-2">
-                    <Suspense fallback={"loading..."}>
-                        <For each={atoms()}>
+                    <Show when={!atoms.loading} fallback={"loading..."}>
+                        <For each={displayedAtoms()}>
                             {atom => (
                                 <AtomCard
                                     atom={atom}
+                                    isNew={isNew(atom)}
                                     selectedAtom={selectedAtom()}
                                     setSelectedAtom={setSelectedAtom}
                                 />
                             )}
                         </For>
-                    </Suspense>
+                    </Show>
                 </div>
             </div>
             <Show when={selectedAtom()} keyed>
@@ -357,6 +413,7 @@ const PropertiesPanel = (props: {selectedAtom: Atom; close: () => void}) => {
 
 const AtomCard = (props: {
     atom: Atom;
+    isNew: boolean;
     selectedAtom: Atom | undefined;
     setSelectedAtom: Setter<Atom | undefined>;
 }) => {
@@ -374,6 +431,11 @@ const AtomCard = (props: {
             }}
             class={`flex h-48 w-48 flex-col overflow-hidden rounded-4xl border p-4 text-left ${props.selectedAtom === props.atom ? "border-blue-500 bg-blue-400/20" : "border-neutral-200 bg-neutral-100 hover:bg-neutral-200"}`}
         >
+            <Show when={props.isNew}>
+                <span class="mb-1 self-center rounded-full bg-blue-400/20 px-2 py-0.5 text-xs font-medium whitespace-nowrap text-blue-500">
+                    New
+                </span>
+            </Show>
             <span class="block text-center text-lg font-medium">
                 {name() ?? String(props.atom.value)}
             </span>

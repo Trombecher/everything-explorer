@@ -5,6 +5,28 @@ export type Atom = {
     readonly value: bigint;
 };
 
+/**
+ * The largest possible atom id. Atom ids are unsigned 128-bit integers.
+ */
+export const MAX_ATOM_ID = (1n << 128n) - 1n;
+
+/**
+ * Generates a new atom id from a ULID.
+ *
+ * A ULID is a 128-bit value made of a 48-bit millisecond timestamp followed by
+ * 80 random bits.
+ */
+export const generateAtomId = (): bigint => {
+    const randomBytes = crypto.getRandomValues(new Uint8Array(10));
+
+    let randomness = 0n;
+    for (const byte of randomBytes) {
+        randomness = (randomness << 8n) | BigInt(byte);
+    }
+
+    return (BigInt(Date.now()) << 80n) | randomness;
+};
+
 export namespace Atom {
     export const NodeFunction = {
         type: ObjectType.Atom,
