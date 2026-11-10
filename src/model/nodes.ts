@@ -7,6 +7,7 @@ export namespace NodeType {
     export const Plus = Symbol("NodeType.Plus");
     export const Literal = Symbol("NodeType.Literal");
     export const Times = Symbol("NodeType.Times");
+    export const Equal = Symbol("NodeType.Equal");
 }
 
 export type NodeType = Node["type"];
@@ -37,7 +38,19 @@ export type LiteralNode = {
     readonly rest: readonly EverythingObject[];
 };
 
-export type Node = FunctionNode | PlusNode | LiteralNode | TimesNode;
+export type EqualNode = {
+    readonly type: typeof NodeType.Equal;
+    readonly first: EverythingObject;
+    readonly second: EverythingObject;
+    readonly rest: readonly EverythingObject[];
+};
+
+export type Node =
+    | FunctionNode
+    | PlusNode
+    | LiteralNode
+    | TimesNode
+    | EqualNode;
 
 export const NotANode = Symbol("NotANode");
 
@@ -136,6 +149,25 @@ const objectToNodeWithoutCache = (
         }
     }
 
+    some = singleSetAtomValue(object, Atom.NodeEqualFirst.value);
+    if (some) {
+        const second = singleSetAtomValue(object, Atom.NodeEqualSecond.value);
+
+        if (second) {
+            if (finalNode) return NotANode;
+
+            finalNode = {
+                type: NodeType.Equal,
+                first: some,
+                second,
+                rest: withoutAtomConstructors(object.elements, [
+                    Atom.NodeEqualFirst.value,
+                    Atom.NodeEqualSecond.value,
+                ]),
+            };
+        }
+    }
+
     return finalNode ?? NotANode;
 };
 
@@ -205,6 +237,14 @@ export const nodeToObject = (node: Node): EverythingObject => {
             return {
                 type: ObjectType.Set,
                 elements: [construction(Atom.NodeLiteral, node.object)],
+            };
+        case NodeType.Equal:
+            return {
+                type: ObjectType.Set,
+                elements: [
+                    construction(Atom.NodeEqualFirst, node.first),
+                    construction(Atom.NodeEqualSecond, node.second),
+                ],
             };
     }
 };

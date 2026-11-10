@@ -48,6 +48,16 @@ export namespace Atom {
         value: 2148623946948209931514052368378168923n,
     } as const satisfies Atom;
 
+    export const NodeEqualFirst = {
+        type: ObjectType.Atom,
+        value: 2148623984105467336671475554302291443n,
+    } as const satisfies Atom;
+
+    export const NodeEqualSecond = {
+        type: ObjectType.Atom,
+        value: 2150546540588687321716707989954282134n,
+    } as const satisfies Atom;
+
     export const NodeMultiplyFirst = {
         type: ObjectType.Atom,
         value: 2150955291898078111384483788783842606n,

@@ -1,4 +1,5 @@
 import DotIcon from "lucide-solid/icons/dot";
+import EqualIcon from "lucide-solid/icons/equal";
 import PlusIcon from "lucide-solid/icons/plus";
 import {Dynamic} from "solid-js/web";
 
@@ -7,6 +8,7 @@ import {ObjectType, type Construction, type EverythingObject} from "@/model";
 import {
     nodeToObject,
     NodeType,
+    type EqualNode,
     type PlusNode,
     type TimesNode,
 } from "@/model/nodes";
@@ -22,23 +24,26 @@ import {useObjectSelection, type ObjectSelectionPath} from "./selection";
 const BlockIcon = {
     [NodeType.Times]: DotIcon,
     [NodeType.Plus]: PlusIcon,
+    [NodeType.Equal]: EqualIcon,
     [ObjectType.Construction]: DotDotIcon,
 };
 
-const getFirst = (block: TimesNode | PlusNode | Construction) => {
+const getFirst = (block: TimesNode | PlusNode | EqualNode | Construction) => {
     switch (block.type) {
         case NodeType.Plus:
         case NodeType.Times:
+        case NodeType.Equal:
             return block.first;
         case ObjectType.Construction:
             return block.constructor;
     }
 };
 
-const getSecond = (block: TimesNode | PlusNode | Construction) => {
+const getSecond = (block: TimesNode | PlusNode | EqualNode | Construction) => {
     switch (block.type) {
         case NodeType.Plus:
         case NodeType.Times:
+        case NodeType.Equal:
             return block.second;
         case ObjectType.Construction:
             return block.value;
@@ -46,7 +51,7 @@ const getSecond = (block: TimesNode | PlusNode | Construction) => {
 };
 
 export default (props: {
-    block: TimesNode | PlusNode | Construction;
+    block: TimesNode | PlusNode | EqualNode | Construction;
     path: ObjectSelectionPath;
     wholeWidthBudgetInPixels: number;
     setObject?: ((newObject: EverythingObject) => void) | undefined;
@@ -91,6 +96,7 @@ export default (props: {
                             switch (props.block.type) {
                                 case NodeType.Plus:
                                 case NodeType.Times:
+                                case NodeType.Equal:
                                     props.setObject?.(
                                         nodeToObject({
                                             ...props.block,
@@ -141,6 +147,7 @@ export default (props: {
                             switch (props.block.type) {
                                 case NodeType.Times:
                                 case NodeType.Plus:
+                                case NodeType.Equal:
                                     props.setObject?.(
                                         nodeToObject({
                                             ...props.block,
