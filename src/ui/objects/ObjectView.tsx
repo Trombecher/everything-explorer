@@ -101,8 +101,6 @@ const handleKeyDown = (props: {
         // Try to add new empty set to object.
 
         if (props.object.type === ObjectType.Set) {
-            props.objectSelection.selectChild(props.object.elements.length);
-
             props.setObject({
                 type: ObjectType.Set,
                 elements: [
@@ -110,6 +108,10 @@ const handleKeyDown = (props: {
                     {type: ObjectType.Set, elements: []},
                 ],
             });
+
+            props.objectSelection.selectChild(
+                Math.max(0, props.object.elements.length - 1),
+            );
         } else if (
             props.object.type === ObjectType.Atom
             || props.object.type === ObjectType.Integer
