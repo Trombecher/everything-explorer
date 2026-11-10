@@ -8,6 +8,7 @@ export namespace NodeType {
     export const Literal = Symbol("NodeType.Literal");
     export const Times = Symbol("NodeType.Times");
     export const Equal = Symbol("NodeType.Equal");
+    export const Contains = Symbol("NodeType.Contains");
 }
 
 export type NodeType = Node["type"];
@@ -45,12 +46,20 @@ export type EqualNode = {
     readonly rest: readonly EverythingObject[];
 };
 
+export type ContainsNode = {
+    readonly type: typeof NodeType.Contains;
+    readonly element: EverythingObject;
+    readonly set: EverythingObject;
+    readonly rest: readonly EverythingObject[];
+};
+
 export type Node =
     | FunctionNode
     | PlusNode
     | LiteralNode
     | TimesNode
-    | EqualNode;
+    | EqualNode
+    | ContainsNode;
 
 export const NotANode = Symbol("NotANode");
 
@@ -168,6 +177,25 @@ const objectToNodeWithoutCache = (
         }
     }
 
+    some = singleSetAtomValue(object, Atom.NodeContainsElement.value);
+    if (some) {
+        const set = singleSetAtomValue(object, Atom.NodeContainsSet.value);
+
+        if (set) {
+            if (finalNode) return NotANode;
+
+            finalNode = {
+                type: NodeType.Contains,
+                element: some,
+                set,
+                rest: withoutAtomConstructors(object.elements, [
+                    Atom.NodeContainsElement.value,
+                    Atom.NodeContainsSet.value,
+                ]),
+            };
+        }
+    }
+
     return finalNode ?? NotANode;
 };
 
@@ -244,6 +272,14 @@ export const nodeToObject = (node: Node): EverythingObject => {
                 elements: [
                     construction(Atom.NodeEqualFirst, node.first),
                     construction(Atom.NodeEqualSecond, node.second),
+                ],
+            };
+        case NodeType.Contains:
+            return {
+                type: ObjectType.Set,
+                elements: [
+                    construction(Atom.NodeContainsElement, node.element),
+                    construction(Atom.NodeContainsSet, node.set),
                 ],
             };
     }

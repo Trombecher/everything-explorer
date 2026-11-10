@@ -8,12 +8,14 @@ import {ObjectType, type Construction, type EverythingObject} from "@/model";
 import {
     nodeToObject,
     NodeType,
+    type ContainsNode,
     type EqualNode,
     type PlusNode,
     type TimesNode,
 } from "@/model/nodes";
 
 import DotDotIcon from "../reuse/DotDotIcon";
+import ElementOfIcon from "../reuse/ElementOfIcon";
 import {
     binaryBlockSlotWidthBudgetInPixels,
     calculateLayoutModeOfBlock,
@@ -25,33 +27,42 @@ const BlockIcon = {
     [NodeType.Times]: DotIcon,
     [NodeType.Plus]: PlusIcon,
     [NodeType.Equal]: EqualIcon,
+    [NodeType.Contains]: ElementOfIcon,
     [ObjectType.Construction]: DotDotIcon,
 };
 
-const getFirst = (block: TimesNode | PlusNode | EqualNode | Construction) => {
+const getFirst = (
+    block: TimesNode | PlusNode | EqualNode | ContainsNode | Construction,
+) => {
     switch (block.type) {
         case NodeType.Plus:
         case NodeType.Times:
         case NodeType.Equal:
             return block.first;
+        case NodeType.Contains:
+            return block.element;
         case ObjectType.Construction:
             return block.constructor;
     }
 };
 
-const getSecond = (block: TimesNode | PlusNode | EqualNode | Construction) => {
+const getSecond = (
+    block: TimesNode | PlusNode | EqualNode | ContainsNode | Construction,
+) => {
     switch (block.type) {
         case NodeType.Plus:
         case NodeType.Times:
         case NodeType.Equal:
             return block.second;
+        case NodeType.Contains:
+            return block.set;
         case ObjectType.Construction:
             return block.value;
     }
 };
 
 export default (props: {
-    block: TimesNode | PlusNode | EqualNode | Construction;
+    block: TimesNode | PlusNode | EqualNode | ContainsNode | Construction;
     path: ObjectSelectionPath;
     wholeWidthBudgetInPixels: number;
     setObject?: ((newObject: EverythingObject) => void) | undefined;
@@ -104,6 +115,14 @@ export default (props: {
                                         }),
                                     );
                                     break;
+                                case NodeType.Contains:
+                                    props.setObject?.(
+                                        nodeToObject({
+                                            ...props.block,
+                                            element: newFirst,
+                                        }),
+                                    );
+                                    break;
                                 case ObjectType.Construction:
                                     props.setObject?.({
                                         ...props.block,
@@ -152,6 +171,14 @@ export default (props: {
                                         nodeToObject({
                                             ...props.block,
                                             second: newSecond,
+                                        }),
+                                    );
+                                    break;
+                                case NodeType.Contains:
+                                    props.setObject?.(
+                                        nodeToObject({
+                                            ...props.block,
+                                            set: newSecond,
                                         }),
                                     );
                                     break;
