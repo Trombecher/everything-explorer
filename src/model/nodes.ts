@@ -11,6 +11,7 @@ export namespace NodeType {
     export const Contains = Symbol("NodeType.Contains");
     export const And = Symbol("NodeType.And");
     export const Or = Symbol("NodeType.Or");
+    export const Union = Symbol("NodeType.Union");
 }
 
 export type NodeType = Node["type"];
@@ -69,6 +70,13 @@ export type OrNode = {
     readonly rest: readonly EverythingObject[];
 };
 
+export type UnionNode = {
+    readonly type: typeof NodeType.Union;
+    readonly first: EverythingObject;
+    readonly second: EverythingObject;
+    readonly rest: readonly EverythingObject[];
+};
+
 export type Node =
     | FunctionNode
     | PlusNode
@@ -77,7 +85,8 @@ export type Node =
     | EqualNode
     | ContainsNode
     | AndNode
-    | OrNode;
+    | OrNode
+    | UnionNode;
 
 export const NotANode = Symbol("NotANode");
 
@@ -209,6 +218,25 @@ const objectToNodeWithoutCache = (
                 rest: withoutAtomConstructors(object.elements, [
                     Atom.NodeOrFirst.value,
                     Atom.NodeOrSecond.value,
+                ]),
+            };
+        }
+    }
+
+    some = singleSetAtomValue(object, Atom.NodeUnionFirst.value);
+    if (some) {
+        const second = singleSetAtomValue(object, Atom.NodeUnionSecond.value);
+
+        if (second) {
+            if (finalNode) return NotANode;
+
+            finalNode = {
+                type: NodeType.Union,
+                first: some,
+                second,
+                rest: withoutAtomConstructors(object.elements, [
+                    Atom.NodeUnionFirst.value,
+                    Atom.NodeUnionSecond.value,
                 ]),
             };
         }
@@ -352,6 +380,14 @@ export const nodeToObject = (node: Node): EverythingObject => {
                 elements: [
                     construction(Atom.NodeOrFirst, node.first),
                     construction(Atom.NodeOrSecond, node.second),
+                ],
+            };
+        case NodeType.Union:
+            return {
+                type: ObjectType.Set,
+                elements: [
+                    construction(Atom.NodeUnionFirst, node.first),
+                    construction(Atom.NodeUnionSecond, node.second),
                 ],
             };
     }

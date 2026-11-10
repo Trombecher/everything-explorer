@@ -78,6 +78,16 @@ export namespace Atom {
         value: 2150546471301176810351954476414010805n,
     } as const satisfies Atom;
 
+    export const NodeUnionFirst = {
+        type: ObjectType.Atom,
+        value: 2150602665196451232518504136866676495n,
+    } as const satisfies Atom;
+
+    export const NodeUnionSecond = {
+        type: ObjectType.Atom,
+        value: 2150602676477464422271577313769115263n,
+    } as const satisfies Atom;
+
     export const NodeContainsElement = {
         type: ObjectType.Atom,
         value: 2166943953075778840020869770686077619n,

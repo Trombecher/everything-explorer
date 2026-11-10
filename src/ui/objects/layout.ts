@@ -81,6 +81,7 @@ const blockIconWidthInPixels = {
     plus: 24,
     quote: 24,
     unwrap: 48,
+    union: 24,
     vee: 24,
     wedge: 24,
     x: 24,
@@ -231,6 +232,21 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                 ],
                 options,
             );
+        case NodeType.Union:
+            return rowLayoutWidth(
+                [
+                    calculateRowLayoutWidthOfBlock(
+                        objectToBlock(block.first),
+                        options,
+                    ),
+                    blockIconWidthInPixels.union,
+                    calculateRowLayoutWidthOfBlock(
+                        objectToBlock(block.second),
+                        options,
+                    ),
+                ],
+                options,
+            );
         case NodeType.Times:
             return rowLayoutWidth(
                 [
@@ -367,6 +383,7 @@ export const childCountOfBlock = (block: Block): number => {
         case NodeType.Contains:
         case NodeType.And:
         case NodeType.Or:
+        case NodeType.Union:
             return 2;
         case ObjectType.Set:
             return block.elements.length;

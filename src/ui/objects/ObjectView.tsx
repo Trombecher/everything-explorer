@@ -38,6 +38,7 @@ const isHandledKey = (key: string): boolean =>
     || key === "="
     || key === "&"
     || key === "|"
+    || key === "u"
     || key === " "
     || key === "*"
     || key === "l"
@@ -173,6 +174,12 @@ const handleKeyDown = (props: {
                     props.setObject(node.first);
                     break;
                 }
+                case NodeType.Union: {
+                    // Retain first operand.
+
+                    props.setObject(node.first);
+                    break;
+                }
                 case NodeType.Contains: {
                     // Retain element.
 
@@ -230,6 +237,19 @@ const handleKeyDown = (props: {
         props.setObject(
             nodeToObject({
                 type: NodeType.Or,
+                first: props.object,
+                second: defaultObject,
+                rest: [],
+            }),
+        );
+
+        props.objectSelection.selectChild(1);
+    } else if (props.event.key === "u") {
+        if (!props.setObject) return;
+
+        props.setObject(
+            nodeToObject({
+                type: NodeType.Union,
                 first: props.object,
                 second: defaultObject,
                 rest: [],
@@ -338,6 +358,8 @@ const objectViewColorHue = (object: EverythingObject): number => {
                 return 130;
             case NodeType.Or:
                 return 10;
+            case NodeType.Union:
+                return 230;
         }
     }
 
@@ -367,6 +389,7 @@ const blockInColumnModeIsItemsCenter = (blockType: Block["type"]) => {
         case NodeType.Contains:
         case NodeType.And:
         case NodeType.Or:
+        case NodeType.Union:
         case ObjectType.Construction:
             return true;
         default:
@@ -587,6 +610,16 @@ export const ObjectView = (props: {
                     {orNode => (
                         <BinaryOperationView
                             block={orNode()}
+                            path={props.path}
+                            wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                            setObject={props.setObject}
+                        />
+                    )}
+                </Match>
+                <Match when={variant(block(), NodeType.Union)}>
+                    {unionNode => (
+                        <BinaryOperationView
+                            block={unionNode()}
                             path={props.path}
                             wholeWidthBudgetInPixels={props.widthBudgetInPixels}
                             setObject={props.setObject}

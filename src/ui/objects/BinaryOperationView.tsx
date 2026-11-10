@@ -14,10 +14,12 @@ import {
     type OrNode,
     type PlusNode,
     type TimesNode,
+    type UnionNode,
 } from "@/model/nodes";
 
 import DotDotIcon from "../reuse/DotDotIcon";
 import ElementOfIcon from "../reuse/ElementOfIcon";
+import UnionIcon from "../reuse/UnionIcon";
 import VeeIcon from "../reuse/VeeIcon";
 import WedgeIcon from "../reuse/WedgeIcon";
 import {
@@ -34,6 +36,7 @@ type BinaryOperationBlock =
     | ContainsNode
     | AndNode
     | OrNode
+    | UnionNode
     | Construction;
 
 const BlockIcon = {
@@ -43,6 +46,7 @@ const BlockIcon = {
     [NodeType.Contains]: ElementOfIcon,
     [NodeType.And]: WedgeIcon,
     [NodeType.Or]: VeeIcon,
+    [NodeType.Union]: UnionIcon,
     [ObjectType.Construction]: DotDotIcon,
 };
 
@@ -53,6 +57,7 @@ const getFirst = (block: BinaryOperationBlock) => {
         case NodeType.Equal:
         case NodeType.And:
         case NodeType.Or:
+        case NodeType.Union:
             return block.first;
         case NodeType.Contains:
             return block.element;
@@ -68,6 +73,7 @@ const getSecond = (block: BinaryOperationBlock) => {
         case NodeType.Equal:
         case NodeType.And:
         case NodeType.Or:
+        case NodeType.Union:
             return block.second;
         case NodeType.Contains:
             return block.set;
@@ -125,6 +131,7 @@ export default (props: {
                                 case NodeType.Equal:
                                 case NodeType.And:
                                 case NodeType.Or:
+                                case NodeType.Union:
                                     props.setObject?.(
                                         nodeToObject({
                                             ...props.block,
@@ -186,6 +193,7 @@ export default (props: {
                                 case NodeType.Equal:
                                 case NodeType.And:
                                 case NodeType.Or:
+                                case NodeType.Union:
                                     props.setObject?.(
                                         nodeToObject({
                                             ...props.block,
