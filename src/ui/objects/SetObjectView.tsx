@@ -5,7 +5,7 @@ import type {EverythingObject} from "@/model";
 import {type EverythingSet, ObjectType} from "@/model";
 import type {DeepReadonly} from "@/util";
 
-import LeftBraceIcon from "../reuse/LeftBraceIcon";
+import LeftBraceIcon from "../icons/LeftBraceIcon";
 import {
     calculateLayoutModeOfBlock,
     calculateSetElementWidthBudgetInPixels,

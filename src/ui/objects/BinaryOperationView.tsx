@@ -18,12 +18,12 @@ import {
     type UnionNode,
 } from "@/model/nodes";
 
-import DotDotIcon from "../reuse/DotDotIcon";
-import ElementOfIcon from "../reuse/ElementOfIcon";
-import FilterIcon from "../reuse/FilterIcon";
-import UnionIcon from "../reuse/UnionIcon";
-import VeeIcon from "../reuse/VeeIcon";
-import WedgeIcon from "../reuse/WedgeIcon";
+import DotDotIcon from "../icons/DotDotIcon";
+import ElementOfIcon from "../icons/ElementOfIcon";
+import FilterIcon from "../icons/FilterIcon";
+import UnionIcon from "../icons/UnionIcon";
+import VeeIcon from "../icons/VeeIcon";
+import WedgeIcon from "../icons/WedgeIcon";
 import {
     binaryBlockSlotWidthBudgetInPixels,
     calculateLayoutModeOfBlock,

@@ -8,7 +8,7 @@ import {nodeToObject, NodeType, NotANode, objectToNode} from "@/model/nodes";
 import type {DeepReadonly} from "@/util";
 import {variant} from "@/util";
 
-import MapsToIcon from "../reuse/MapsToIcon";
+import MapsToIcon from "../icons/MapsToIcon";
 import AtomView from "./AtomView";
 import BinaryOperationView from "./BinaryOperationView";
 import type {Block} from "./blocks";

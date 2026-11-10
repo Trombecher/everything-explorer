@@ -1,6 +1,6 @@
 import {ObjectType, type IntegerObject} from "@/model";
+import BlackBoardZIcon from "@/ui/icons/BlackBoardZIcon";
 import BigIntTextField from "@/ui/reuse/BigIntTextField";
-import BlackBoardZIcon from "@/ui/reuse/BlackBoardZIcon";
 
 export default (props: {
     integer: IntegerObject;
