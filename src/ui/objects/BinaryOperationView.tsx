@@ -8,6 +8,7 @@ import {ObjectType, type Construction, type EverythingObject} from "@/model";
 import {
     nodeToObject,
     NodeType,
+    type AndNode,
     type ContainsNode,
     type EqualNode,
     type PlusNode,
@@ -16,6 +17,7 @@ import {
 
 import DotDotIcon from "../reuse/DotDotIcon";
 import ElementOfIcon from "../reuse/ElementOfIcon";
+import WedgeIcon from "../reuse/WedgeIcon";
 import {
     binaryBlockSlotWidthBudgetInPixels,
     calculateLayoutModeOfBlock,
@@ -28,16 +30,24 @@ const BlockIcon = {
     [NodeType.Plus]: PlusIcon,
     [NodeType.Equal]: EqualIcon,
     [NodeType.Contains]: ElementOfIcon,
+    [NodeType.And]: WedgeIcon,
     [ObjectType.Construction]: DotDotIcon,
 };
 
 const getFirst = (
-    block: TimesNode | PlusNode | EqualNode | ContainsNode | Construction,
+    block:
+        | TimesNode
+        | PlusNode
+        | EqualNode
+        | ContainsNode
+        | AndNode
+        | Construction,
 ) => {
     switch (block.type) {
         case NodeType.Plus:
         case NodeType.Times:
         case NodeType.Equal:
+        case NodeType.And:
             return block.first;
         case NodeType.Contains:
             return block.element;
@@ -47,12 +57,19 @@ const getFirst = (
 };
 
 const getSecond = (
-    block: TimesNode | PlusNode | EqualNode | ContainsNode | Construction,
+    block:
+        | TimesNode
+        | PlusNode
+        | EqualNode
+        | ContainsNode
+        | AndNode
+        | Construction,
 ) => {
     switch (block.type) {
         case NodeType.Plus:
         case NodeType.Times:
         case NodeType.Equal:
+        case NodeType.And:
             return block.second;
         case NodeType.Contains:
             return block.set;
@@ -62,7 +79,13 @@ const getSecond = (
 };
 
 export default (props: {
-    block: TimesNode | PlusNode | EqualNode | ContainsNode | Construction;
+    block:
+        | TimesNode
+        | PlusNode
+        | EqualNode
+        | ContainsNode
+        | AndNode
+        | Construction;
     path: ObjectSelectionPath;
     wholeWidthBudgetInPixels: number;
     setObject?: ((newObject: EverythingObject) => void) | undefined;
@@ -108,6 +131,7 @@ export default (props: {
                                 case NodeType.Plus:
                                 case NodeType.Times:
                                 case NodeType.Equal:
+                                case NodeType.And:
                                     props.setObject?.(
                                         nodeToObject({
                                             ...props.block,
@@ -167,6 +191,7 @@ export default (props: {
                                 case NodeType.Times:
                                 case NodeType.Plus:
                                 case NodeType.Equal:
+                                case NodeType.And:
                                     props.setObject?.(
                                         nodeToObject({
                                             ...props.block,

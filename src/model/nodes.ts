@@ -9,6 +9,7 @@ export namespace NodeType {
     export const Times = Symbol("NodeType.Times");
     export const Equal = Symbol("NodeType.Equal");
     export const Contains = Symbol("NodeType.Contains");
+    export const And = Symbol("NodeType.And");
 }
 
 export type NodeType = Node["type"];
@@ -53,13 +54,21 @@ export type ContainsNode = {
     readonly rest: readonly EverythingObject[];
 };
 
+export type AndNode = {
+    readonly type: typeof NodeType.And;
+    readonly first: EverythingObject;
+    readonly second: EverythingObject;
+    readonly rest: readonly EverythingObject[];
+};
+
 export type Node =
     | FunctionNode
     | PlusNode
     | LiteralNode
     | TimesNode
     | EqualNode
-    | ContainsNode;
+    | ContainsNode
+    | AndNode;
 
 export const NotANode = Symbol("NotANode");
 
@@ -153,6 +162,25 @@ const objectToNodeWithoutCache = (
                 rest: withoutAtomConstructors(object.elements, [
                     Atom.NodeMultiplyFirst.value,
                     Atom.NodeMultiplySecond.value,
+                ]),
+            };
+        }
+    }
+
+    some = singleSetAtomValue(object, Atom.NodeAndFirst.value);
+    if (some) {
+        const second = singleSetAtomValue(object, Atom.NodeAndSecond.value);
+
+        if (second) {
+            if (finalNode) return NotANode;
+
+            finalNode = {
+                type: NodeType.And,
+                first: some,
+                second,
+                rest: withoutAtomConstructors(object.elements, [
+                    Atom.NodeAndFirst.value,
+                    Atom.NodeAndSecond.value,
                 ]),
             };
         }
@@ -280,6 +308,14 @@ export const nodeToObject = (node: Node): EverythingObject => {
                 elements: [
                     construction(Atom.NodeContainsElement, node.element),
                     construction(Atom.NodeContainsSet, node.set),
+                ],
+            };
+        case NodeType.And:
+            return {
+                type: ObjectType.Set,
+                elements: [
+                    construction(Atom.NodeAndFirst, node.first),
+                    construction(Atom.NodeAndSecond, node.second),
                 ],
             };
     }
