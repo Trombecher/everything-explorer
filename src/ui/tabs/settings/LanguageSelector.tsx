@@ -3,8 +3,7 @@ import {Language, translate} from "@/i18n";
 import {Phrase} from "@/i18n/phrases";
 import type {AppState, LanguageSetting} from "@/state/app";
 import {System} from "@/state/common";
-
-import Select from "./reuse/Select";
+import Select from "@/ui/reuse/Select";
 
 const languageSettingToPhrase = {
     [System]: Phrase.System,

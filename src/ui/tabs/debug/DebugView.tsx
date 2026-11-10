@@ -2,12 +2,12 @@ import type {EverythingObject} from "@/model";
 import {defaultObject, ObjectType} from "@/model";
 import {nodeToObject, NodeType} from "@/model/nodes";
 
-import {handleHistoryKeyDown, ObjectHistory} from "../objects/history";
-import {LayoutMode} from "../objects/layout";
-import ObjectView from "../objects/ObjectView";
-import {ObjectSelectionContext} from "../objects/selection";
-import WidthMeasurer from "../reuse/WidthMeasurer";
-import Swatch from "../Swatch";
+import {handleHistoryKeyDown, ObjectHistory} from "../../objects/history";
+import {LayoutMode} from "../../objects/layout";
+import ObjectView from "../../objects/ObjectView";
+import {ObjectSelectionContext} from "../../objects/selection";
+import WidthMeasurer from "../../reuse/WidthMeasurer";
+import Swatch from "./Swatch";
 
 const createInitialObject2 = (): EverythingObject => ({
     type: ObjectType.Set,

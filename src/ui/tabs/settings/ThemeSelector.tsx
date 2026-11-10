@@ -2,8 +2,7 @@ import {useAppState} from "@/context";
 import {Phrase} from "@/i18n/phrases";
 import {System} from "@/state/common";
 import {Theme, type ThemeSetting} from "@/state/theme";
-
-import Select from "./reuse/Select";
+import Select from "@/ui/reuse/Select";
 
 type ThemeSettingStringId = "system" | "dark" | "light";
 

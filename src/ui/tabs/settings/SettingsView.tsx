@@ -1,9 +1,9 @@
 import {useAppState} from "@/context";
 import {Phrase} from "@/i18n/phrases";
+import Button from "@/ui/reuse/Button";
 
-import LanguageSelector from "../LanguageSelector";
-import Button from "../reuse/Button";
-import ThemeSelector from "../ThemeSelector";
+import LanguageSelector from "./LanguageSelector";
+import ThemeSelector from "./ThemeSelector";
 
 export default () => {
     const appState = useAppState();

@@ -7,10 +7,10 @@ import {Theme} from "@/state/theme";
 
 import {useAppState} from "../context";
 import SideBar from "./sidebar/SideBar";
-import DebugView from "./tabs/DebugView";
+import DebugView from "./tabs/debug/DebugView";
 import Home from "./tabs/HomeView";
 import InstancePropertiesView from "./tabs/InstancePropertiesView";
-import SettingsView from "./tabs/SettingsView";
+import SettingsView from "./tabs/settings/SettingsView";
 import ThingsView from "./tabs/things/ThingsView";
 
 export default () => {
