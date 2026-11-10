@@ -342,9 +342,10 @@ const PropertiesPanel = (props: {selectedAtom: Atom; close: () => void}) => {
                     <PlusIcon />
                     Add property
                 </Button>
+                <p>Id: {String(props.selectedAtom.value)}</p>
             </div>
 
-            <WidthMeasurer>
+            <WidthMeasurer class="px-2">
                 {widthBudgetInPixels => (
                     <ObjectSelectionContext.Provider
                         value={history.objectSelection}
