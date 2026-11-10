@@ -11,6 +11,7 @@ import {
     type AndNode,
     type ContainsNode,
     type EqualNode,
+    type FilterNode,
     type OrNode,
     type PlusNode,
     type TimesNode,
@@ -19,6 +20,7 @@ import {
 
 import DotDotIcon from "../reuse/DotDotIcon";
 import ElementOfIcon from "../reuse/ElementOfIcon";
+import FilterIcon from "../reuse/FilterIcon";
 import UnionIcon from "../reuse/UnionIcon";
 import VeeIcon from "../reuse/VeeIcon";
 import WedgeIcon from "../reuse/WedgeIcon";
@@ -37,6 +39,7 @@ type BinaryOperationBlock =
     | AndNode
     | OrNode
     | UnionNode
+    | FilterNode
     | Construction;
 
 const BlockIcon = {
@@ -47,6 +50,7 @@ const BlockIcon = {
     [NodeType.And]: WedgeIcon,
     [NodeType.Or]: VeeIcon,
     [NodeType.Union]: UnionIcon,
+    [NodeType.Filter]: FilterIcon,
     [ObjectType.Construction]: DotDotIcon,
 };
 
@@ -61,6 +65,8 @@ const getFirst = (block: BinaryOperationBlock) => {
             return block.first;
         case NodeType.Contains:
             return block.element;
+        case NodeType.Filter:
+            return block.set;
         case ObjectType.Construction:
             return block.constructor;
     }
@@ -77,6 +83,8 @@ const getSecond = (block: BinaryOperationBlock) => {
             return block.second;
         case NodeType.Contains:
             return block.set;
+        case NodeType.Filter:
+            return block.filterFunction;
         case ObjectType.Construction:
             return block.value;
     }
@@ -147,6 +155,14 @@ export default (props: {
                                         }),
                                     );
                                     break;
+                                case NodeType.Filter:
+                                    props.setObject?.(
+                                        nodeToObject({
+                                            ...props.block,
+                                            set: newFirst,
+                                        }),
+                                    );
+                                    break;
                                 case ObjectType.Construction:
                                     props.setObject?.({
                                         ...props.block,
@@ -206,6 +222,14 @@ export default (props: {
                                         nodeToObject({
                                             ...props.block,
                                             set: newSecond,
+                                        }),
+                                    );
+                                    break;
+                                case NodeType.Filter:
+                                    props.setObject?.(
+                                        nodeToObject({
+                                            ...props.block,
+                                            filterFunction: newSecond,
                                         }),
                                     );
                                     break;

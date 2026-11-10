@@ -247,6 +247,21 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                 ],
                 options,
             );
+        case NodeType.Filter:
+            return rowLayoutWidth(
+                [
+                    calculateRowLayoutWidthOfBlock(
+                        objectToBlock(block.set),
+                        options,
+                    ),
+                    blockIconWidthInPixels.filter,
+                    calculateRowLayoutWidthOfBlock(
+                        objectToBlock(block.filterFunction),
+                        options,
+                    ),
+                ],
+                options,
+            );
         case NodeType.Times:
             return rowLayoutWidth(
                 [
@@ -384,6 +399,7 @@ export const childCountOfBlock = (block: Block): number => {
         case NodeType.And:
         case NodeType.Or:
         case NodeType.Union:
+        case NodeType.Filter:
             return 2;
         case ObjectType.Set:
             return block.elements.length;

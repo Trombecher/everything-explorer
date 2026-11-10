@@ -12,6 +12,7 @@ export namespace NodeType {
     export const And = Symbol("NodeType.And");
     export const Or = Symbol("NodeType.Or");
     export const Union = Symbol("NodeType.Union");
+    export const Filter = Symbol("NodeType.Filter");
 }
 
 export type NodeType = Node["type"];
@@ -77,6 +78,13 @@ export type UnionNode = {
     readonly rest: readonly EverythingObject[];
 };
 
+export type FilterNode = {
+    readonly type: typeof NodeType.Filter;
+    readonly set: EverythingObject;
+    readonly filterFunction: EverythingObject;
+    readonly rest: readonly EverythingObject[];
+};
+
 export type Node =
     | FunctionNode
     | PlusNode
@@ -86,7 +94,8 @@ export type Node =
     | ContainsNode
     | AndNode
     | OrNode
-    | UnionNode;
+    | UnionNode
+    | FilterNode;
 
 export const NotANode = Symbol("NotANode");
 
@@ -242,6 +251,28 @@ const objectToNodeWithoutCache = (
         }
     }
 
+    some = singleSetAtomValue(object, Atom.NodeFilterSet.value);
+    if (some) {
+        const filterFunction = singleSetAtomValue(
+            object,
+            Atom.NodeFilterFilter.value,
+        );
+
+        if (filterFunction) {
+            if (finalNode) return NotANode;
+
+            finalNode = {
+                type: NodeType.Filter,
+                set: some,
+                filterFunction,
+                rest: withoutAtomConstructors(object.elements, [
+                    Atom.NodeFilterSet.value,
+                    Atom.NodeFilterFilter.value,
+                ]),
+            };
+        }
+    }
+
     some = singleSetAtomValue(object, Atom.NodeEqualFirst.value);
     if (some) {
         const second = singleSetAtomValue(object, Atom.NodeEqualSecond.value);
@@ -388,6 +419,14 @@ export const nodeToObject = (node: Node): EverythingObject => {
                 elements: [
                     construction(Atom.NodeUnionFirst, node.first),
                     construction(Atom.NodeUnionSecond, node.second),
+                ],
+            };
+        case NodeType.Filter:
+            return {
+                type: ObjectType.Set,
+                elements: [
+                    construction(Atom.NodeFilterSet, node.set),
+                    construction(Atom.NodeFilterFilter, node.filterFunction),
                 ],
             };
     }

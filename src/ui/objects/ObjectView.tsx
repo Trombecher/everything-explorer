@@ -39,6 +39,7 @@ const isHandledKey = (key: string): boolean =>
     || key === "&"
     || key === "|"
     || key === "u"
+    || key === "p"
     || key === " "
     || key === "*"
     || key === "l"
@@ -180,6 +181,12 @@ const handleKeyDown = (props: {
                     props.setObject(node.first);
                     break;
                 }
+                case NodeType.Filter: {
+                    // Retain set.
+
+                    props.setObject(node.set);
+                    break;
+                }
                 case NodeType.Contains: {
                     // Retain element.
 
@@ -252,6 +259,19 @@ const handleKeyDown = (props: {
                 type: NodeType.Union,
                 first: props.object,
                 second: defaultObject,
+                rest: [],
+            }),
+        );
+
+        props.objectSelection.selectChild(1);
+    } else if (props.event.key === "p") {
+        if (!props.setObject) return;
+
+        props.setObject(
+            nodeToObject({
+                type: NodeType.Filter,
+                set: props.object,
+                filterFunction: defaultObject,
                 rest: [],
             }),
         );
@@ -360,6 +380,8 @@ const objectViewColorHue = (object: EverythingObject): number => {
                 return 10;
             case NodeType.Union:
                 return 230;
+            case NodeType.Filter:
+                return 205;
         }
     }
 
@@ -390,6 +412,7 @@ const blockInColumnModeIsItemsCenter = (blockType: Block["type"]) => {
         case NodeType.And:
         case NodeType.Or:
         case NodeType.Union:
+        case NodeType.Filter:
         case ObjectType.Construction:
             return true;
         default:
@@ -620,6 +643,16 @@ export const ObjectView = (props: {
                     {unionNode => (
                         <BinaryOperationView
                             block={unionNode()}
+                            path={props.path}
+                            wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                            setObject={props.setObject}
+                        />
+                    )}
+                </Match>
+                <Match when={variant(block(), NodeType.Filter)}>
+                    {filterNode => (
+                        <BinaryOperationView
+                            block={filterNode()}
                             path={props.path}
                             wholeWidthBudgetInPixels={props.widthBudgetInPixels}
                             setObject={props.setObject}

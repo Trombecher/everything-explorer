@@ -88,6 +88,16 @@ export namespace Atom {
         value: 2150602676477464422271577313769115263n,
     } as const satisfies Atom;
 
+    export const NodeFilterSet = {
+        type: ObjectType.Atom,
+        value: 2150755714608308122129968313720999578n,
+    } as const satisfies Atom;
+
+    export const NodeFilterFilter = {
+        type: ObjectType.Atom,
+        value: 2150755715328094057860222292607728283n,
+    } as const satisfies Atom;
+
     export const NodeContainsElement = {
         type: ObjectType.Atom,
         value: 2166943953075778840020869770686077619n,
