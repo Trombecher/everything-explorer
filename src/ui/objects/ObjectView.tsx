@@ -113,6 +113,7 @@ const handleKeyDown = (props: {
         } else if (
             props.object.type === ObjectType.Atom
             || props.object.type === ObjectType.Integer
+            || props.object.type === ObjectType.Text
         ) {
             // Focus field
             const input = props.event.currentTarget.querySelector("input");

@@ -41,7 +41,7 @@ export default (props: {
                         props.setText({type: ObjectType.Text, text: newText});
                     }
                 }}
-                class="block field-sizing-content"
+                class="block field-sizing-content focus:min-w-16"
             />
             <span>"</span>
         </TextField>
