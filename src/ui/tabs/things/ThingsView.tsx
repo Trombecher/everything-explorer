@@ -13,10 +13,10 @@ import {
 } from "solid-js";
 
 import {useAppState} from "@/context";
-import type {Atom} from "@/model/atoms";
+import {ObjectType} from "@/model";
+import {generateAtomId, MAX_ATOM_ID, type Atom} from "@/model/atoms";
 import ResizeSeparator from "@/ui/reuse/ResizeSeparator";
 
-import AddThingDialog from "./AddThingDialog";
 import AtomCard from "./AtomCard";
 import PropertiesPanel from "./PropertiesPanel";
 
@@ -27,6 +27,8 @@ const MIN_PROPERTIES_PANEL_WIDTH = 240;
  * panel.
  */
 const MIN_ATOM_LIST_WIDTH = 280;
+
+const DECIMAL_INTEGER_PATTERN = /^\d+$/;
 
 export default () => {
     const appState = useAppState();
@@ -104,19 +106,33 @@ export default () => {
     );
 
     const [selectedAtom, setSelectedAtom] = createSignal<undefined | Atom>();
+    const [searchValue, setSearchValue] = createSignal("");
 
-    const addThing = (atom: Atom) => {
-        const existing = displayedAtoms().find(
-            candidate => candidate.value === atom.value,
-        );
+    const parseAtomId = (input: string): Atom | undefined => {
+        const trimmed = input.trim();
 
-        if (existing) {
-            setSelectedAtom(existing);
+        if (!DECIMAL_INTEGER_PATTERN.test(trimmed)) return undefined;
+
+        const value = BigInt(trimmed);
+        if (value > MAX_ATOM_ID) return undefined;
+
+        return {type: ObjectType.Atom, value};
+    };
+
+    const searchForAtom = (input: string) => {
+        const atom = parseAtomId(input);
+        if (!atom) {
+            setSelectedAtom(undefined);
             return;
         }
 
-        setAddedAtoms(previous => [...previous, atom]);
         setSelectedAtom(atom);
+    };
+
+    const generateAndSearchNewAtom = () => {
+        const newId = generateAtomId().toString();
+        setSearchValue(newId);
+        searchForAtom(newId);
     };
 
     return (
@@ -134,14 +150,22 @@ export default () => {
                         <SearchIcon />
                         <input
                             type="search"
-                            placeholder="Search for something..."
+                            placeholder="Search by atom ID..."
+                            value={searchValue()}
+                            onInput={e => {
+                                setSearchValue(e.currentTarget.value);
+                                searchForAtom(e.currentTarget.value);
+                            }}
                             class="block min-w-0 grow py-2 pr-3 pl-2 outline-none"
                         />
                     </label>
-                    <AddThingDialog
+                    <button
+                        onClick={generateAndSearchNewAtom}
                         disabled={appState.connectionClient() === undefined}
-                        onAdd={addThing}
-                    />
+                        class="flex cursor-pointer items-center gap-2 rounded-2xl bg-blue-500 px-3 py-1 font-medium text-white hover:bg-blue-600 active:scale-97 active:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 dark:text-black"
+                    >
+                        + Add thing
+                    </button>
                 </div>
 
                 <div class="mt-4 flex flex-wrap gap-2">
