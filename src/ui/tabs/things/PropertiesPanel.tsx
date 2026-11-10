@@ -236,7 +236,7 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
                                             <ObjectView
                                                 indentLeft={false}
                                                 widthBudgetInPixels={Math.max(
-                                                    widthBudgetInPixels
+                                                    widthBudgetInPixels()
                                                         - REMOVE_BUTTON_SPACE,
                                                     0,
                                                 )}

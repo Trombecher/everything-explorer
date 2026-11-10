@@ -65,7 +65,7 @@ export default () => {
                                 );
                             }}
                             path={[]}
-                            widthBudgetInPixels={widthBudgetInPixels}
+                            widthBudgetInPixels={widthBudgetInPixels()}
                             replaceParentWithThis={undefined}
                             parentObjectLayoutMode={LayoutMode.Row}
                         />

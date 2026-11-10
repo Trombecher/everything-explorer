@@ -1,14 +1,18 @@
-import type {JSXElement} from "solid-js";
+import type {Accessor, JSXElement} from "solid-js";
 import {createSignal, onCleanup, onMount} from "solid-js";
 
 /**
- * Measures the width of its container and passes it to `children`.
+ * Measures the width of its container and passes an accessor for it to
+ * `children`.
+ *
+ * The accessor is stable, so `children` is only called once. Call it where the
+ * width is needed to avoid recreating the children on every resize.
  *
  * Use this to measure a whole list once instead of measuring every item.
  */
 export default (props: {
     class?: string;
-    children: (widthInPixels: number) => JSXElement;
+    children: (widthInPixels: Accessor<number>) => JSXElement;
 }) => {
     const [width, setWidth] = createSignal(Number.POSITIVE_INFINITY);
 
@@ -38,7 +42,7 @@ export default (props: {
                 container = el;
             }}
         >
-            {props.children(width())}
+            {props.children(width)}
         </div>
     );
 };

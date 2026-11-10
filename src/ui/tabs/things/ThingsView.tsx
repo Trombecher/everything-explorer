@@ -7,18 +7,56 @@ import {
     createSignal,
     For,
     on,
+    onCleanup,
+    onMount,
     Show,
 } from "solid-js";
 
 import {useAppState} from "@/context";
 import type {Atom} from "@/model/atoms";
+import ResizeSeparator from "@/ui/reuse/ResizeSeparator";
 
 import AddThingDialog from "./AddThingDialog";
 import AtomCard from "./AtomCard";
 import PropertiesPanel from "./PropertiesPanel";
 
+const MIN_PROPERTIES_PANEL_WIDTH = 240;
+
+/**
+ * The atom list is never squeezed below this width when resizing the properties
+ * panel.
+ */
+const MIN_ATOM_LIST_WIDTH = 280;
+
 export default () => {
     const appState = useAppState();
+
+    let container: HTMLDivElement | undefined;
+
+    const maximumPropertiesPanelWidth = () =>
+        Math.max(
+            MIN_PROPERTIES_PANEL_WIDTH,
+            (container?.getBoundingClientRect().width ?? 0)
+                - MIN_ATOM_LIST_WIDTH,
+        );
+
+    const clampPropertiesPanelWidth = (width: number) =>
+        Math.min(
+            Math.max(width, MIN_PROPERTIES_PANEL_WIDTH),
+            maximumPropertiesPanelWidth(),
+        );
+
+    onMount(() => {
+        if (!container) return;
+
+        const observer = new ResizeObserver(() => {
+            appState.setPropertiesPanelWidth(clampPropertiesPanelWidth);
+        });
+
+        observer.observe(container);
+
+        onCleanup(() => observer.disconnect());
+    });
 
     const [atoms] = createResource(
         () => appState.connectionClient(),
@@ -82,8 +120,13 @@ export default () => {
     };
 
     return (
-        <div class="flex grow gap-2 py-2">
-            <div class="w-full rounded-4xl border border-neutral-200 bg-white p-2">
+        <div
+            class="flex grow gap-2 py-2"
+            ref={el => {
+                container = el;
+            }}
+        >
+            <div class="min-w-0 grow rounded-4xl border border-neutral-200 bg-white p-2">
                 <div class="flex items-center gap-2 px-2 text-black">
                     <LayoutGridIcon />
                     <h2 class="text-xl font-semibold">Things</h2>
@@ -118,10 +161,27 @@ export default () => {
             </div>
             <Show when={selectedAtom()} keyed>
                 {selectedAtom => (
-                    <PropertiesPanel
-                        selectedAtom={selectedAtom}
-                        close={() => setSelectedAtom(undefined)}
-                    />
+                    <>
+                        <ResizeSeparator
+                            label="Resize properties panel"
+                            width={appState.propertiesPanelWidth}
+                            setWidth={appState.setPropertiesPanelWidth}
+                            minWidth={MIN_PROPERTIES_PANEL_WIDTH}
+                            maxWidth={maximumPropertiesPanelWidth}
+                            resizedSide="end"
+                        />
+                        <div
+                            class="shrink-0"
+                            style={{
+                                width: `${appState.propertiesPanelWidth()}px`,
+                            }}
+                        >
+                            <PropertiesPanel
+                                selectedAtom={selectedAtom}
+                                close={() => setSelectedAtom(undefined)}
+                            />
+                        </div>
+                    </>
                 )}
             </Show>
         </div>

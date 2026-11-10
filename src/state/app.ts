@@ -126,6 +126,14 @@ export class AppState {
     public readonly layoutOptions: Accessor<LayoutOptions>;
     public readonly setLayoutOptions: Setter<LayoutOptions>;
 
+    /**
+     * Width of the properties panel of the things tab in px.
+     *
+     * This is runtime state, not part of the persisted app state.
+     */
+    public readonly propertiesPanelWidth: Accessor<number>;
+    public readonly setPropertiesPanelWidth: Setter<number>;
+
     public readonly browserLanguage: () => BrowserLanguage;
 
     constructor(initial: InternalAppState) {
@@ -172,6 +180,14 @@ export class AppState {
 
         this.layoutOptions = layoutOptions;
         this.setLayoutOptions = setLayoutOptions;
+
+        // Properties panel width
+
+        const [propertiesPanelWidth, setPropertiesPanelWidth] =
+            createSignal(400);
+
+        this.propertiesPanelWidth = propertiesPanelWidth;
+        this.setPropertiesPanelWidth = setPropertiesPanelWidth;
 
         // Atom names belong to a specific knowledge base, so drop them when
         // reconnecting.
