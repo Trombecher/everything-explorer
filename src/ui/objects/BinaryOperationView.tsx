@@ -11,12 +11,14 @@ import {
     type AndNode,
     type ContainsNode,
     type EqualNode,
+    type OrNode,
     type PlusNode,
     type TimesNode,
 } from "@/model/nodes";
 
 import DotDotIcon from "../reuse/DotDotIcon";
 import ElementOfIcon from "../reuse/ElementOfIcon";
+import VeeIcon from "../reuse/VeeIcon";
 import WedgeIcon from "../reuse/WedgeIcon";
 import {
     binaryBlockSlotWidthBudgetInPixels,
@@ -25,29 +27,32 @@ import {
 import ObjectView from "./ObjectView";
 import {useObjectSelection, type ObjectSelectionPath} from "./selection";
 
+type BinaryOperationBlock =
+    | TimesNode
+    | PlusNode
+    | EqualNode
+    | ContainsNode
+    | AndNode
+    | OrNode
+    | Construction;
+
 const BlockIcon = {
     [NodeType.Times]: DotIcon,
     [NodeType.Plus]: PlusIcon,
     [NodeType.Equal]: EqualIcon,
     [NodeType.Contains]: ElementOfIcon,
     [NodeType.And]: WedgeIcon,
+    [NodeType.Or]: VeeIcon,
     [ObjectType.Construction]: DotDotIcon,
 };
 
-const getFirst = (
-    block:
-        | TimesNode
-        | PlusNode
-        | EqualNode
-        | ContainsNode
-        | AndNode
-        | Construction,
-) => {
+const getFirst = (block: BinaryOperationBlock) => {
     switch (block.type) {
         case NodeType.Plus:
         case NodeType.Times:
         case NodeType.Equal:
         case NodeType.And:
+        case NodeType.Or:
             return block.first;
         case NodeType.Contains:
             return block.element;
@@ -56,20 +61,13 @@ const getFirst = (
     }
 };
 
-const getSecond = (
-    block:
-        | TimesNode
-        | PlusNode
-        | EqualNode
-        | ContainsNode
-        | AndNode
-        | Construction,
-) => {
+const getSecond = (block: BinaryOperationBlock) => {
     switch (block.type) {
         case NodeType.Plus:
         case NodeType.Times:
         case NodeType.Equal:
         case NodeType.And:
+        case NodeType.Or:
             return block.second;
         case NodeType.Contains:
             return block.set;
@@ -79,13 +77,7 @@ const getSecond = (
 };
 
 export default (props: {
-    block:
-        | TimesNode
-        | PlusNode
-        | EqualNode
-        | ContainsNode
-        | AndNode
-        | Construction;
+    block: BinaryOperationBlock;
     path: ObjectSelectionPath;
     wholeWidthBudgetInPixels: number;
     setObject?: ((newObject: EverythingObject) => void) | undefined;
@@ -132,6 +124,7 @@ export default (props: {
                                 case NodeType.Times:
                                 case NodeType.Equal:
                                 case NodeType.And:
+                                case NodeType.Or:
                                     props.setObject?.(
                                         nodeToObject({
                                             ...props.block,
@@ -192,6 +185,7 @@ export default (props: {
                                 case NodeType.Plus:
                                 case NodeType.Equal:
                                 case NodeType.And:
+                                case NodeType.Or:
                                     props.setObject?.(
                                         nodeToObject({
                                             ...props.block,

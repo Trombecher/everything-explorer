@@ -81,6 +81,7 @@ const blockIconWidthInPixels = {
     plus: 24,
     quote: 24,
     unwrap: 48,
+    vee: 24,
     wedge: 24,
     x: 24,
     brace: 12,
@@ -208,6 +209,21 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                         options,
                     ),
                     blockIconWidthInPixels.wedge,
+                    calculateRowLayoutWidthOfBlock(
+                        objectToBlock(block.second),
+                        options,
+                    ),
+                ],
+                options,
+            );
+        case NodeType.Or:
+            return rowLayoutWidth(
+                [
+                    calculateRowLayoutWidthOfBlock(
+                        objectToBlock(block.first),
+                        options,
+                    ),
+                    blockIconWidthInPixels.vee,
                     calculateRowLayoutWidthOfBlock(
                         objectToBlock(block.second),
                         options,
@@ -350,6 +366,7 @@ export const childCountOfBlock = (block: Block): number => {
         case NodeType.Equal:
         case NodeType.Contains:
         case NodeType.And:
+        case NodeType.Or:
             return 2;
         case ObjectType.Set:
             return block.elements.length;

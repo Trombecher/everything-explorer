@@ -10,6 +10,7 @@ export namespace NodeType {
     export const Equal = Symbol("NodeType.Equal");
     export const Contains = Symbol("NodeType.Contains");
     export const And = Symbol("NodeType.And");
+    export const Or = Symbol("NodeType.Or");
 }
 
 export type NodeType = Node["type"];
@@ -61,6 +62,13 @@ export type AndNode = {
     readonly rest: readonly EverythingObject[];
 };
 
+export type OrNode = {
+    readonly type: typeof NodeType.Or;
+    readonly first: EverythingObject;
+    readonly second: EverythingObject;
+    readonly rest: readonly EverythingObject[];
+};
+
 export type Node =
     | FunctionNode
     | PlusNode
@@ -68,7 +76,8 @@ export type Node =
     | TimesNode
     | EqualNode
     | ContainsNode
-    | AndNode;
+    | AndNode
+    | OrNode;
 
 export const NotANode = Symbol("NotANode");
 
@@ -181,6 +190,25 @@ const objectToNodeWithoutCache = (
                 rest: withoutAtomConstructors(object.elements, [
                     Atom.NodeAndFirst.value,
                     Atom.NodeAndSecond.value,
+                ]),
+            };
+        }
+    }
+
+    some = singleSetAtomValue(object, Atom.NodeOrFirst.value);
+    if (some) {
+        const second = singleSetAtomValue(object, Atom.NodeOrSecond.value);
+
+        if (second) {
+            if (finalNode) return NotANode;
+
+            finalNode = {
+                type: NodeType.Or,
+                first: some,
+                second,
+                rest: withoutAtomConstructors(object.elements, [
+                    Atom.NodeOrFirst.value,
+                    Atom.NodeOrSecond.value,
                 ]),
             };
         }
@@ -316,6 +344,14 @@ export const nodeToObject = (node: Node): EverythingObject => {
                 elements: [
                     construction(Atom.NodeAndFirst, node.first),
                     construction(Atom.NodeAndSecond, node.second),
+                ],
+            };
+        case NodeType.Or:
+            return {
+                type: ObjectType.Set,
+                elements: [
+                    construction(Atom.NodeOrFirst, node.first),
+                    construction(Atom.NodeOrSecond, node.second),
                 ],
             };
     }
