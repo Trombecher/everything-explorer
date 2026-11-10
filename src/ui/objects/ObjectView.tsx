@@ -8,8 +8,9 @@ import {nodeToObject, NodeType, NotANode, objectToNode} from "@/model/nodes";
 import type {DeepReadonly} from "@/util";
 import {variant} from "@/util";
 
-import Select from "../reuse/Select";
+import ItalicXIcon from "../icons/ItalicXIcon";
 import MapsToIcon from "../icons/MapsToIcon";
+import Select from "../reuse/Select";
 import AtomView from "./AtomView";
 import BinaryOperationView from "./BinaryOperationView";
 import type {Block} from "./blocks";
@@ -320,11 +321,7 @@ const handleKeyDown = (props: {
         if (!props.setObject) return;
 
         props.setObject(
-            nodeToObject({
-                type: NodeType.Parameter,
-                depth: 0n,
-                rest: [],
-            }),
+            nodeToObject({type: NodeType.Parameter, depth: 0n, rest: []}),
         );
     } else if (props.event.key === "e") {
         if (!props.setObject) return;
@@ -563,7 +560,7 @@ export const ObjectView = (props: {
 
                         return (
                             <>
-                                <XIcon />
+                                <ItalicXIcon />
                                 <Select<bigint, string>
                                     options={Array.from(
                                         {length: enclosingFunctionCount},
@@ -580,7 +577,9 @@ export const ObjectView = (props: {
                                     }}
                                     idFromValue={value => String(value)}
                                     idToValue={id => BigInt(id)}
-                                    stringifyValue={value => `function ${value}`}
+                                    stringifyValue={value =>
+                                        `function ${value}`
+                                    }
                                     description="Enclosing function"
                                     class="w-48"
                                 />
