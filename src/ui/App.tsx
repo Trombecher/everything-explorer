@@ -11,7 +11,7 @@ import DebugView from "./tabs/DebugView";
 import Home from "./tabs/HomeView";
 import InstancePropertiesView from "./tabs/InstancePropertiesView";
 import SettingsView from "./tabs/SettingsView";
-import AllAtoms from "./tabs/ThingsView";
+import ThingsView from "./tabs/things/ThingsView";
 
 export default () => {
     const appState = useAppState();
@@ -56,7 +56,7 @@ export default () => {
             <SideBar />
             <Switch>
                 <Match when={appState.state.currentTab === Tab.Things}>
-                    <AllAtoms />
+                    <ThingsView />
                 </Match>
                 <Match
                     when={appState.state.currentTab === Tab.InstanceProperties}

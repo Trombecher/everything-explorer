@@ -6,7 +6,7 @@ import {createMemo, createSignal, Show} from "solid-js";
 import {ObjectType} from "@/model";
 import {generateAtomId, MAX_ATOM_ID, type Atom} from "@/model/atoms";
 
-import Button from "../reuse/Button";
+import Button from "../../reuse/Button";
 
 const DECIMAL_INTEGER_PATTERN = /^\d+$/;
 
