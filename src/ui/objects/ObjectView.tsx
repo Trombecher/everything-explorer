@@ -8,6 +8,7 @@ import {nodeToObject, NodeType, NotANode, objectToNode} from "@/model/nodes";
 import type {DeepReadonly} from "@/util";
 import {variant} from "@/util";
 
+import Select from "../reuse/Select";
 import MapsToIcon from "../icons/MapsToIcon";
 import AtomView from "./AtomView";
 import BinaryOperationView from "./BinaryOperationView";
@@ -47,6 +48,7 @@ const isHandledKey = (key: string): boolean =>
     || key === "e"
     || key === "a"
     || key === "t"
+    || key === "p"
     || (key.length === 1 && "0123456789".includes(key));
 
 const handleKeyDown = (props: {
@@ -314,6 +316,16 @@ const handleKeyDown = (props: {
         );
 
         props.objectSelection.selectChild(0);
+    } else if (props.event.key === "p") {
+        if (!props.setObject) return;
+
+        props.setObject(
+            nodeToObject({
+                type: NodeType.Parameter,
+                depth: 0n,
+                rest: [],
+            }),
+        );
     } else if (props.event.key === "e") {
         if (!props.setObject) return;
 
@@ -367,6 +379,8 @@ const objectViewColorHue = (object: EverythingObject): number => {
         switch (node.type) {
             case NodeType.Function:
                 return 54;
+            case NodeType.Parameter:
+                return 280;
             case NodeType.Literal:
                 return 23;
             case NodeType.Plus:
@@ -542,6 +556,37 @@ export const ObjectView = (props: {
                             />
                         </>
                     )}
+                </Match>
+                <Match when={variant(block(), NodeType.Parameter)}>
+                    {parameterNode => {
+                        const enclosingFunctionCount = 10;
+
+                        return (
+                            <>
+                                <XIcon />
+                                <Select<bigint, string>
+                                    options={Array.from(
+                                        {length: enclosingFunctionCount},
+                                        (_, i) => BigInt(i),
+                                    )}
+                                    value={parameterNode().depth}
+                                    onChange={newDepth => {
+                                        props.setObject?.(
+                                            nodeToObject({
+                                                ...parameterNode(),
+                                                depth: newDepth,
+                                            }),
+                                        );
+                                    }}
+                                    idFromValue={value => String(value)}
+                                    idToValue={id => BigInt(id)}
+                                    stringifyValue={value => `function ${value}`}
+                                    description="Enclosing function"
+                                    class="w-48"
+                                />
+                            </>
+                        );
+                    }}
                 </Match>
                 <Match when={variant(block(), NodeType.Plus)}>
                     {plusNode => (

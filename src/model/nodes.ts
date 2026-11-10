@@ -13,6 +13,7 @@ export namespace NodeType {
     export const Or = Symbol("NodeType.Or");
     export const Union = Symbol("NodeType.Union");
     export const Filter = Symbol("NodeType.Filter");
+    export const Parameter = Symbol("NodeType.Parameter");
 }
 
 export type NodeType = Node["type"];
@@ -85,6 +86,12 @@ export type FilterNode = {
     readonly rest: readonly EverythingObject[];
 };
 
+export type ParameterNode = {
+    readonly type: typeof NodeType.Parameter;
+    readonly depth: bigint;
+    readonly rest: readonly EverythingObject[];
+};
+
 export type Node =
     | FunctionNode
     | PlusNode
@@ -95,7 +102,8 @@ export type Node =
     | AndNode
     | OrNode
     | UnionNode
-    | FilterNode;
+    | FilterNode
+    | ParameterNode;
 
 export const NotANode = Symbol("NotANode");
 
@@ -311,6 +319,21 @@ const objectToNodeWithoutCache = (
         }
     }
 
+    some = singleSetAtomValue(object, Atom.NodeParameter.value);
+    if (some) {
+        if (finalNode) return NotANode;
+
+        if (some.type !== ObjectType.Integer) return NotANode;
+
+        finalNode = {
+            type: NodeType.Parameter,
+            depth: some.value,
+            rest: withoutAtomConstructors(object.elements, [
+                Atom.NodeParameter.value,
+            ]),
+        };
+    }
+
     return finalNode ?? NotANode;
 };
 
@@ -427,6 +450,16 @@ export const nodeToObject = (node: Node): EverythingObject => {
                 elements: [
                     construction(Atom.NodeFilterSet, node.set),
                     construction(Atom.NodeFilterFilter, node.filterFunction),
+                ],
+            };
+        case NodeType.Parameter:
+            return {
+                type: ObjectType.Set,
+                elements: [
+                    construction(Atom.NodeParameter, {
+                        type: ObjectType.Integer,
+                        value: node.depth,
+                    }),
                 ],
             };
     }

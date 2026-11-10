@@ -271,6 +271,14 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                 ],
                 options,
             );
+        case NodeType.Parameter:
+            return rowLayoutWidth(
+                [
+                    blockIconWidthInPixels.x,
+                    192 + options.block.itemGapInPixels,
+                ],
+                options,
+            );
         case ObjectType.Set: {
             return rowLayoutWidth(
                 [
@@ -381,6 +389,7 @@ export const childCountOfBlock = (block: Block): number => {
         case ObjectType.Character:
         case ObjectType.Integer:
         case ObjectType.Text:
+        case NodeType.Parameter:
             return 0;
         case NodeType.Function:
         case NodeType.Literal:
