@@ -39,7 +39,7 @@ const isHandledKey = (key: string): boolean =>
     || key === "&"
     || key === "|"
     || key === "u"
-    || key === "p"
+    || key === "F"
     || key === " "
     || key === "*"
     || key === "l"
@@ -264,7 +264,7 @@ const handleKeyDown = (props: {
         );
 
         props.objectSelection.selectChild(1);
-    } else if (props.event.key === "p") {
+    } else if (props.event.key === "F") {
         if (!props.setObject) return;
 
         props.setObject(
