@@ -90,6 +90,48 @@ const getSecond = (block: BinaryOperationBlock) => {
     }
 };
 
+const changeBlockFirst = (
+    block: BinaryOperationBlock,
+    newFirst: EverythingObject,
+) => {
+    switch (block.type) {
+        case NodeType.Plus:
+        case NodeType.Times:
+        case NodeType.Equal:
+        case NodeType.And:
+        case NodeType.Or:
+        case NodeType.Union:
+            return nodeToObject({...block, first: newFirst});
+        case NodeType.Contains:
+            return nodeToObject({...block, element: newFirst});
+        case NodeType.Filter:
+            return nodeToObject({...block, set: newFirst});
+        case ObjectType.Construction:
+            return {...block, constructor: newFirst};
+    }
+};
+
+const changeBlockSecond = (
+    block: BinaryOperationBlock,
+    newSecond: EverythingObject,
+) => {
+    switch (block.type) {
+        case NodeType.Times:
+        case NodeType.Plus:
+        case NodeType.Equal:
+        case NodeType.And:
+        case NodeType.Or:
+        case NodeType.Union:
+            return nodeToObject({...block, second: newSecond});
+        case NodeType.Contains:
+            return nodeToObject({...block, set: newSecond});
+        case NodeType.Filter:
+            return nodeToObject({...block, filterFunction: newSecond});
+        case ObjectType.Construction:
+            return {...block, value: newSecond};
+    }
+};
+
 export default (props: {
     block: BinaryOperationBlock;
     path: ObjectSelectionPath;
@@ -133,43 +175,9 @@ export default (props: {
 
                             props.setObject?.(second());
                         } else {
-                            switch (props.block.type) {
-                                case NodeType.Plus:
-                                case NodeType.Times:
-                                case NodeType.Equal:
-                                case NodeType.And:
-                                case NodeType.Or:
-                                case NodeType.Union:
-                                    props.setObject?.(
-                                        nodeToObject({
-                                            ...props.block,
-                                            first: newFirst,
-                                        }),
-                                    );
-                                    break;
-                                case NodeType.Contains:
-                                    props.setObject?.(
-                                        nodeToObject({
-                                            ...props.block,
-                                            element: newFirst,
-                                        }),
-                                    );
-                                    break;
-                                case NodeType.Filter:
-                                    props.setObject?.(
-                                        nodeToObject({
-                                            ...props.block,
-                                            set: newFirst,
-                                        }),
-                                    );
-                                    break;
-                                case ObjectType.Construction:
-                                    props.setObject?.({
-                                        ...props.block,
-                                        constructor: newFirst,
-                                    });
-                                    break;
-                            }
+                            props.setObject?.(
+                                changeBlockFirst(props.block, newFirst),
+                            );
                         }
                     })
                 }
@@ -203,43 +211,9 @@ export default (props: {
 
                             props.setObject?.(first());
                         } else {
-                            switch (props.block.type) {
-                                case NodeType.Times:
-                                case NodeType.Plus:
-                                case NodeType.Equal:
-                                case NodeType.And:
-                                case NodeType.Or:
-                                case NodeType.Union:
-                                    props.setObject?.(
-                                        nodeToObject({
-                                            ...props.block,
-                                            second: newSecond,
-                                        }),
-                                    );
-                                    break;
-                                case NodeType.Contains:
-                                    props.setObject?.(
-                                        nodeToObject({
-                                            ...props.block,
-                                            set: newSecond,
-                                        }),
-                                    );
-                                    break;
-                                case NodeType.Filter:
-                                    props.setObject?.(
-                                        nodeToObject({
-                                            ...props.block,
-                                            filterFunction: newSecond,
-                                        }),
-                                    );
-                                    break;
-                                case ObjectType.Construction:
-                                    props.setObject?.({
-                                        ...props.block,
-                                        value: newSecond,
-                                    });
-                                    break;
-                            }
+                            props.setObject?.(
+                                changeBlockSecond(props.block, newSecond),
+                            );
                         }
                     })
                 }
