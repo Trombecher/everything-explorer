@@ -580,7 +580,7 @@ export const ObjectView = (props: {
                                     stringifyValue={value =>
                                         `function ${value}`
                                     }
-                                    description="Enclosing function"
+                                    description=""
                                     class="w-48"
                                 />
                             </>
