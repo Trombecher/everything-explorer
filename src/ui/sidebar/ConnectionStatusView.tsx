@@ -8,7 +8,7 @@ export default () => {
     const appState = useAppState();
 
     return (
-        <div class="rounded-4xl border border-neutral-200 bg-white p-2">
+        <div class="rounded-4xl border border-neutral-200 bg-white p-2 dark:bg-neutral-100">
             <h2 class="m-2 font-semibold">Connection</h2>
             <Button
                 class="flex w-full items-center justify-center gap-2 text-sm"

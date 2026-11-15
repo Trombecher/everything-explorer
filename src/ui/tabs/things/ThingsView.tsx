@@ -142,7 +142,7 @@ export default () => {
                 container = el;
             }}
         >
-            <div class="min-w-0 grow rounded-4xl border border-neutral-200 bg-white p-2">
+            <div class="min-w-0 grow rounded-4xl border border-neutral-200 bg-white p-2 dark:bg-neutral-100">
                 <div class="flex items-center gap-2 px-2 text-black">
                     <LayoutGridIcon />
                     <h2 class="text-xl font-semibold">Things</h2>

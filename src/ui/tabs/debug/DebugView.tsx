@@ -45,7 +45,7 @@ export default () => {
 
     return (
         <div
-            class="mx-auto my-2 max-w-3xl min-w-0 grow rounded-4xl border border-neutral-200 bg-white p-4"
+            class="mx-auto my-2 max-w-3xl min-w-0 grow rounded-4xl border border-neutral-200 bg-white p-4 dark:bg-neutral-100"
             tabIndex={0}
             onKeyDown={event => handleHistoryKeyDown(event, objectHistory)}
         >

@@ -66,7 +66,7 @@ export default (props: {disabled: boolean; onAdd: (atom: Atom) => void}) => {
                         input?.focus();
                         input?.select();
                     }}
-                    class="fixed top-1/2 left-1/2 z-50 flex max-h-[90vh] w-[min(90vw,32rem)] -translate-x-1/2 -translate-y-1/2 flex-col gap-3 overflow-y-auto rounded-4xl border border-neutral-200 bg-white p-4 shadow-xl"
+                    class="fixed top-1/2 left-1/2 z-50 flex max-h-[90vh] w-[min(90vw,32rem)] -translate-x-1/2 -translate-y-1/2 flex-col gap-3 overflow-y-auto rounded-4xl border border-neutral-200 bg-white p-4 shadow-xl dark:bg-neutral-100"
                 >
                     <Dialog.Title class="text-2xl font-semibold text-black">
                         Add a thing

@@ -165,7 +165,7 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
 
     return (
         <div
-            class="relative flex w-full flex-col gap-2 rounded-4xl border border-neutral-200 bg-white p-2"
+            class="relative flex w-full flex-col gap-2 rounded-4xl border border-neutral-200 bg-white p-2 dark:bg-neutral-100"
             tabIndex={0}
             onKeyDown={event => {
                 handleHistoryKeyDown(event, history);

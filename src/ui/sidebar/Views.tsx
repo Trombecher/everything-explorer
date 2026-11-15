@@ -7,7 +7,7 @@ import TabButton from "./TabButton";
 
 export default () => {
     return (
-        <div class="flex grow flex-col rounded-4xl border border-neutral-200 bg-white p-2">
+        <div class="flex grow flex-col rounded-4xl border border-neutral-200 bg-white p-2 dark:bg-neutral-100">
             <h2 class="m-2 font-semibold">Views</h2>
             {(
                 [

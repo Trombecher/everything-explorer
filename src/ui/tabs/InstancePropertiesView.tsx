@@ -9,7 +9,7 @@ export default () => {
     const appState = useAppState();
 
     return (
-        <div class="mx-auto my-2 max-w-3xl grow rounded-4xl border border-neutral-200 bg-white p-4">
+        <div class="mx-auto my-2 max-w-3xl grow rounded-4xl border border-neutral-200 bg-white p-4 dark:bg-neutral-100">
             <div class="mb-4 flex items-center gap-2">
                 <Settings2Icon />
                 <h2 class="text-2xl font-semibold tracking-tight text-black">
