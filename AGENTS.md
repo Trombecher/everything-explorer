@@ -107,13 +107,11 @@ Please do not add any frontend test **files**.
 
 ### Testing via browser skill
 
-You can test the frontend code by using a browser skill if possible.
-
-- If the UI that you want to test out does not require any connection to a
-  knowledge store, you can run the frontend headlessly with `nub run dev` and go
-  to `http://localhost:1420`.
-- Otherwise, you have to start the tauri app with `nub x tauri dev` and wait for
-  10s. In this meantime, I start the knowledge server by hand in the tauri app
-  window. Then you can go to `http://localhost:1420` in your browser, add a
-  **remote** connection to `localhost:3000` (the knowledge server) (if there
-  isn't already one) and connect to that.
+You can test the frontend code by using a browser skill if possible. You can run
+the frontend headlessly with `nub run dev` and go to `http://localhost:1420`.
+For tasks that involve UI which needs an active connection to a knowledge base,
+I have already started the frondend dev server by hand by starting the tauri
+app, so you don't need to start the frontend yourself; it is already running.
+You can go to the connections tab and add a **remote** connection to
+`http://localhost:3000` (the knowledge server) (if there isn't already) one and
+connect to that. Then you can explore the knowledge base (UI) if you need to.
