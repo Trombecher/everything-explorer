@@ -21,22 +21,10 @@ export type DeepReadonly<T> = T extends (...args: any[]) => any
  * property matches a specific variant, and returns the object with narrowed
  * type if it does.
  *
- * @example
- *     ```ts
- *     type Action =
- *         | {type: "add"; payload: number}
- *         | {type: "remove"; id: string};
- *
- *     const action: Action = {type: "add", payload: 5};
- *
- *     const addAction = variant(action, "add");
- *     if (addAction) {
- *         console.log(addAction.payload); // ✓ Type is number
- *     }
- *
- *     const removeAction = variant(action, "remove");
- *     console.log(removeAction); // undefined
- *     ```
+ * When the value's `type` discriminant equals the given variant, the object is
+ * returned with its type narrowed to that variant so its variant-specific
+ * payload is accessible. If the discriminants differ, `undefined` is returned,
+ * so callers should narrow with a truthiness check.
  *
  * @typeParam O - The object type, must have a `type` property
  * @typeParam T - The specific variant type to check for (inferred from valid
