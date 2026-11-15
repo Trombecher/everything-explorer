@@ -11,6 +11,17 @@ export const german = {
     [Phrase.CreateNewLocal]: () => "Neue lokale erstellen",
     [Phrase.ExistingLocal]: () => "Bestehende lokale",
     [Phrase.RemoteConnection]: () => "Remote-Verbindung",
+    [Phrase.AddRemoteConnection]: () => "Remote-Verbindung hinzufügen",
+    [Phrase.RemoteConnectionDescription]: () =>
+        "Gib die Adresse einer Remote-Wissensbasis ein und wähle einen Namen dafür.",
+    [Phrase.Url]: () => "URL",
+    [Phrase.Name]: () => "Name",
+    [Phrase.InvalidRemoteUrl]: () =>
+        "Die URL muss eine absolute HTTP- oder HTTPS-URL sein.",
+    [Phrase.RemoteConnectionAlreadyExists]: () =>
+        "Eine Verbindung zu dieser URL existiert bereits.",
+    [Phrase.Add]: () => "Hinzufügen",
+    [Phrase.Cancel]: () => "Abbrechen",
     [Phrase.Local]: () => "Lokal",
     [Phrase.Remote]: () => "Remote",
     [Phrase.Connect]: () => "Verbinden",

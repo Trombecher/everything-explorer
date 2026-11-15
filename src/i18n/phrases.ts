@@ -13,6 +13,14 @@ export namespace Phrase {
         [CreateNewLocal]: undefined;
         [ExistingLocal]: undefined;
         [RemoteConnection]: undefined;
+        [AddRemoteConnection]: undefined;
+        [RemoteConnectionDescription]: undefined;
+        [Url]: undefined;
+        [Name]: undefined;
+        [InvalidRemoteUrl]: undefined;
+        [RemoteConnectionAlreadyExists]: undefined;
+        [Add]: undefined;
+        [Cancel]: undefined;
         [Local]: undefined;
         [Remote]: undefined;
         [Connect]: undefined;
@@ -44,6 +52,14 @@ export namespace Phrase {
     export const CreateNewLocal = Symbol();
     export const ExistingLocal = Symbol();
     export const RemoteConnection = Symbol();
+    export const AddRemoteConnection = Symbol();
+    export const RemoteConnectionDescription = Symbol();
+    export const Url = Symbol();
+    export const Name = Symbol();
+    export const InvalidRemoteUrl = Symbol();
+    export const RemoteConnectionAlreadyExists = Symbol();
+    export const Add = Symbol();
+    export const Cancel = Symbol();
     export const Local = Symbol();
     export const Remote = Symbol();
     export const Connect = Symbol();
@@ -76,6 +92,14 @@ export type Phrase =
     | typeof Phrase.CreateNewLocal
     | typeof Phrase.ExistingLocal
     | typeof Phrase.RemoteConnection
+    | typeof Phrase.AddRemoteConnection
+    | typeof Phrase.RemoteConnectionDescription
+    | typeof Phrase.Url
+    | typeof Phrase.Name
+    | typeof Phrase.InvalidRemoteUrl
+    | typeof Phrase.RemoteConnectionAlreadyExists
+    | typeof Phrase.Add
+    | typeof Phrase.Cancel
     | typeof Phrase.Local
     | typeof Phrase.Remote
     | typeof Phrase.Connect
