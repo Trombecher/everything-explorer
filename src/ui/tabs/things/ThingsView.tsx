@@ -1,4 +1,5 @@
 import LayoutGridIcon from "lucide-solid/icons/layout-grid";
+import PlusIcon from "lucide-solid/icons/plus";
 import SearchIcon from "lucide-solid/icons/search";
 import {
     createEffect,
@@ -164,7 +165,7 @@ export default () => {
                         disabled={appState.connectionClient() === undefined}
                         class="flex cursor-pointer items-center gap-2 rounded-2xl bg-blue-500 px-3 py-1 font-medium text-white hover:bg-blue-600 active:scale-97 active:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 dark:text-black"
                     >
-                        + Add thing
+                        <PlusIcon /> Add thing
                     </button>
                 </div>
 
