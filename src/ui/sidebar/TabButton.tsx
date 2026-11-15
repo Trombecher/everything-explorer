@@ -8,6 +8,7 @@ import {Tab} from "@/state/common";
 export const tabToPhrase = {
     [Tab.Things]: Phrase.Things,
     [Tab.InstanceProperties]: Phrase.InstanceProperties,
+    [Tab.Connections]: Phrase.Connections,
     [Tab.AppSettings]: Phrase.AppSettings,
     [Tab.Home]: Phrase.Home,
     [Tab.Debug]: Phrase.Debug,

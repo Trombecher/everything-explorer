@@ -8,6 +8,7 @@ export namespace Phrase {
         [Compact]: undefined;
         [Greeting]: {forName: string};
         [InstanceProperties]: undefined;
+        [Connections]: undefined;
         [Things]: undefined;
         [German]: undefined;
         [English]: undefined;
@@ -26,6 +27,7 @@ export namespace Phrase {
     export const Compact = Symbol();
     export const Greeting = Symbol();
     export const InstanceProperties = Symbol();
+    export const Connections = Symbol();
     export const Things = Symbol();
     export const German = Symbol();
     export const English = Symbol();
@@ -45,6 +47,7 @@ export type Phrase =
     | typeof Phrase.Compact
     | typeof Phrase.Greeting
     | typeof Phrase.InstanceProperties
+    | typeof Phrase.Connections
     | typeof Phrase.Things
     | typeof Phrase.German
     | typeof Phrase.English

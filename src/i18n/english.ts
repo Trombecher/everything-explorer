@@ -6,6 +6,7 @@ export const english = {
     [Phrase.Compact]: () => "Compact",
     [Phrase.Greeting]: ({forName}) => `Hello, ${forName}!`,
     [Phrase.InstanceProperties]: () => "Instance Properties",
+    [Phrase.Connections]: () => "Connections",
     [Phrase.Things]: () => "Things",
     [Phrase.English]: () => "English",
     [Phrase.German]: () => "German",

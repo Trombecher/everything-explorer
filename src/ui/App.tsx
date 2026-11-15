@@ -7,6 +7,7 @@ import {Theme} from "@/state/theme";
 
 import {useAppState} from "../context";
 import SideBar from "./sidebar/SideBar";
+import ConnectionsView from "./tabs/ConnectionsView";
 import DebugView from "./tabs/debug/DebugView";
 import Home from "./tabs/HomeView";
 import InstancePropertiesView from "./tabs/InstancePropertiesView";
@@ -62,6 +63,9 @@ export default () => {
                     when={appState.state.currentTab === Tab.InstanceProperties}
                 >
                     <InstancePropertiesView />
+                </Match>
+                <Match when={appState.state.currentTab === Tab.Connections}>
+                    <ConnectionsView />
                 </Match>
                 <Match when={appState.state.currentTab === Tab.AppSettings}>
                     <SettingsView />

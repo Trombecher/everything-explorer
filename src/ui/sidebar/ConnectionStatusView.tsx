@@ -1,8 +1,11 @@
+import CableIcon from "lucide-solid/icons/cable";
 import UnplugIcon from "lucide-solid/icons/unplug";
 
 import {useAppState} from "@/context";
+import {Tab} from "@/state/common";
 
 import Button, {ButtonSeverity} from "../reuse/Button";
+import TabButton from "./TabButton";
 
 export default () => {
     const appState = useAppState();
@@ -38,6 +41,9 @@ export default () => {
                     {appState.lastUsedConnection()?.name}
                 </span>
             </Button>
+            <div class="mt-1">
+                <TabButton icon={<CableIcon />} tab={Tab.Connections} />
+            </div>
         </div>
     );
 };
