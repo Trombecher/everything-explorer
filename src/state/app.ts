@@ -1,5 +1,12 @@
 import type {Accessor, Setter} from "solid-js";
-import {createEffect, createSignal, on, onCleanup, onMount} from "solid-js";
+import {
+    batch,
+    createEffect,
+    createSignal,
+    on,
+    onCleanup,
+    onMount,
+} from "solid-js";
 import {type SetStoreFunction, createStore} from "solid-js/store";
 
 import * as backend from "@/backend/api";
@@ -242,18 +249,16 @@ export class AppState {
 
         const servingPath = await connectionClient.servingPath();
 
-        const connectionIndex = this.localConnectionIndexFromPath(servingPath);
-
-        if (connectionIndex === undefined) {
-            // The server is serving an unknown file.
-            // Let's just add that to the connections.
-
-            this.addConnection({
+        const connectionIndex =
+            this.localConnectionIndexFromPath(servingPath)
+            ?? this.addConnection({
                 type: ConnectionType.Local,
                 filePath: servingPath,
                 name: "",
             });
-        }
+
+        // The app is connected to this connection, so it is the last used one.
+        this.setState("lastUsedConnectionIndex", connectionIndex);
 
         this.setConnectionClient(connectionClient);
     }
@@ -341,11 +346,68 @@ export class AppState {
         this.setState("themeSetting", newTheme);
     }
 
-    public addConnection(connection: Connection) {
-        this.setState("connections", connections => [
-            connection,
-            ...connections,
-        ]);
+    /**
+     * Adds a connection at the beginning of the connection list.
+     *
+     * @returns The index of the added connection.
+     */
+    public addConnection(connection: Connection): number {
+        batch(() => {
+            this.setState("connections", connections => [
+                connection,
+                ...connections,
+            ]);
+
+            // The new connection is prepended, so all indices shift by one.
+            const lastUsedConnectionIndex = this.state.lastUsedConnectionIndex;
+            if (lastUsedConnectionIndex !== undefined) {
+                this.setState(
+                    "lastUsedConnectionIndex",
+                    lastUsedConnectionIndex + 1,
+                );
+            }
+        });
+
+        return 0;
+    }
+
+    /**
+     * Removes the connection with the given index.
+     *
+     * If the app is currently connected to that connection, it is disconnected
+     * first.
+     */
+    public async removeConnection(connectionIndex: number) {
+        this.connection(connectionIndex);
+
+        if (
+            this.state.lastUsedConnectionIndex === connectionIndex
+            && this.isConnected()
+        ) {
+            await this.disconnect();
+        }
+
+        // Update both the connection list and the last used index in one batch,
+        // such that there is never a moment in which the index is out of range.
+        batch(() => {
+            this.setState("connections", connections =>
+                connections.filter((_, index) => index !== connectionIndex),
+            );
+
+            const lastUsedConnectionIndex = this.state.lastUsedConnectionIndex;
+
+            if (lastUsedConnectionIndex === connectionIndex) {
+                this.setState("lastUsedConnectionIndex", undefined);
+            } else if (
+                lastUsedConnectionIndex !== undefined
+                && lastUsedConnectionIndex > connectionIndex
+            ) {
+                this.setState(
+                    "lastUsedConnectionIndex",
+                    lastUsedConnectionIndex - 1,
+                );
+            }
+        });
     }
 
     public connection(connectionIndex: number) {

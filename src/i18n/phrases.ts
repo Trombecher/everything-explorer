@@ -9,6 +9,18 @@ export namespace Phrase {
         [Greeting]: {forName: string};
         [InstanceProperties]: undefined;
         [Connections]: undefined;
+        [AddKnowledgeBase]: undefined;
+        [CreateNewLocal]: undefined;
+        [ExistingLocal]: undefined;
+        [RemoteConnection]: undefined;
+        [Local]: undefined;
+        [Remote]: undefined;
+        [Connect]: undefined;
+        [Disconnect]: undefined;
+        [Connected]: undefined;
+        [UnnamedConnection]: undefined;
+        [DeleteConnection]: undefined;
+        [NoConnectionsYet]: undefined;
         [Things]: undefined;
         [German]: undefined;
         [English]: undefined;
@@ -28,6 +40,18 @@ export namespace Phrase {
     export const Greeting = Symbol();
     export const InstanceProperties = Symbol();
     export const Connections = Symbol();
+    export const AddKnowledgeBase = Symbol();
+    export const CreateNewLocal = Symbol();
+    export const ExistingLocal = Symbol();
+    export const RemoteConnection = Symbol();
+    export const Local = Symbol();
+    export const Remote = Symbol();
+    export const Connect = Symbol();
+    export const Disconnect = Symbol();
+    export const Connected = Symbol();
+    export const UnnamedConnection = Symbol();
+    export const DeleteConnection = Symbol();
+    export const NoConnectionsYet = Symbol();
     export const Things = Symbol();
     export const German = Symbol();
     export const English = Symbol();
@@ -48,6 +72,18 @@ export type Phrase =
     | typeof Phrase.Greeting
     | typeof Phrase.InstanceProperties
     | typeof Phrase.Connections
+    | typeof Phrase.AddKnowledgeBase
+    | typeof Phrase.CreateNewLocal
+    | typeof Phrase.ExistingLocal
+    | typeof Phrase.RemoteConnection
+    | typeof Phrase.Local
+    | typeof Phrase.Remote
+    | typeof Phrase.Connect
+    | typeof Phrase.Disconnect
+    | typeof Phrase.Connected
+    | typeof Phrase.UnnamedConnection
+    | typeof Phrase.DeleteConnection
+    | typeof Phrase.NoConnectionsYet
     | typeof Phrase.Things
     | typeof Phrase.German
     | typeof Phrase.English
