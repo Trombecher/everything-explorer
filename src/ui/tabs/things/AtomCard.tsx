@@ -22,7 +22,7 @@ export default (props: {
                     props.setSelectedAtom(undefined);
                 }
             }}
-            class={`flex h-48 w-48 flex-col overflow-hidden rounded-4xl border p-4 text-left ${props.selectedAtom === props.atom ? "border-blue-500 bg-blue-400/20" : "border-neutral-200 bg-neutral-100 hover:bg-neutral-200"}`}
+            class={`flex size-48 flex-col overflow-hidden rounded-4xl border p-4 text-left ${props.selectedAtom === props.atom ? "border-blue-500 bg-blue-400/20" : "border-neutral-200 bg-neutral-100 hover:bg-neutral-200"}`}
         >
             <Show when={props.isNew}>
                 <span class="mb-1 self-center rounded-full bg-blue-400/20 px-2 py-0.5 text-xs font-medium whitespace-nowrap text-blue-500">

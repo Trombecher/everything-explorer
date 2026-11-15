@@ -43,6 +43,7 @@
     --color-neutral-900: oklch(21% 0.006 40.59);
 
     --color-always-white: white;
+    --color-always-black: black;
 }
 
 html[data-theme="dark"] {

@@ -103,7 +103,7 @@ export default (props: {
                     setEditing(false);
                     setInvalid(false);
                 }}
-                class={`block field-sizing-content data-invalid:outline data-invalid:outline-2 data-invalid:outline-red-500 ${props.inputClass ?? ""}`}
+                class={`block field-sizing-content data-invalid:outline-2 data-invalid:outline-red-500 ${props.inputClass ?? ""}`}
             />
         </TextField>
     );

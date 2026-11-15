@@ -7,7 +7,6 @@ export default () => {
             viewBox="0 0 24 24"
             fill="currentColor"
             stroke="none"
-            class="lucide lucide-dot preview-icon"
         >
             <circle cx="7" cy="12" r="4" />
             <circle cx="17" cy="12" r="4" />

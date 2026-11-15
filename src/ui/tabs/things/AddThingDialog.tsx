@@ -59,7 +59,7 @@ export default (props: {disabled: boolean; onAdd: (atom: Atom) => void}) => {
                 Add thing
             </Dialog.Trigger>
             <Dialog.Portal>
-                <Dialog.Overlay class="fixed inset-0 z-50 bg-[#00000066]" />
+                <Dialog.Overlay class="fixed inset-0 z-50 bg-always-black/40" />
                 <Dialog.Content
                     onOpenAutoFocus={event => {
                         event.preventDefault();
