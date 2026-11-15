@@ -146,7 +146,7 @@ export default (props: {
                 class={`h-full w-1 rounded-full ${
                     resizing()
                         ? "bg-blue-400"
-                        : "bg-neutral-200 group-hover:bg-blue-300 group-focus-visible:bg-blue-300"
+                        : "bg-transparent group-hover:bg-blue-300 group-focus-visible:bg-blue-300"
                 }`}
             />
         </div>

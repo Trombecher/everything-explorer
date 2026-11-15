@@ -237,6 +237,10 @@ export default () => {
             <Show when={selectedAtom()} keyed>
                 {selectedAtom => (
                     <>
+                        {/*
+                         * Negative margin makes the separator occupy the
+                         * `gap-2` between the panels instead of adding to it.
+                         */}
                         <ResizeSeparator
                             label="Resize properties panel"
                             width={appState.propertiesPanelWidth}
@@ -244,6 +248,7 @@ export default () => {
                             minWidth={MIN_PROPERTIES_PANEL_WIDTH}
                             maxWidth={maximumPropertiesPanelWidth}
                             resizedSide="end"
+                            class="-mx-2"
                         />
                         <div
                             class="shrink-0"
