@@ -103,5 +103,17 @@ imports must end with `Icon`. We debate about adding
 
 ## Testing
 
-Please do not add any frontend tests (or try to test the frontend code in other
-ways) (if not said otherwise).
+Please do not add any frontend test **files**.
+
+### Testing via browser skill
+
+You can test the frontend code by using a browser skill if possible.
+
+- If the UI that you want to test out does not require any connection to a
+  knowledge store, you can run the frontend headlessly with `nub run dev` and go
+  to `http://localhost:1420`.
+- Otherwise, you have to start the tauri app with `nub x tauri dev` and wait for
+  10s. In this meantime, I start the knowledge server by hand in the tauri app
+  window. Then you can go to `http://localhost:1420` in your browser, add a
+  **remote** connection to `localhost:3000` (the knowledge server) (if there
+  isn't already one) and connect to that.
