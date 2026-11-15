@@ -75,7 +75,8 @@ translated to all declared languages (type-level enforcement).
 ### Package Manager
 
 Nub is used as the package manager. It mirrors the Bun / pnpm CLI for common
-operations.
+operations, notably `nub install <package>`, `nub remove <package>`,
+`nub run <script>`, and `nub x <binary>`. Do not use `npx` nor `npm`.
 
 ## TypeScript UI Code Style
 
