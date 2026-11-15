@@ -1,6 +1,7 @@
 import LayoutGridIcon from "lucide-solid/icons/layout-grid";
 import PlusIcon from "lucide-solid/icons/plus";
 import SearchIcon from "lucide-solid/icons/search";
+import XIcon from "lucide-solid/icons/x";
 import {
     createEffect,
     createMemo,
@@ -109,6 +110,15 @@ export default () => {
     const [selectedAtom, setSelectedAtom] = createSignal<undefined | Atom>();
     const [searchValue, setSearchValue] = createSignal("");
 
+    /**
+     * On narrow containers the search field is collapsed into a button and only
+     * shown in an extra row once expanded.
+     */
+    const [isSearchExpanded, setIsSearchExpanded] = createSignal(false);
+
+    const searchToggleLabel = () =>
+        isSearchExpanded() ? "Close search" : "Search things";
+
     const parseAtomId = (input: string): Atom | undefined => {
         const trimmed = input.trim();
 
@@ -144,29 +154,69 @@ export default () => {
             }}
         >
             <div class="min-w-0 grow rounded-4xl border border-neutral-200 bg-white p-2 dark:bg-neutral-100">
-                <div class="flex items-center gap-2 px-2 text-black">
-                    <LayoutGridIcon />
-                    <h2 class="text-xl font-semibold">Things</h2>
-                    <label class="mx-2 flex grow items-center rounded-2xl border border-neutral-200 bg-neutral-100 pl-2 focus-within:outline-2 dark:bg-white">
-                        <SearchIcon />
-                        <input
-                            type="search"
-                            placeholder="Search by atom ID..."
-                            value={searchValue()}
-                            onInput={e => {
-                                setSearchValue(e.currentTarget.value);
-                                searchForAtom(e.currentTarget.value);
-                            }}
-                            class="block min-w-0 grow py-2 pr-3 pl-2 outline-none"
-                        />
-                    </label>
-                    <button
-                        onClick={generateAndSearchNewAtom}
-                        disabled={appState.connectionClient() === undefined}
-                        class="flex cursor-pointer items-center gap-2 rounded-2xl bg-blue-500 px-3 py-1 font-medium text-white hover:bg-blue-600 active:scale-97 active:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 dark:text-black"
-                    >
-                        <PlusIcon /> Add thing
-                    </button>
+                <div class="@container">
+                    <div class="flex flex-wrap items-center gap-2 px-2 text-black">
+                        <LayoutGridIcon class="shrink-0" />
+                        <h2 class="shrink-0 text-xl font-semibold">Things</h2>
+                        <label class="mx-2 flex grow items-center rounded-2xl border border-neutral-200 bg-neutral-100 pl-2 focus-within:outline-2 @max-md:hidden dark:bg-white">
+                            <SearchIcon />
+                            <input
+                                type="search"
+                                placeholder="Search by atom ID..."
+                                value={searchValue()}
+                                onInput={e => {
+                                    setSearchValue(e.currentTarget.value);
+                                    searchForAtom(e.currentTarget.value);
+                                }}
+                                class="block min-w-0 grow py-2 pr-3 pl-2 outline-none"
+                            />
+                        </label>
+                        <button
+                            onClick={() =>
+                                setIsSearchExpanded(expanded => !expanded)
+                            }
+                            aria-label={searchToggleLabel()}
+                            title={searchToggleLabel()}
+                            class="ml-auto flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-2xl text-neutral-600 hover:bg-neutral-100 @min-md:hidden"
+                        >
+                            <Show
+                                when={isSearchExpanded()}
+                                fallback={<SearchIcon />}
+                            >
+                                <XIcon />
+                            </Show>
+                        </button>
+                        <button
+                            onClick={generateAndSearchNewAtom}
+                            disabled={appState.connectionClient() === undefined}
+                            aria-label="Add thing"
+                            class="flex shrink-0 cursor-pointer items-center gap-2 rounded-2xl bg-blue-500 px-3 py-1 font-medium text-white hover:bg-blue-600 active:scale-97 active:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 dark:text-black"
+                        >
+                            <PlusIcon />
+                            <span class="@max-xs:hidden">Add thing</span>
+                        </button>
+                    </div>
+                    <Show when={isSearchExpanded()}>
+                        <label class="mt-2 flex w-full items-center rounded-2xl border border-neutral-200 bg-neutral-100 pl-2 focus-within:outline-2 @min-md:hidden dark:bg-white">
+                            <SearchIcon />
+                            <input
+                                type="search"
+                                placeholder="Search by atom ID..."
+                                value={searchValue()}
+                                ref={el => queueMicrotask(() => el.focus())}
+                                onInput={e => {
+                                    setSearchValue(e.currentTarget.value);
+                                    searchForAtom(e.currentTarget.value);
+                                }}
+                                onKeyDown={e => {
+                                    if (e.key === "Escape") {
+                                        setIsSearchExpanded(false);
+                                    }
+                                }}
+                                class="block min-w-0 grow py-2 pr-3 pl-2 outline-none"
+                            />
+                        </label>
+                    </Show>
                 </div>
 
                 <div class="mt-4 flex flex-wrap gap-2">
