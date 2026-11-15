@@ -5,6 +5,7 @@ export namespace Phrase {
 
     export type TranslationArguments = RequireArgsForEveryPhrase<{
         [AppSettings]: undefined;
+        [ToggleSidebar]: undefined;
         [Compact]: undefined;
         [Greeting]: {forName: string};
         [InstanceProperties]: undefined;
@@ -44,6 +45,7 @@ export namespace Phrase {
     }>;
 
     export const AppSettings = Symbol();
+    export const ToggleSidebar = Symbol();
     export const Compact = Symbol();
     export const Greeting = Symbol();
     export const InstanceProperties = Symbol();
@@ -84,6 +86,7 @@ export namespace Phrase {
 
 export type Phrase =
     | typeof Phrase.AppSettings
+    | typeof Phrase.ToggleSidebar
     | typeof Phrase.Compact
     | typeof Phrase.Greeting
     | typeof Phrase.InstanceProperties

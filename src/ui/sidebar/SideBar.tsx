@@ -10,11 +10,14 @@ export default () => {
     const appState = useAppState();
 
     return (
-        <aside class="sticky top-0 flex h-screen w-64 shrink-0 flex-col gap-2 p-2">
-            <AppInfo />
-            <ConnectionStatusView />
+        <aside
+            id="app-sidebar"
+            class={`sticky top-0 flex h-screen shrink-0 flex-col gap-2 p-2 transition-[width] duration-150 ${appState.sidebarCollapsed() ? "w-18.5" : "w-64"}`}
+        >
+            <AppInfo compact={appState.sidebarCollapsed()} />
+            <ConnectionStatusView compact={appState.sidebarCollapsed()} />
             <Show when={appState.isConnected()}>
-                <Views />
+                <Views compact={appState.sidebarCollapsed()} />
             </Show>
         </aside>
     );

@@ -3,6 +3,7 @@ import {Phrase} from "./phrases";
 
 export const english = {
     [Phrase.AppSettings]: () => "App Settings",
+    [Phrase.ToggleSidebar]: () => "Toggle sidebar",
     [Phrase.Compact]: () => "Compact",
     [Phrase.Greeting]: ({forName}) => `Hello, ${forName}!`,
     [Phrase.InstanceProperties]: () => "Instance Properties",

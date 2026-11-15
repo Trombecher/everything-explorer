@@ -141,6 +141,14 @@ export class AppState {
     public readonly propertiesPanelWidth: Accessor<number>;
     public readonly setPropertiesPanelWidth: Setter<number>;
 
+    /**
+     * Whether the sidebar is collapsed to a slim icon rail.
+     *
+     * This is runtime state, not part of the persisted app state.
+     */
+    public readonly sidebarCollapsed: Accessor<boolean>;
+    public readonly setSidebarCollapsed: Setter<boolean>;
+
     public readonly browserLanguage: () => BrowserLanguage;
 
     constructor(initial: InternalAppState) {
@@ -195,6 +203,12 @@ export class AppState {
 
         this.propertiesPanelWidth = propertiesPanelWidth;
         this.setPropertiesPanelWidth = setPropertiesPanelWidth;
+
+        // Sidebar collapsed
+        const [sidebarCollapsed, setSidebarCollapsed] = createSignal(false);
+
+        this.sidebarCollapsed = sidebarCollapsed;
+        this.setSidebarCollapsed = setSidebarCollapsed;
 
         // Atom names belong to a specific knowledge base, so drop them when
         // reconnecting.
@@ -344,6 +358,10 @@ export class AppState {
 
     public setThemeSetting(newTheme: ThemeSetting) {
         this.setState("themeSetting", newTheme);
+    }
+
+    public toggleSidebarCollapsed() {
+        this.setSidebarCollapsed(collapsed => !collapsed);
     }
 
     /**
