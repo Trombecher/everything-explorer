@@ -199,7 +199,7 @@ export class AppState {
         // Properties panel width
 
         const [propertiesPanelWidth, setPropertiesPanelWidth] =
-            createSignal(400);
+            createSignal(600);
 
         this.propertiesPanelWidth = propertiesPanelWidth;
         this.setPropertiesPanelWidth = setPropertiesPanelWidth;

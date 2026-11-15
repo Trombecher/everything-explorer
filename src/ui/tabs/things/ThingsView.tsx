@@ -168,7 +168,7 @@ export default () => {
                                     setSearchValue(e.currentTarget.value);
                                     searchForAtom(e.currentTarget.value);
                                 }}
-                                class="block min-w-0 grow py-2 pr-3 pl-2 outline-none"
+                                class="block w-0 grow py-2 pr-3 pl-2 outline-none"
                             />
                         </label>
                         <button
