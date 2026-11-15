@@ -44,7 +44,7 @@ export default <T, I extends string>(props: {
                 <Select.Label />
                 <Select.Description>{props.description}</Select.Description>
             </div>
-            <Select.Trigger class="flex min-w-48 rounded-full border border-neutral-200 bg-neutral-100 p-1 text-left data-expanded:bg-neutral-200">
+            <Select.Trigger class="flex min-w-48 rounded-full border border-neutral-200 bg-neutral-100 p-1 text-left data-expanded:bg-neutral-200 dark:bg-white">
                 <Select.Value<I> class="pl-2">
                     {selected => (
                         <>
@@ -60,7 +60,7 @@ export default <T, I extends string>(props: {
             </Select.Trigger>
 
             <Select.Portal>
-                <Select.Content class="rounded-3xl border border-neutral-200 bg-white p-2 shadow-lg select-none dark:bg-neutral-100">
+                <Select.Content class="rounded-3xl border border-neutral-200 bg-white p-2 shadow-lg select-none">
                     <h3 class="px-2 py-1 text-sm font-medium text-neutral-600">
                         {props.description}
                     </h3>

@@ -147,7 +147,7 @@ export default () => {
                 <div class="flex items-center gap-2 px-2 text-black">
                     <LayoutGridIcon />
                     <h2 class="text-xl font-semibold">Things</h2>
-                    <label class="mx-2 flex grow items-center rounded-2xl border border-neutral-200 bg-neutral-100 pl-2 focus-within:outline-2">
+                    <label class="mx-2 flex grow items-center rounded-2xl border border-neutral-200 bg-neutral-100 pl-2 focus-within:outline-2 dark:bg-white">
                         <SearchIcon />
                         <input
                             type="search"
