@@ -1,3 +1,4 @@
+mod evaluate;
 mod routes_v1;
 mod wire;
 
