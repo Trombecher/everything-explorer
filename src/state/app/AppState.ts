@@ -11,112 +11,25 @@ import {type SetStoreFunction, createStore} from "solid-js/store";
 
 import * as backend from "@/backend/api";
 import {ConnectionClient} from "@/connect";
+import {Language, translate} from "@/i18n";
+import type {Phrase} from "@/i18n/phrases";
+import {System, Tab} from "@/state/common";
+import type {ThemeSetting} from "@/state/theme";
 import {
     defaultBlockLayoutOptions,
     type LayoutOptions,
 } from "@/ui/objects/layout";
+import type {DeepReadonly} from "@/util";
 
-import {Language, translate} from "../i18n";
-import type {Phrase} from "../i18n/phrases";
-import type {DeepReadonly} from "../util";
-import {System, Tab} from "./common";
-import type {ThemeSetting} from "./theme";
-
-export type LanguageSetting = Language | typeof System;
-
-export namespace ConnectionType {
-    export const Local = Symbol();
-    export const Remote = Symbol();
-}
-
-export type ConnectionType =
-    | typeof ConnectionType.Local
-    | typeof ConnectionType.Remote;
-
-export type Connection = (
-    | {type: typeof ConnectionType.Local; filePath: string}
-    | {type: typeof ConnectionType.Remote; url: string}
-) & {name: string};
-
-const connectionsShareURI = (
-    connection: DeepReadonly<Connection>,
-    connection2: DeepReadonly<Connection>,
-): boolean => {
-    if (
-        connection2.type === ConnectionType.Local
-        && connection.type === ConnectionType.Local
-    ) {
-        return connection.filePath === connection2.filePath;
-    }
-
-    if (
-        connection.type === ConnectionType.Remote
-        && connection2.type === ConnectionType.Remote
-    ) {
-        return connection.url === connection2.url;
-    }
-
-    return false;
-};
-
-/**
- * Invariants:
- *
- * - If `lastUsedConnectionIndex` is not `undefined`, then it is a safe
- *   non-negative integer which is a valid connection index.
- * - No connection URL is double.
- */
-export type InternalAppState = {
-    languageSetting: LanguageSetting;
-    currentTab: Tab;
-    connections: Connection[];
-    themeSetting: ThemeSetting;
-    lastUsedConnectionIndex: number | undefined;
-};
-
-/**
- * Modifies the given `appState` such that all invariants are good.
- */
-const enforceInvariants = (appState: InternalAppState) => {
-    // Filter out doubles.
-    appState.connections = appState.connections.filter(
-        (connection, i) =>
-            !appState.connections.find(
-                (connection2, j) =>
-                    i < j && connectionsShareURI(connection, connection2),
-            ),
-    );
-
-    if (
-        appState.lastUsedConnectionIndex !== undefined
-        && (!Number.isSafeInteger(appState.lastUsedConnectionIndex)
-            || appState.lastUsedConnectionIndex < 0
-            || !appState.connections[appState.lastUsedConnectionIndex])
-    ) {
-        appState.lastUsedConnectionIndex = undefined;
-    }
-};
-
-export type BrowserLanguage = Language | undefined;
-
-export const detectBrowserLanguage = (): BrowserLanguage => {
-    switch (navigator.language.split("-")[0]) {
-        case "en":
-            return Language.English;
-        case "de":
-            return Language.German;
-        default:
-            return undefined;
-    }
-};
-
-export const defaultAppStateData = (): InternalAppState => ({
-    languageSetting: System,
-    currentTab: Tab.Debug,
-    connections: [],
-    themeSetting: System,
-    lastUsedConnectionIndex: undefined,
-});
+import {enforceInvariants} from "./connections";
+import {type BrowserLanguage, detectBrowserLanguage} from "./language";
+import {
+    ConnectionType,
+    defaultAppStateData,
+    type Connection,
+    type InternalAppState,
+    type LanguageSetting,
+} from "./types";
 
 export class AppState {
     public readonly state: DeepReadonly<InternalAppState>;
