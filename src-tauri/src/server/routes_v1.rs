@@ -4,7 +4,7 @@ use axum::{Json, extract::State, http::StatusCode, response::IntoResponse};
 use everything::{
     compute::{self, LazyObject, Node},
     knowledge::{Knowledge, Statement},
-    model::{Object, Set},
+    model::{Atom, Object, Set},
 };
 
 use crate::server::{
@@ -57,7 +57,7 @@ pub async fn construction_values_of_object(
 
 /// Evaluates the given object in the knowledge base and returns the result.
 ///
-/// Objects that are not nodes evaluate to themselves.
+/// Objects that are not nodes evaluate to [`Atom::UNDEFINED`].
 pub async fn evaluate_object(
     State(state): State<Arc<WebServerState>>,
     Json(json): Json<JsonObject>,
@@ -71,7 +71,7 @@ pub async fn evaluate_object(
 
 fn evaluate(object: &Object, knowledge: &Knowledge) -> Object {
     let Ok(node) = Node::new(object, knowledge) else {
-        return object.clone();
+        return Atom::UNDEFINED.into();
     };
 
     materialize(compute::evaluate(&node, knowledge), knowledge)
@@ -175,11 +175,11 @@ mod tests {
     }
 
     #[test]
-    fn non_node_evaluates_to_itself() {
+    fn non_node_evaluates_to_undefined() {
         let knowledge = Knowledge::empty();
         let object = Object::new_integer(BigInt::from(7));
 
-        assert_eq!(evaluate(&object, &knowledge), object);
+        assert_eq!(evaluate(&object, &knowledge), Atom::UNDEFINED.into());
     }
 
     #[test]
