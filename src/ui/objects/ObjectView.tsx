@@ -64,7 +64,7 @@ const isHandledKey = (key: string): boolean =>
     || key === "p"
     || key === "s"
     || key === "c"
-    || (key.length === 1 && "0123456789".includes(key));
+    || key === "z";
 
 const handleKeyDown = (props: {
     event: KeyboardEvent & {currentTarget: HTMLDivElement; target: Element};
@@ -434,14 +434,25 @@ const handleKeyDown = (props: {
         );
 
         props.objectSelection.selectChild(1);
-    } else if ("0123456789".includes(props.event.key)) {
+    } else if (props.event.key === "z") {
         if (!props.setObject) return;
 
         // Replace with number.
 
-        props.setObject({
-            type: ObjectType.Integer,
-            value: BigInt(props.event.key),
+        props.setObject({type: ObjectType.Integer, value: 0n});
+
+        // Focus the input once the new object has been rendered. Capture the
+        // container because `event.currentTarget` is cleared after dispatch.
+
+        const container = props.event.currentTarget;
+
+        queueMicrotask(() => {
+            const input = container.querySelector("input");
+
+            if (input) {
+                input.focus();
+                input.select();
+            }
         });
     } else if (props.event.key === "*") {
         if (!props.setObject) return;
