@@ -11,6 +11,7 @@ export namespace NodeType {
     export const Contains = Symbol("NodeType.Contains");
     export const And = Symbol("NodeType.And");
     export const Or = Symbol("NodeType.Or");
+    export const Not = Symbol("NodeType.Not");
     export const Union = Symbol("NodeType.Union");
     export const Filter = Symbol("NodeType.Filter");
     export const Call = Symbol("NodeType.Call");
@@ -74,6 +75,12 @@ export type OrNode = {
     readonly rest: readonly EverythingObject[];
 };
 
+export type NotNode = {
+    readonly type: typeof NodeType.Not;
+    readonly operand: EverythingObject;
+    readonly rest: readonly EverythingObject[];
+};
+
 export type UnionNode = {
     readonly type: typeof NodeType.Union;
     readonly first: EverythingObject;
@@ -110,6 +117,7 @@ export type Node =
     | ContainsNode
     | AndNode
     | OrNode
+    | NotNode
     | UnionNode
     | FilterNode
     | CallNode
@@ -261,6 +269,19 @@ const objectToNodeWithoutCache = (
                 ]),
             };
         }
+    }
+
+    some = singleSetAtomValue(object, Atom.NodeNot.value);
+    if (some) {
+        if (finalNode) return NotANode;
+
+        finalNode = {
+            type: NodeType.Not,
+            operand: some,
+            rest: withoutAtomConstructors(object.elements, [
+                Atom.NodeNot.value,
+            ]),
+        };
     }
 
     some = singleSetAtomValue(object, Atom.NodeUnionFirst.value);
@@ -492,6 +513,14 @@ export const nodeToObject = (node: Node): EverythingObject => {
                 elements: [
                     construction(Atom.NodeOrFirst, node.first),
                     construction(Atom.NodeOrSecond, node.second),
+                    ...node.rest,
+                ],
+            };
+        case NodeType.Not:
+            return {
+                type: ObjectType.Set,
+                elements: [
+                    construction(Atom.NodeNot, node.operand),
                     ...node.rest,
                 ],
             };

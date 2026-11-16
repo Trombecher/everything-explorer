@@ -83,6 +83,7 @@ const blockIconWidthInPixels = {
     blackboardZ: 24,
     mapsTo: 32,
     call: 40,
+    not: 24,
 } as const satisfies Record<string, 12 | 24 | 32 | 40 | 48 | 56 | 64>;
 
 /**
@@ -228,6 +229,17 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                     blockIconWidthInPixels.vee,
                     calculateRowLayoutWidthOfBlock(
                         objectToBlock(block.second),
+                        options,
+                    ),
+                ],
+                options,
+            );
+        case NodeType.Not:
+            return rowLayoutWidth(
+                [
+                    blockIconWidthInPixels.not,
+                    calculateRowLayoutWidthOfBlock(
+                        objectToBlock(block.operand),
                         options,
                     ),
                 ],
@@ -412,6 +424,7 @@ export const childCountOfBlock = (block: Block): number => {
             return 0;
         case NodeType.Function:
         case NodeType.Literal:
+        case NodeType.Not:
             return 1;
         case ObjectType.Construction:
         case NodeType.Plus:
@@ -536,6 +549,20 @@ export const binaryBlockSlotWidthBudgetInPixels = (
             return Infinity;
     }
 };
+
+export const calculateNotNodeOperandWidthBudgetInPixels = (
+    widthBudgetInPixels: number,
+    layoutOptions: LayoutOptions,
+): number =>
+    Math.max(
+        0,
+        widthBudgetInPixels
+            - layoutOptions.block.blockBorderWidthInPixels * 2
+            - layoutOptions.block.blockPaddingLeftInPixels
+            - layoutOptions.block.blockPaddingRightInPixels
+            - blockIconWidthInPixels.not
+            - layoutOptions.block.itemGapInPixels,
+    );
 
 export const calculateLiteralNodeInnerObjectWidthBudgetInPixels = (
     widthBudgetInPixels: number,

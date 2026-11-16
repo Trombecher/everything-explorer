@@ -72,6 +72,11 @@ const createInitialObject2 = (): EverythingObject => ({
             rest: [],
         }),
         nodeToObject({
+            type: NodeType.Not,
+            operand: {type: ObjectType.Integer, value: 0n},
+            rest: [],
+        }),
+        nodeToObject({
             type: NodeType.Union,
             first: defaultObject,
             second: defaultObject,

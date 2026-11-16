@@ -32,6 +32,7 @@ import type {ObjectSelection, ObjectSelectionPath} from "./selection";
 import {useObjectSelection} from "./selection";
 import SetObjectView from "./SetObjectView";
 import TextView from "./TextView";
+import UnaryOperationView from "./UnaryOperationView";
 
 const isHandledKey = (key: string): boolean =>
     key === "ArrowUp"
@@ -46,6 +47,8 @@ const isHandledKey = (key: string): boolean =>
     || key === "&"
     || key === "|"
     || key === "u"
+    || key === "n"
+    || key === "!"
     || key === "F"
     || key === " "
     || key === "*"
@@ -187,6 +190,12 @@ const handleKeyDown = (props: {
                     props.setObject(node.first);
                     break;
                 }
+                case NodeType.Not: {
+                    // Retain operand.
+
+                    props.setObject(node.operand);
+                    break;
+                }
                 case NodeType.Union: {
                     // Retain first operand.
 
@@ -282,6 +291,14 @@ const handleKeyDown = (props: {
         );
 
         props.objectSelection.selectChild(1);
+    } else if (props.event.key === "n" || props.event.key === "!") {
+        if (!props.setObject) return;
+
+        props.setObject(
+            nodeToObject({type: NodeType.Not, operand: props.object, rest: []}),
+        );
+
+        props.objectSelection.selectChild(0);
     } else if (props.event.key === "F") {
         if (!props.setObject) return;
 
@@ -418,6 +435,8 @@ const objectViewColorHue = (object: EverythingObject): number => {
                 return 130;
             case NodeType.Or:
                 return 10;
+            case NodeType.Not:
+                return 70;
             case NodeType.Union:
                 return 230;
             case NodeType.Filter:
@@ -780,6 +799,16 @@ export const ObjectView = (props: {
                     {orNode => (
                         <BinaryOperationView
                             block={orNode()}
+                            path={props.path}
+                            wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                            setObject={props.setObject}
+                        />
+                    )}
+                </Match>
+                <Match when={variant(block(), NodeType.Not)}>
+                    {notNode => (
+                        <UnaryOperationView
+                            block={notNode()}
                             path={props.path}
                             wholeWidthBudgetInPixels={props.widthBudgetInPixels}
                             setObject={props.setObject}
