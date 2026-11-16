@@ -98,6 +98,13 @@ const createInitialObject2 = (): EverythingObject => ({
             rest: [],
         }),
         nodeToObject({
+            type: NodeType.If,
+            condition: {type: ObjectType.Integer, value: 1n},
+            thenBranch: {type: ObjectType.Integer, value: 42n},
+            otherwiseBranch: {type: ObjectType.Integer, value: 0n},
+            rest: [],
+        }),
+        nodeToObject({
             type: NodeType.Call,
             callee: nodeToObject({
                 type: NodeType.Function,

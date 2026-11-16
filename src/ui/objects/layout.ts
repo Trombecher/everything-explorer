@@ -84,6 +84,7 @@ const blockIconWidthInPixels = {
     mapsTo: 32,
     call: 40,
     not: 24,
+    check: 24,
 } as const satisfies Record<string, 12 | 24 | 32 | 40 | 48 | 56 | 64>;
 
 /**
@@ -275,6 +276,30 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                 ],
                 options,
             );
+        case NodeType.If:
+            return rowLayoutWidth(
+                [
+                    calculateRowLayoutWidthOfBlock(
+                        objectToBlock(block.condition),
+                        options,
+                    ),
+                    Math.max(
+                        blockIconWidthInPixels.check
+                            + options.block.itemGapInPixels
+                            + calculateRowLayoutWidthOfBlock(
+                                objectToBlock(block.thenBranch),
+                                options,
+                            ),
+                        blockIconWidthInPixels.x
+                            + options.block.itemGapInPixels
+                            + calculateRowLayoutWidthOfBlock(
+                                objectToBlock(block.otherwiseBranch),
+                                options,
+                            ),
+                    ),
+                ],
+                options,
+            );
         case NodeType.Times:
             return rowLayoutWidth(
                 [
@@ -437,6 +462,8 @@ export const childCountOfBlock = (block: Block): number => {
         case NodeType.Filter:
         case NodeType.Call:
             return 2;
+        case NodeType.If:
+            return 3;
         case ObjectType.Set:
             return block.elements.length;
     }
@@ -549,6 +576,41 @@ export const binaryBlockSlotWidthBudgetInPixels = (
             return Infinity;
     }
 };
+
+const ifNodeInnerWidthBudgetInPixels = (
+    widthBudgetInPixels: number,
+    layoutOptions: LayoutOptions,
+): number =>
+    Math.max(
+        0,
+        widthBudgetInPixels
+            - layoutOptions.block.blockBorderWidthInPixels * 2
+            - layoutOptions.block.blockPaddingLeftInPixels
+            - layoutOptions.block.blockPaddingRightInPixels,
+    );
+
+export const calculateIfConditionWidthBudgetInPixels = (
+    widthBudgetInPixels: number,
+    layoutModeOfIf: LayoutMode,
+    layoutOptions: LayoutOptions,
+): number =>
+    layoutModeOfIf === LayoutMode.Row
+        ? Infinity
+        : ifNodeInnerWidthBudgetInPixels(widthBudgetInPixels, layoutOptions);
+
+export const calculateIfBranchChildWidthBudgetInPixels = (
+    widthBudgetInPixels: number,
+    layoutModeOfIf: LayoutMode,
+    layoutOptions: LayoutOptions,
+): number =>
+    layoutModeOfIf === LayoutMode.Row
+        ? Infinity
+        : Math.max(
+              0,
+              ifNodeInnerWidthBudgetInPixels(widthBudgetInPixels, layoutOptions)
+                  - blockIconWidthInPixels.check
+                  - layoutOptions.block.itemGapInPixels,
+          );
 
 export const calculateNotNodeOperandWidthBudgetInPixels = (
     widthBudgetInPixels: number,

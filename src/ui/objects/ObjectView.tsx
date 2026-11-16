@@ -19,6 +19,7 @@ import {
     EnclosingFunctionsContext,
     useEnclosingFunctions,
 } from "./enclosingFunctions";
+import IfOperationView from "./IfOperationView";
 import IntegerView from "./IntegerView";
 import {
     calculateFunctionBodyWidthBudgetInPixels,
@@ -48,6 +49,7 @@ const isHandledKey = (key: string): boolean =>
     || key === "|"
     || key === "u"
     || key === "n"
+    || key === "i"
     || key === "!"
     || key === "F"
     || key === " "
@@ -208,6 +210,12 @@ const handleKeyDown = (props: {
                     props.setObject(node.set);
                     break;
                 }
+                case NodeType.If: {
+                    // Retain condition.
+
+                    props.setObject(node.condition);
+                    break;
+                }
                 case NodeType.Contains: {
                     // Retain element.
 
@@ -299,6 +307,20 @@ const handleKeyDown = (props: {
         );
 
         props.objectSelection.selectChild(0);
+    } else if (props.event.key === "i") {
+        if (!props.setObject) return;
+
+        props.setObject(
+            nodeToObject({
+                type: NodeType.If,
+                condition: props.object,
+                thenBranch: defaultObject,
+                otherwiseBranch: defaultObject,
+                rest: [],
+            }),
+        );
+
+        props.objectSelection.selectChild(1);
     } else if (props.event.key === "F") {
         if (!props.setObject) return;
 
@@ -441,6 +463,8 @@ const objectViewColorHue = (object: EverythingObject): number => {
                 return 230;
             case NodeType.Filter:
                 return 205;
+            case NodeType.If:
+                return 260;
             case NodeType.Call:
                 return 320;
         }
@@ -829,6 +853,16 @@ export const ObjectView = (props: {
                     {filterNode => (
                         <BinaryOperationView
                             block={filterNode()}
+                            path={props.path}
+                            wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                            setObject={props.setObject}
+                        />
+                    )}
+                </Match>
+                <Match when={variant(block(), NodeType.If)}>
+                    {ifNode => (
+                        <IfOperationView
+                            block={ifNode()}
                             path={props.path}
                             wholeWidthBudgetInPixels={props.widthBudgetInPixels}
                             setObject={props.setObject}

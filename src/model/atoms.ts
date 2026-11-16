@@ -103,6 +103,21 @@ export namespace Atom {
         value: 2150755715328094057860222292607728283n,
     } as const satisfies Atom;
 
+    export const NodeIfCondition = {
+        type: ObjectType.Atom,
+        value: 2150756911395278548780220055702389669n,
+    } as const satisfies Atom;
+
+    export const NodeIfThen = {
+        type: ObjectType.Atom,
+        value: 2150756911395360151235546653103149781n,
+    } as const satisfies Atom;
+
+    export const NodeIfElse = {
+        type: ObjectType.Atom,
+        value: 2150756911395636855407117245584275797n,
+    } as const satisfies Atom;
+
     export const NodeContainsElement = {
         type: ObjectType.Atom,
         value: 2166943953075778840020869770686077619n,

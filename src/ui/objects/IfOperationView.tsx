@@ -1,0 +1,153 @@
+import CheckIcon from "lucide-solid/icons/check";
+import XIcon from "lucide-solid/icons/x";
+
+import {useAppState} from "@/context";
+import type {EverythingObject} from "@/model";
+import {nodeToObject, type IfNode} from "@/model/nodes";
+
+import {
+    calculateIfBranchChildWidthBudgetInPixels,
+    calculateIfConditionWidthBudgetInPixels,
+    calculateLayoutModeOfBlock,
+    LayoutMode,
+} from "./layout";
+import ObjectView from "./ObjectView";
+import {useObjectSelection, type ObjectSelectionPath} from "./selection";
+
+const IfBranchRow = (props: {
+    icon: "check" | "x";
+    object: EverythingObject;
+    path: ObjectSelectionPath;
+    widthBudgetInPixels: number;
+    replaceParentWithThis: (() => void) | undefined;
+    setObject: ((newObject: EverythingObject | undefined) => void) | undefined;
+}) => {
+    const appState = useAppState();
+
+    const itemGap = () => `${appState.layoutOptions().block.itemGapInPixels}px`;
+
+    return (
+        <div class="flex items-center" style={{gap: itemGap()}}>
+            {props.icon === "check" ? <CheckIcon /> : <XIcon />}
+            <ObjectView
+                indentLeft={false}
+                parentObjectLayoutMode={LayoutMode.Column}
+                replaceParentWithThis={props.replaceParentWithThis}
+                siblingCount={3}
+                object={props.object}
+                setObject={props.setObject}
+                path={props.path}
+                widthBudgetInPixels={props.widthBudgetInPixels}
+            />
+        </div>
+    );
+};
+
+export default (props: {
+    block: IfNode;
+    path: ObjectSelectionPath;
+    wholeWidthBudgetInPixels: number;
+    setObject?: ((newObject: EverythingObject | undefined) => void) | undefined;
+}) => {
+    const objectSelection = useObjectSelection();
+    const appState = useAppState();
+
+    const layoutMode = () =>
+        calculateLayoutModeOfBlock(
+            props.block,
+            props.wholeWidthBudgetInPixels,
+            appState.layoutOptions(),
+        );
+
+    const itemGap = () => `${appState.layoutOptions().block.itemGapInPixels}px`;
+
+    const removeNode = () => {
+        objectSelection.selectParent();
+
+        props.setObject?.(undefined);
+    };
+
+    const replaceWith = (object: EverythingObject) => {
+        if (!props.setObject) return;
+
+        objectSelection.selectParent();
+        props.setObject(object);
+    };
+
+    const changeChild = (
+        key: "condition" | "thenBranch" | "otherwiseBranch",
+        newObject: EverythingObject | undefined,
+    ) => {
+        if (newObject === undefined) {
+            // An if node without all of its children is meaningless,
+            // so remove the whole node.
+            removeNode();
+        } else {
+            props.setObject?.(nodeToObject({...props.block, [key]: newObject}));
+        }
+    };
+
+    return (
+        <>
+            <ObjectView
+                indentLeft={false}
+                parentObjectLayoutMode={layoutMode()}
+                replaceParentWithThis={
+                    props.setObject
+                    && (() => replaceWith(props.block.condition))
+                }
+                siblingCount={3}
+                object={props.block.condition}
+                setObject={
+                    props.setObject
+                    && (newObject => changeChild("condition", newObject))
+                }
+                path={[...props.path, 0]}
+                widthBudgetInPixels={calculateIfConditionWidthBudgetInPixels(
+                    props.wholeWidthBudgetInPixels,
+                    layoutMode(),
+                    appState.layoutOptions(),
+                )}
+            />
+            <div class="flex flex-col items-start" style={{gap: itemGap()}}>
+                <IfBranchRow
+                    icon="check"
+                    object={props.block.thenBranch}
+                    path={[...props.path, 1]}
+                    widthBudgetInPixels={calculateIfBranchChildWidthBudgetInPixels(
+                        props.wholeWidthBudgetInPixels,
+                        layoutMode(),
+                        appState.layoutOptions(),
+                    )}
+                    replaceParentWithThis={
+                        props.setObject
+                        && (() => replaceWith(props.block.thenBranch))
+                    }
+                    setObject={
+                        props.setObject
+                        && (newObject => changeChild("thenBranch", newObject))
+                    }
+                />
+                <IfBranchRow
+                    icon="x"
+                    object={props.block.otherwiseBranch}
+                    path={[...props.path, 2]}
+                    widthBudgetInPixels={calculateIfBranchChildWidthBudgetInPixels(
+                        props.wholeWidthBudgetInPixels,
+                        layoutMode(),
+                        appState.layoutOptions(),
+                    )}
+                    replaceParentWithThis={
+                        props.setObject
+                        && (() => replaceWith(props.block.otherwiseBranch))
+                    }
+                    setObject={
+                        props.setObject
+                        && (newObject =>
+                            changeChild("otherwiseBranch", newObject))
+                    }
+                />
+            </div>
+        </>
+    );
+};

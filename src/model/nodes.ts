@@ -14,6 +14,7 @@ export namespace NodeType {
     export const Not = Symbol("NodeType.Not");
     export const Union = Symbol("NodeType.Union");
     export const Filter = Symbol("NodeType.Filter");
+    export const If = Symbol("NodeType.If");
     export const Call = Symbol("NodeType.Call");
     export const Parameter = Symbol("NodeType.Parameter");
 }
@@ -95,6 +96,14 @@ export type FilterNode = {
     readonly rest: readonly EverythingObject[];
 };
 
+export type IfNode = {
+    readonly type: typeof NodeType.If;
+    readonly condition: EverythingObject;
+    readonly thenBranch: EverythingObject;
+    readonly otherwiseBranch: EverythingObject;
+    readonly rest: readonly EverythingObject[];
+};
+
 export type CallNode = {
     readonly type: typeof NodeType.Call;
     readonly callee: EverythingObject;
@@ -120,6 +129,7 @@ export type Node =
     | NotNode
     | UnionNode
     | FilterNode
+    | IfNode
     | CallNode
     | ParameterNode;
 
@@ -320,6 +330,31 @@ const objectToNodeWithoutCache = (
                 rest: withoutAtomConstructors(object.elements, [
                     Atom.NodeFilterSet.value,
                     Atom.NodeFilterFilter.value,
+                ]),
+            };
+        }
+    }
+
+    some = singleSetAtomValue(object, Atom.NodeIfCondition.value);
+    if (some) {
+        const thenObject = singleSetAtomValue(object, Atom.NodeIfThen.value);
+        const otherwiseObject = singleSetAtomValue(
+            object,
+            Atom.NodeIfElse.value,
+        );
+
+        if (thenObject && otherwiseObject) {
+            if (finalNode) return NotANode;
+
+            finalNode = {
+                type: NodeType.If,
+                condition: some,
+                thenBranch: thenObject,
+                otherwiseBranch: otherwiseObject,
+                rest: withoutAtomConstructors(object.elements, [
+                    Atom.NodeIfCondition.value,
+                    Atom.NodeIfThen.value,
+                    Atom.NodeIfElse.value,
                 ]),
             };
         }
@@ -539,6 +574,16 @@ export const nodeToObject = (node: Node): EverythingObject => {
                 elements: [
                     construction(Atom.NodeFilterSet, node.set),
                     construction(Atom.NodeFilterFilter, node.filterFunction),
+                    ...node.rest,
+                ],
+            };
+        case NodeType.If:
+            return {
+                type: ObjectType.Set,
+                elements: [
+                    construction(Atom.NodeIfCondition, node.condition),
+                    construction(Atom.NodeIfThen, node.thenBranch),
+                    construction(Atom.NodeIfElse, node.otherwiseBranch),
                     ...node.rest,
                 ],
             };
