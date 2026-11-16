@@ -23,8 +23,8 @@ export default (props: {compact?: boolean}) => {
                     </div>
                 }
             >
-                <div class="mt-2 mb-3 flex items-start justify-between gap-2 px-2">
-                    <div>
+                <div class="mb-3 flex items-start justify-between gap-2">
+                    <div class="pt-2 pl-2">
                         <h1 class="text-lg font-bold text-black">
                             Everything
                             <br />
