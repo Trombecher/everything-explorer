@@ -1,3 +1,4 @@
+mod cors;
 mod evaluate;
 mod routes_v1;
 mod wire;
@@ -6,48 +7,17 @@ use std::{path::PathBuf, sync::Arc};
 
 use axum::{
     Router,
-    http::{HeaderValue, Method, header},
     routing::{get, post},
 };
+use cors::cors_layer;
 use everything::knowledge::{Knowledge, Statement};
 use everything_db::{PersistantKnowledge, StatementChange};
 use tauri::async_runtime::JoinHandle;
 use tokio::sync::{Mutex, oneshot};
-use tower_http::cors::{AllowOrigin, CorsLayer};
-
-const TAURI_DEV_URL: &str = "http://localhost:1420";
 
 /// The port the knowledge server listens on in development, so that a UI running
 /// in a regular browser (e.g. the Vite dev server) can connect to a known URL.
 const DEV_SERVER_PORT: u16 = 3000;
-
-/// Whether an `Origin` header value points at a localhost origin, on any port.
-fn is_localhost_origin(origin: &HeaderValue) -> bool {
-    let Ok(origin) = origin.to_str() else {
-        return false;
-    };
-
-    let Some((scheme, authority)) = origin.split_once("://") else {
-        return false;
-    };
-
-    if !scheme.eq_ignore_ascii_case("http") && !scheme.eq_ignore_ascii_case("https") {
-        return false;
-    }
-
-    let authority = authority.split('/').next().unwrap_or_default();
-
-    // Strip the (optional) port, taking care of IPv6 literals such as `[::1]:5173`.
-    let host = match authority.strip_prefix('[') {
-        Some(rest) => rest.split(']').next().unwrap_or_default(),
-        None => authority.split(':').next().unwrap_or_default(),
-    };
-
-    matches!(
-        host.to_ascii_lowercase().as_str(),
-        "localhost" | "127.0.0.1" | "::1"
-    )
-}
 
 /// The address the knowledge server binds to: a fixed localhost port in
 /// development, an OS-assigned one otherwise.
@@ -56,22 +26,6 @@ fn bind_address() -> String {
         format!("127.0.0.1:{DEV_SERVER_PORT}")
     } else {
         "127.0.0.1:0".to_owned()
-    }
-}
-
-fn cors_layer() -> CorsLayer {
-    let cors = CorsLayer::new()
-        .allow_methods([Method::GET, Method::POST])
-        .allow_headers([header::CONTENT_TYPE, header::CONTENT_LENGTH]);
-
-    if cfg!(debug_assertions) {
-        // In development the UI can also be served from a regular browser on an
-        // arbitrary local port, so accept every localhost origin.
-        cors.allow_origin(AllowOrigin::predicate(|origin, _request_parts| {
-            is_localhost_origin(origin)
-        }))
-    } else {
-        cors.allow_origin(TAURI_DEV_URL.parse::<HeaderValue>().unwrap())
     }
 }
 
@@ -178,45 +132,5 @@ impl PrivateKnowledgeServer {
 
         self.task.await??;
         Ok(())
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use axum::http::HeaderValue;
-
-    use super::is_localhost_origin;
-
-    #[test]
-    fn accepts_localhost_origins_on_any_port() {
-        for origin in [
-            "http://localhost",
-            "http://localhost:1420",
-            "http://localhost:5173",
-            "https://localhost:8443",
-            "http://127.0.0.1:3000",
-            "http://[::1]:5173",
-            "HTTP://LOCALHOST:1234",
-        ] {
-            let origin = HeaderValue::from_str(origin).unwrap();
-            assert!(is_localhost_origin(&origin), "{origin:?}");
-        }
-    }
-
-    #[test]
-    fn rejects_non_localhost_origins() {
-        for origin in [
-            "https://example.com",
-            "http://localhost.example.com:1420",
-            "http://127.0.0.1.example.com",
-            "http://192.168.0.2:5173",
-            "https://tauri.localhost",
-            "tauri://localhost",
-            "null",
-            "not an origin",
-        ] {
-            let origin = HeaderValue::from_str(origin).unwrap();
-            assert!(!is_localhost_origin(&origin), "{origin:?}");
-        }
     }
 }
