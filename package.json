@@ -11,7 +11,8 @@
         "check": "tsc --noEmit && oxlint",
         "build": "vite build",
         "serve": "vite preview",
-        "tauri": "tauri"
+        "tauri": "tauri",
+        "regenerate-icon": "tauri icon src/icon.svg"
     },
     "dependencies": {
         "@kobalte/core": "^0.13.14",
