@@ -45,6 +45,7 @@ const isHandledKey = (key: string): boolean =>
     || key === "Delete"
     || key === "+"
     || key === "="
+    || key === "<"
     || key === "&"
     || key === "|"
     || key === "u"
@@ -185,6 +186,12 @@ const handleKeyDown = (props: {
                     props.setObject(node.first);
                     break;
                 }
+                case NodeType.Less: {
+                    // Retain first operand.
+
+                    props.setObject(node.first);
+                    break;
+                }
                 case NodeType.And: {
                     // Retain first operand.
 
@@ -258,6 +265,19 @@ const handleKeyDown = (props: {
         props.setObject(
             nodeToObject({
                 type: NodeType.Equal,
+                first: props.object,
+                second: defaultObject,
+                rest: [],
+            }),
+        );
+
+        props.objectSelection.selectChild(1);
+    } else if (props.event.key === "<") {
+        if (!props.setObject) return;
+
+        props.setObject(
+            nodeToObject({
+                type: NodeType.Less,
                 first: props.object,
                 second: defaultObject,
                 rest: [],
@@ -456,6 +476,8 @@ const objectViewColorHue = (object: EverythingObject): number => {
                 return 340;
             case NodeType.Equal:
                 return 280;
+            case NodeType.Less:
+                return 290;
             case NodeType.Contains:
                 return 175;
             case NodeType.And:
@@ -498,6 +520,7 @@ const blockInColumnModeIsItemsCenter = (blockType: Block["type"]) => {
         case NodeType.Plus:
         case NodeType.Times:
         case NodeType.Equal:
+        case NodeType.Less:
         case NodeType.Contains:
         case NodeType.And:
         case NodeType.Or:
@@ -805,6 +828,16 @@ export const ObjectView = (props: {
                     {equalNode => (
                         <BinaryOperationView
                             block={equalNode()}
+                            path={props.path}
+                            wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                            setObject={props.setObject}
+                        />
+                    )}
+                </Match>
+                <Match when={variant(block(), NodeType.Less)}>
+                    {lessNode => (
+                        <BinaryOperationView
+                            block={lessNode()}
                             path={props.path}
                             wholeWidthBudgetInPixels={props.widthBudgetInPixels}
                             setObject={props.setObject}

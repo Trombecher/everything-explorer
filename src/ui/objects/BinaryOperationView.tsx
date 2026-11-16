@@ -13,6 +13,7 @@ import {
     type ContainsNode,
     type EqualNode,
     type FilterNode,
+    type LessNode,
     type OrNode,
     type PlusNode,
     type TimesNode,
@@ -23,6 +24,7 @@ import CallIcon from "../icons/CallIcon";
 import DotDotIcon from "../icons/DotDotIcon";
 import ElementOfIcon from "../icons/ElementOfIcon";
 import FilterIcon from "../icons/FilterIcon";
+import LessThanIcon from "../icons/LessThanIcon";
 import UnionIcon from "../icons/UnionIcon";
 import VeeIcon from "../icons/VeeIcon";
 import WedgeIcon from "../icons/WedgeIcon";
@@ -37,6 +39,7 @@ type BinaryOperationBlock =
     | TimesNode
     | PlusNode
     | EqualNode
+    | LessNode
     | ContainsNode
     | AndNode
     | OrNode
@@ -49,6 +52,7 @@ const BlockIcon = {
     [NodeType.Times]: DotIcon,
     [NodeType.Plus]: PlusIcon,
     [NodeType.Equal]: EqualIcon,
+    [NodeType.Less]: LessThanIcon,
     [NodeType.Contains]: ElementOfIcon,
     [NodeType.And]: WedgeIcon,
     [NodeType.Or]: VeeIcon,
@@ -63,6 +67,7 @@ const getFirst = (block: BinaryOperationBlock) => {
         case NodeType.Plus:
         case NodeType.Times:
         case NodeType.Equal:
+        case NodeType.Less:
         case NodeType.And:
         case NodeType.Or:
         case NodeType.Union:
@@ -83,6 +88,7 @@ const getSecond = (block: BinaryOperationBlock) => {
         case NodeType.Plus:
         case NodeType.Times:
         case NodeType.Equal:
+        case NodeType.Less:
         case NodeType.And:
         case NodeType.Or:
         case NodeType.Union:
@@ -106,6 +112,7 @@ const changeBlockFirst = (
         case NodeType.Plus:
         case NodeType.Times:
         case NodeType.Equal:
+        case NodeType.Less:
         case NodeType.And:
         case NodeType.Or:
         case NodeType.Union:
@@ -129,6 +136,7 @@ const changeBlockSecond = (
         case NodeType.Times:
         case NodeType.Plus:
         case NodeType.Equal:
+        case NodeType.Less:
         case NodeType.And:
         case NodeType.Or:
         case NodeType.Union:

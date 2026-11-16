@@ -51,6 +51,12 @@ const createInitialObject2 = (): EverythingObject => ({
             rest: [],
         }),
         nodeToObject({
+            type: NodeType.Less,
+            first: {type: ObjectType.Integer, value: 1n},
+            second: {type: ObjectType.Integer, value: 2n},
+            rest: [],
+        }),
+        nodeToObject({
             type: NodeType.Contains,
             element: {type: ObjectType.Atom, value: 2n},
             set: {

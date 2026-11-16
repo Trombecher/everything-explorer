@@ -85,6 +85,7 @@ const blockIconWidthInPixels = {
     call: 40,
     not: 24,
     check: 24,
+    lessThan: 24,
 } as const satisfies Record<string, 12 | 24 | 32 | 40 | 48 | 56 | 64>;
 
 /**
@@ -183,6 +184,21 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                         options,
                     ),
                     blockIconWidthInPixels.equals,
+                    calculateRowLayoutWidthOfBlock(
+                        objectToBlock(block.second),
+                        options,
+                    ),
+                ],
+                options,
+            );
+        case NodeType.Less:
+            return rowLayoutWidth(
+                [
+                    calculateRowLayoutWidthOfBlock(
+                        objectToBlock(block.first),
+                        options,
+                    ),
+                    blockIconWidthInPixels.lessThan,
                     calculateRowLayoutWidthOfBlock(
                         objectToBlock(block.second),
                         options,
@@ -455,6 +471,7 @@ export const childCountOfBlock = (block: Block): number => {
         case NodeType.Plus:
         case NodeType.Times:
         case NodeType.Equal:
+        case NodeType.Less:
         case NodeType.Contains:
         case NodeType.And:
         case NodeType.Or:

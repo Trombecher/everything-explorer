@@ -8,6 +8,7 @@ export namespace NodeType {
     export const Literal = Symbol("NodeType.Literal");
     export const Times = Symbol("NodeType.Times");
     export const Equal = Symbol("NodeType.Equal");
+    export const Less = Symbol("NodeType.Less");
     export const Contains = Symbol("NodeType.Contains");
     export const And = Symbol("NodeType.And");
     export const Or = Symbol("NodeType.Or");
@@ -50,6 +51,13 @@ export type LiteralNode = {
 
 export type EqualNode = {
     readonly type: typeof NodeType.Equal;
+    readonly first: EverythingObject;
+    readonly second: EverythingObject;
+    readonly rest: readonly EverythingObject[];
+};
+
+export type LessNode = {
+    readonly type: typeof NodeType.Less;
     readonly first: EverythingObject;
     readonly second: EverythingObject;
     readonly rest: readonly EverythingObject[];
@@ -123,6 +131,7 @@ export type Node =
     | LiteralNode
     | TimesNode
     | EqualNode
+    | LessNode
     | ContainsNode
     | AndNode
     | OrNode
@@ -398,6 +407,25 @@ const objectToNodeWithoutCache = (
         }
     }
 
+    some = singleSetAtomValue(object, Atom.NodeLessFirst.value);
+    if (some) {
+        const second = singleSetAtomValue(object, Atom.NodeLessSecond.value);
+
+        if (second) {
+            if (finalNode) return NotANode;
+
+            finalNode = {
+                type: NodeType.Less,
+                first: some,
+                second,
+                rest: withoutAtomConstructors(object.elements, [
+                    Atom.NodeLessFirst.value,
+                    Atom.NodeLessSecond.value,
+                ]),
+            };
+        }
+    }
+
     some = singleSetAtomValue(object, Atom.NodeContainsElement.value);
     if (some) {
         const set = singleSetAtomValue(object, Atom.NodeContainsSet.value);
@@ -521,6 +549,15 @@ export const nodeToObject = (node: Node): EverythingObject => {
                 elements: [
                     construction(Atom.NodeEqualFirst, node.first),
                     construction(Atom.NodeEqualSecond, node.second),
+                    ...node.rest,
+                ],
+            };
+        case NodeType.Less:
+            return {
+                type: ObjectType.Set,
+                elements: [
+                    construction(Atom.NodeLessFirst, node.first),
+                    construction(Atom.NodeLessSecond, node.second),
                     ...node.rest,
                 ],
             };
