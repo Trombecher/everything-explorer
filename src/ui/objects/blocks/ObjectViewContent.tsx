@@ -1,0 +1,235 @@
+import {Match, Switch} from "solid-js";
+
+import {useAppState} from "@/context";
+import {Phrase} from "@/i18n/phrases";
+import {ObjectType, type EverythingObject} from "@/model";
+import {NodeType} from "@/model/nodes";
+import type {DeepReadonly} from "@/util";
+import {variant} from "@/util";
+
+import AtomView from "../AtomView";
+import BinaryOperationView from "../BinaryOperationView";
+import IfOperationView from "../IfOperationView";
+import IntegerView from "../IntegerView";
+import type {LayoutMode} from "../layout";
+import type {ObjectSelectionPath} from "../selection";
+import SetObjectView from "../SetObjectView";
+import TextView from "../TextView";
+import UnaryOperationView from "../UnaryOperationView";
+import FunctionObjectView from "./FunctionObjectView";
+import FunctionSelfObjectView from "./FunctionSelfObjectView";
+import type {Block} from "./index";
+import LiteralObjectView from "./LiteralObjectView";
+import ParameterObjectView from "./ParameterObjectView";
+
+export default (props: {
+    block: Block;
+    path: DeepReadonly<ObjectSelectionPath>;
+    setObject: ((newObject: EverythingObject | undefined) => void) | undefined;
+    widthBudgetInPixels: number;
+    layoutMode: LayoutMode;
+}) => {
+    const appState = useAppState();
+
+    return (
+        <Switch>
+            <Match when={variant(props.block, NodeType.Function)}>
+                {functionNode => (
+                    <FunctionObjectView
+                        node={functionNode()}
+                        path={props.path}
+                        setObject={props.setObject}
+                        widthBudgetInPixels={props.widthBudgetInPixels}
+                        layoutMode={props.layoutMode}
+                    />
+                )}
+            </Match>
+            <Match when={variant(props.block, NodeType.FunctionSelf)}>
+                {functionSelfNode => (
+                    <FunctionSelfObjectView
+                        node={functionSelfNode()}
+                        setObject={props.setObject}
+                    />
+                )}
+            </Match>
+            <Match when={variant(props.block, NodeType.Parameter)}>
+                {parameterNode => (
+                    <ParameterObjectView
+                        node={parameterNode()}
+                        setObject={props.setObject}
+                    />
+                )}
+            </Match>
+            <Match when={variant(props.block, NodeType.Plus)}>
+                {plusNode => (
+                    <BinaryOperationView
+                        block={plusNode()}
+                        path={props.path}
+                        wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                        setObject={props.setObject}
+                    />
+                )}
+            </Match>
+            <Match when={variant(props.block, NodeType.Literal)}>
+                {literalNode => (
+                    <LiteralObjectView
+                        node={literalNode()}
+                        path={props.path}
+                        setObject={props.setObject}
+                        widthBudgetInPixels={props.widthBudgetInPixels}
+                        layoutMode={props.layoutMode}
+                    />
+                )}
+            </Match>
+            <Match when={variant(props.block, NodeType.Times)}>
+                {timesNode => (
+                    <BinaryOperationView
+                        block={timesNode()}
+                        path={props.path}
+                        wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                        setObject={props.setObject}
+                    />
+                )}
+            </Match>
+            <Match when={variant(props.block, NodeType.Equal)}>
+                {equalNode => (
+                    <BinaryOperationView
+                        block={equalNode()}
+                        path={props.path}
+                        wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                        setObject={props.setObject}
+                    />
+                )}
+            </Match>
+            <Match when={variant(props.block, NodeType.Less)}>
+                {lessNode => (
+                    <BinaryOperationView
+                        block={lessNode()}
+                        path={props.path}
+                        wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                        setObject={props.setObject}
+                    />
+                )}
+            </Match>
+            <Match when={variant(props.block, NodeType.Contains)}>
+                {containsNode => (
+                    <BinaryOperationView
+                        block={containsNode()}
+                        path={props.path}
+                        wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                        setObject={props.setObject}
+                    />
+                )}
+            </Match>
+            <Match when={variant(props.block, NodeType.And)}>
+                {andNode => (
+                    <BinaryOperationView
+                        block={andNode()}
+                        path={props.path}
+                        wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                        setObject={props.setObject}
+                    />
+                )}
+            </Match>
+            <Match when={variant(props.block, NodeType.Or)}>
+                {orNode => (
+                    <BinaryOperationView
+                        block={orNode()}
+                        path={props.path}
+                        wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                        setObject={props.setObject}
+                    />
+                )}
+            </Match>
+            <Match when={variant(props.block, NodeType.Not)}>
+                {notNode => (
+                    <UnaryOperationView
+                        block={notNode()}
+                        path={props.path}
+                        wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                        setObject={props.setObject}
+                    />
+                )}
+            </Match>
+            <Match when={variant(props.block, NodeType.Union)}>
+                {unionNode => (
+                    <BinaryOperationView
+                        block={unionNode()}
+                        path={props.path}
+                        wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                        setObject={props.setObject}
+                    />
+                )}
+            </Match>
+            <Match when={variant(props.block, NodeType.Filter)}>
+                {filterNode => (
+                    <BinaryOperationView
+                        block={filterNode()}
+                        path={props.path}
+                        wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                        setObject={props.setObject}
+                    />
+                )}
+            </Match>
+            <Match when={variant(props.block, NodeType.If)}>
+                {ifNode => (
+                    <IfOperationView
+                        block={ifNode()}
+                        path={props.path}
+                        wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                        setObject={props.setObject}
+                    />
+                )}
+            </Match>
+            <Match when={variant(props.block, NodeType.Call)}>
+                {callNode => (
+                    <BinaryOperationView
+                        block={callNode()}
+                        path={props.path}
+                        wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                        setObject={props.setObject}
+                    />
+                )}
+            </Match>
+
+            <Match when={variant(props.block, ObjectType.Text)}>
+                {text => <TextView text={text()} setText={props.setObject} />}
+            </Match>
+            <Match when={variant(props.block, ObjectType.Atom)}>
+                {atom => <AtomView atom={atom()} setAtom={props.setObject} />}
+            </Match>
+            <Match when={variant(props.block, ObjectType.Integer)}>
+                {integer => (
+                    <IntegerView
+                        integer={integer()}
+                        setInteger={props.setObject}
+                    />
+                )}
+            </Match>
+            <Match when={variant(props.block, ObjectType.Set)}>
+                {set => (
+                    <SetObjectView
+                        set={set()}
+                        setSet={props.setObject}
+                        path={props.path}
+                        widthBudgetInPixels={props.widthBudgetInPixels}
+                    />
+                )}
+            </Match>
+            <Match when={variant(props.block, ObjectType.Construction)}>
+                {construction => (
+                    <BinaryOperationView
+                        wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                        block={construction()}
+                        path={props.path}
+                        setObject={props.setObject}
+                    />
+                )}
+            </Match>
+
+            <Match when={true}>
+                {appState.translate(Phrase.NotImplemented, undefined)}
+            </Match>
+        </Switch>
+    );
+};
