@@ -109,8 +109,36 @@ export default () => {
         ),
     );
 
-    const [selectedAtom, setSelectedAtom] = createSignal<undefined | Atom>();
+    const parseAtomId = (input: string): Atom | undefined => {
+        const trimmed = input.trim();
+
+        if (!DECIMAL_INTEGER_PATTERN.test(trimmed)) return undefined;
+
+        const value = BigInt(trimmed);
+        if (value > MAX_ATOM_ID) return undefined;
+
+        return {type: ObjectType.Atom, value};
+    };
+
+    /**
+     * The search field is the single source of truth for the selected atom: an
+     * id in the field selects that atom, anything else selects nothing. This
+     * keeps typing an id and clicking an atom in sync.
+     */
     const [searchValue, setSearchValue] = createSignal("");
+
+    const selectedAtom = createMemo<Atom | undefined>(previous => {
+        const atom = parseAtomId(searchValue());
+
+        // Keep the object identity stable while the parsed id does not change,
+        // e.g. when the search text only gains leading zeros or whitespace.
+        if (previous && atom && previous.value === atom.value) return previous;
+
+        return atom;
+    });
+
+    const selectAtom = (atom: Atom | undefined) =>
+        setSearchValue(atom ? atom.value.toString() : "");
 
     /**
      * On narrow containers the search field is collapsed into a button and only
@@ -124,31 +152,8 @@ export default () => {
             undefined,
         );
 
-    const parseAtomId = (input: string): Atom | undefined => {
-        const trimmed = input.trim();
-
-        if (!DECIMAL_INTEGER_PATTERN.test(trimmed)) return undefined;
-
-        const value = BigInt(trimmed);
-        if (value > MAX_ATOM_ID) return undefined;
-
-        return {type: ObjectType.Atom, value};
-    };
-
-    const searchForAtom = (input: string) => {
-        const atom = parseAtomId(input);
-        if (!atom) {
-            setSelectedAtom(undefined);
-            return;
-        }
-
-        setSelectedAtom(atom);
-    };
-
     const generateAndSearchNewAtom = () => {
-        const newId = generateAtomId().toString();
-        setSearchValue(newId);
-        searchForAtom(newId);
+        setSearchValue(generateAtomId().toString());
     };
 
     return (
@@ -176,7 +181,6 @@ export default () => {
                                 value={searchValue()}
                                 onInput={e => {
                                     setSearchValue(e.currentTarget.value);
-                                    searchForAtom(e.currentTarget.value);
                                 }}
                                 class="block w-0 grow py-2 pr-3 pl-2 outline-none"
                             />
@@ -224,7 +228,6 @@ export default () => {
                                 ref={el => queueMicrotask(() => el.focus())}
                                 onInput={e => {
                                     setSearchValue(e.currentTarget.value);
-                                    searchForAtom(e.currentTarget.value);
                                 }}
                                 onKeyDown={e => {
                                     if (e.key === "Escape") {
@@ -248,7 +251,7 @@ export default () => {
                                     atom={atom}
                                     isNew={isNew(atom)}
                                     selectedAtom={selectedAtom()}
-                                    setSelectedAtom={setSelectedAtom}
+                                    setSelectedAtom={selectAtom}
                                 />
                             )}
                         </For>
@@ -282,7 +285,7 @@ export default () => {
                         >
                             <PropertiesPanel
                                 selectedAtom={selectedAtom}
-                                close={() => setSelectedAtom(undefined)}
+                                close={() => selectAtom(undefined)}
                             />
                         </div>
                     </>
