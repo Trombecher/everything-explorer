@@ -33,6 +33,11 @@ export namespace Atom {
         value: 2148623901005465698003044719488417081n,
     } as const satisfies Atom;
 
+    export const NodeFunctionSelf = {
+        type: ObjectType.Atom,
+        value: 2148624013653182105587583289980365332n,
+    } as const satisfies Atom;
+
     export const NodeAddFirst = {
         type: ObjectType.Atom,
         value: 2148566534810416742677953060919673357n,

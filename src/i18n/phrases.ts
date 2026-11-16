@@ -66,6 +66,7 @@ export namespace Phrase {
         [DisconnectFrom]: {forName: string};
         [New]: undefined;
         [FunctionDepth]: {depth: string};
+        [Self]: undefined;
         [NotImplemented]: undefined;
         [UnknownFallbackToEnglish]: undefined;
         [Detected]: undefined;
@@ -134,6 +135,7 @@ export namespace Phrase {
     export const DisconnectFrom = Symbol();
     export const New = Symbol();
     export const FunctionDepth = Symbol();
+    export const Self = Symbol();
     export const NotImplemented = Symbol();
     export const UnknownFallbackToEnglish = Symbol();
     export const Detected = Symbol();
@@ -203,6 +205,7 @@ export type Phrase =
     | typeof Phrase.DisconnectFrom
     | typeof Phrase.New
     | typeof Phrase.FunctionDepth
+    | typeof Phrase.Self
     | typeof Phrase.NotImplemented
     | typeof Phrase.UnknownFallbackToEnglish
     | typeof Phrase.Detected

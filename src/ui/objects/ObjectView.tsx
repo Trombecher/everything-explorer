@@ -1,4 +1,5 @@
 import QuoteIcon from "lucide-solid/icons/quote";
+import RotateCcwIcon from "lucide-solid/icons/rotate-ccw";
 import {createEffect, Match, Show, Switch} from "solid-js";
 
 import {useAppState} from "@/context";
@@ -61,6 +62,7 @@ const isHandledKey = (key: string): boolean =>
     || key === "a"
     || key === "t"
     || key === "p"
+    || key === "s"
     || key === "c"
     || (key.length === 1 && "0123456789".includes(key));
 
@@ -400,6 +402,12 @@ const handleKeyDown = (props: {
         props.setObject(
             nodeToObject({type: NodeType.Parameter, depth: 0n, rest: []}),
         );
+    } else if (props.event.key === "s") {
+        if (!props.setObject) return;
+
+        props.setObject(
+            nodeToObject({type: NodeType.FunctionSelf, depth: 0n, rest: []}),
+        );
     } else if (props.event.key === "e") {
         if (!props.setObject) return;
 
@@ -466,6 +474,8 @@ const objectViewColorHue = (object: EverythingObject): number => {
         switch (node.type) {
             case NodeType.Function:
                 return 54;
+            case NodeType.FunctionSelf:
+                return 280;
             case NodeType.Parameter:
                 return 280;
             case NodeType.Literal:
@@ -686,6 +696,81 @@ export const ObjectView = (props: {
                                         )}
                                     />
                                 </EnclosingFunctionsContext.Provider>
+                            </>
+                        );
+                    }}
+                </Match>
+                <Match when={variant(block(), NodeType.FunctionSelf)}>
+                    {functionSelfNode => {
+                        const enclosingFunctions = outerEnclosingFunctions;
+
+                        const options = () => {
+                            const depth = functionSelfNode().depth;
+                            const values = enclosingFunctions().map(
+                                (_, index) => BigInt(index),
+                            );
+
+                            if (!values.some(value => value === depth)) {
+                                // Keep an out-of-range depth selectable so the
+                                // dropdown can display the current value.
+                                values.push(depth);
+                            }
+
+                            return values;
+                        };
+
+                        const labelOf = (depth: bigint) => {
+                            const self = appState.translate(
+                                Phrase.Self,
+                                undefined,
+                            );
+                            const functionDepth = appState.translate(
+                                Phrase.FunctionDepth,
+                                {depth: String(depth)},
+                            );
+
+                            const enclosingFunction =
+                                enclosingFunctions()[Number(depth)];
+
+                            if (!enclosingFunction) {
+                                return `${self} (${functionDepth} (${appState.translate(Phrase.OutOfRange, undefined)}))`;
+                            }
+
+                            return `${self} (${functionDepth})`;
+                        };
+
+                        return (
+                            <>
+                                <RotateCcwIcon />
+                                <Show
+                                    when={enclosingFunctions().length > 0}
+                                    fallback={
+                                        <span class="italic">
+                                            {appState.translate(
+                                                Phrase.NoEnclosingFunction,
+                                                undefined,
+                                            )}
+                                        </span>
+                                    }
+                                >
+                                    <Select<bigint, string>
+                                        options={options()}
+                                        value={functionSelfNode().depth}
+                                        onChange={newDepth => {
+                                            props.setObject?.(
+                                                nodeToObject({
+                                                    ...functionSelfNode(),
+                                                    depth: newDepth,
+                                                }),
+                                            );
+                                        }}
+                                        idFromValue={value => String(value)}
+                                        idToValue={id => BigInt(id)}
+                                        stringifyValue={labelOf}
+                                        description=""
+                                        class="w-48"
+                                    />
+                                </Show>
                             </>
                         );
                     }}

@@ -86,6 +86,7 @@ const blockIconWidthInPixels = {
     not: 24,
     check: 24,
     lessThan: 24,
+    functionSelf: 24,
 } as const satisfies Record<string, 12 | 24 | 32 | 40 | 48 | 56 | 64>;
 
 /**
@@ -346,6 +347,14 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                 ],
                 options,
             );
+        case NodeType.FunctionSelf:
+            return rowLayoutWidth(
+                [
+                    blockIconWidthInPixels.functionSelf,
+                    192 + options.block.itemGapInPixels,
+                ],
+                options,
+            );
         case NodeType.Parameter:
             return rowLayoutWidth(
                 [blockIconWidthInPixels.x, 192 + options.block.itemGapInPixels],
@@ -461,6 +470,7 @@ export const childCountOfBlock = (block: Block): number => {
         case ObjectType.Character:
         case ObjectType.Integer:
         case ObjectType.Text:
+        case NodeType.FunctionSelf:
         case NodeType.Parameter:
             return 0;
         case NodeType.Function:

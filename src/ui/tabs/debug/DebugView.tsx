@@ -23,6 +23,16 @@ const createInitialObject2 = (): EverythingObject => ({
             rest: [],
         }),
         nodeToObject({
+            type: NodeType.Function,
+            body: nodeToObject({
+                type: NodeType.FunctionSelf,
+                depth: 0n,
+                rest: [],
+            }),
+            parameterName: undefined,
+            rest: [],
+        }),
+        nodeToObject({
             type: NodeType.Literal,
             object: {type: ObjectType.Text, text: "literal"},
             rest: [],

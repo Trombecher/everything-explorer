@@ -67,6 +67,7 @@ export const english = {
     [Phrase.DisconnectFrom]: ({forName}) => `Disconnect from ${forName}`,
     [Phrase.New]: () => "New",
     [Phrase.FunctionDepth]: ({depth}) => `function ${depth}`,
+    [Phrase.Self]: () => "self",
     [Phrase.NotImplemented]: () => "Not implemented",
     [Phrase.UnknownFallbackToEnglish]: () => "unknown - fallback to english",
     [Phrase.Detected]: () => "detected",

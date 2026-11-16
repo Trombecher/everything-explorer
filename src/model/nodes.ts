@@ -4,6 +4,7 @@ import {Atom} from "./atoms";
 
 export namespace NodeType {
     export const Function = Symbol("NodeType.Function");
+    export const FunctionSelf = Symbol("NodeType.FunctionSelf");
     export const Plus = Symbol("NodeType.Plus");
     export const Literal = Symbol("NodeType.Literal");
     export const Times = Symbol("NodeType.Times");
@@ -33,6 +34,12 @@ export type FunctionNode = {
     readonly type: typeof NodeType.Function;
     readonly body: EverythingObject;
     readonly parameterName: string | undefined;
+    readonly rest: readonly EverythingObject[];
+};
+
+export type FunctionSelfNode = {
+    readonly type: typeof NodeType.FunctionSelf;
+    readonly depth: bigint;
     readonly rest: readonly EverythingObject[];
 };
 
@@ -127,6 +134,7 @@ export type ParameterNode = {
 
 export type Node =
     | FunctionNode
+    | FunctionSelfNode
     | PlusNode
     | LiteralNode
     | TimesNode
@@ -445,6 +453,21 @@ const objectToNodeWithoutCache = (
         }
     }
 
+    some = singleSetAtomValue(object, Atom.NodeFunctionSelf.value);
+    if (some) {
+        if (finalNode) return NotANode;
+
+        if (some.type !== ObjectType.Integer) return NotANode;
+
+        finalNode = {
+            type: NodeType.FunctionSelf,
+            depth: some.value,
+            rest: withoutAtomConstructors(object.elements, [
+                Atom.NodeFunctionSelf.value,
+            ]),
+        };
+    }
+
     some = singleSetAtomValue(object, Atom.NodeParameter.value);
     if (some) {
         if (finalNode) return NotANode;
@@ -630,6 +653,17 @@ export const nodeToObject = (node: Node): EverythingObject => {
                 elements: [
                     construction(Atom.NodeCallCallee, node.callee),
                     construction(Atom.NodeCallWith, node.with),
+                    ...node.rest,
+                ],
+            };
+        case NodeType.FunctionSelf:
+            return {
+                type: ObjectType.Set,
+                elements: [
+                    construction(Atom.NodeFunctionSelf, {
+                        type: ObjectType.Integer,
+                        value: node.depth,
+                    }),
                     ...node.rest,
                 ],
             };
