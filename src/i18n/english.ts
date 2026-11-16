@@ -43,4 +43,7 @@ export const english = {
     [Phrase.Theme]: () => "Theme",
     [Phrase.WelcomeBack]: () => "Welcome back",
     [Phrase.Debug]: () => "Debug",
+    [Phrase.ParameterName]: () => "Parameter name",
+    [Phrase.NoEnclosingFunction]: () => "no enclosing function",
+    [Phrase.OutOfRange]: () => "out of range",
 } as const satisfies TranslationTable;

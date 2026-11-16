@@ -43,4 +43,7 @@ export const german = {
     [Phrase.Theme]: () => "Farbschema",
     [Phrase.WelcomeBack]: () => "Willkommen zurück",
     [Phrase.Debug]: () => "Debug",
+    [Phrase.ParameterName]: () => "Parametername",
+    [Phrase.NoEnclosingFunction]: () => "keine umschließende Funktion",
+    [Phrase.OutOfRange]: () => "außerhalb des Bereichs",
 } as const satisfies TranslationTable;

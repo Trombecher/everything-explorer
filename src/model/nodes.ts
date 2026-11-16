@@ -28,6 +28,7 @@ export type TimesNode = {
 export type FunctionNode = {
     readonly type: typeof NodeType.Function;
     readonly body: EverythingObject;
+    readonly parameterName: string | undefined;
     readonly rest: readonly EverythingObject[];
 };
 
@@ -139,12 +140,25 @@ const objectToNodeWithoutCache = (
     if (some) {
         if (finalNode) return NotANode;
 
+        const parameterNameObject = singleSetAtomValue(
+            object,
+            Atom.ParameterName.value,
+        );
+        const parameterName =
+            parameterNameObject?.type === ObjectType.Text
+                ? parameterNameObject.text
+                : undefined;
+
         finalNode = {
             type: NodeType.Function,
             body: some,
-            rest: withoutAtomConstructors(object.elements, [
-                Atom.NodeFunction.value,
-            ]),
+            parameterName,
+            rest: withoutAtomConstructors(
+                object.elements,
+                parameterName === undefined
+                    ? [Atom.NodeFunction.value]
+                    : [Atom.NodeFunction.value, Atom.ParameterName.value],
+            ),
         };
     }
 
@@ -384,12 +398,24 @@ export const nodeToObject = (node: Node): EverythingObject => {
                 elements: [
                     construction(Atom.NodeMultiplyFirst, node.first),
                     construction(Atom.NodeMultiplySecond, node.second),
+                    ...node.rest,
                 ],
             };
         case NodeType.Function:
             return {
                 type: ObjectType.Set,
-                elements: [construction(Atom.NodeFunction, node.body)],
+                elements: [
+                    construction(Atom.NodeFunction, node.body),
+                    ...node.rest,
+                    ...(node.parameterName === undefined
+                        ? []
+                        : [
+                              construction(Atom.ParameterName, {
+                                  type: ObjectType.Text,
+                                  text: node.parameterName,
+                              }),
+                          ]),
+                ],
             };
         case NodeType.Plus:
             return {
@@ -397,12 +423,16 @@ export const nodeToObject = (node: Node): EverythingObject => {
                 elements: [
                     construction(Atom.NodeAddFirst, node.first),
                     construction(Atom.NodeAddSecond, node.second),
+                    ...node.rest,
                 ],
             };
         case NodeType.Literal:
             return {
                 type: ObjectType.Set,
-                elements: [construction(Atom.NodeLiteral, node.object)],
+                elements: [
+                    construction(Atom.NodeLiteral, node.object),
+                    ...node.rest,
+                ],
             };
         case NodeType.Equal:
             return {
@@ -410,6 +440,7 @@ export const nodeToObject = (node: Node): EverythingObject => {
                 elements: [
                     construction(Atom.NodeEqualFirst, node.first),
                     construction(Atom.NodeEqualSecond, node.second),
+                    ...node.rest,
                 ],
             };
         case NodeType.Contains:
@@ -418,6 +449,7 @@ export const nodeToObject = (node: Node): EverythingObject => {
                 elements: [
                     construction(Atom.NodeContainsElement, node.element),
                     construction(Atom.NodeContainsSet, node.set),
+                    ...node.rest,
                 ],
             };
         case NodeType.And:
@@ -426,6 +458,7 @@ export const nodeToObject = (node: Node): EverythingObject => {
                 elements: [
                     construction(Atom.NodeAndFirst, node.first),
                     construction(Atom.NodeAndSecond, node.second),
+                    ...node.rest,
                 ],
             };
         case NodeType.Or:
@@ -434,6 +467,7 @@ export const nodeToObject = (node: Node): EverythingObject => {
                 elements: [
                     construction(Atom.NodeOrFirst, node.first),
                     construction(Atom.NodeOrSecond, node.second),
+                    ...node.rest,
                 ],
             };
         case NodeType.Union:
@@ -442,6 +476,7 @@ export const nodeToObject = (node: Node): EverythingObject => {
                 elements: [
                     construction(Atom.NodeUnionFirst, node.first),
                     construction(Atom.NodeUnionSecond, node.second),
+                    ...node.rest,
                 ],
             };
         case NodeType.Filter:
@@ -450,6 +485,7 @@ export const nodeToObject = (node: Node): EverythingObject => {
                 elements: [
                     construction(Atom.NodeFilterSet, node.set),
                     construction(Atom.NodeFilterFilter, node.filterFunction),
+                    ...node.rest,
                 ],
             };
         case NodeType.Parameter:
@@ -460,6 +496,7 @@ export const nodeToObject = (node: Node): EverythingObject => {
                         type: ObjectType.Integer,
                         value: node.depth,
                     }),
+                    ...node.rest,
                 ],
             };
     }

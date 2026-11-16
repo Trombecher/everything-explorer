@@ -19,6 +19,7 @@ const createInitialObject2 = (): EverythingObject => ({
                 object: {type: ObjectType.Integer, value: 42n},
                 rest: [],
             }),
+            parameterName: undefined,
             rest: [],
         }),
         nodeToObject({
@@ -86,6 +87,7 @@ const createInitialObject2 = (): EverythingObject => ({
                     depth: 0n,
                     rest: [],
                 }),
+                parameterName: undefined,
                 rest: [],
             }),
             rest: [],

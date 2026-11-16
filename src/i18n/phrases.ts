@@ -42,6 +42,9 @@ export namespace Phrase {
         [Theme]: undefined;
         [WelcomeBack]: undefined;
         [Debug]: undefined;
+        [ParameterName]: undefined;
+        [NoEnclosingFunction]: undefined;
+        [OutOfRange]: undefined;
     }>;
 
     export const AppSettings = Symbol();
@@ -82,6 +85,9 @@ export namespace Phrase {
     export const Home = Symbol();
     export const WelcomeBack = Symbol();
     export const Debug = Symbol();
+    export const ParameterName = Symbol();
+    export const NoEnclosingFunction = Symbol();
+    export const OutOfRange = Symbol();
 }
 
 export type Phrase =
@@ -122,4 +128,7 @@ export type Phrase =
     | typeof Phrase.Theme
     | typeof Phrase.Home
     | typeof Phrase.WelcomeBack
-    | typeof Phrase.Debug;
+    | typeof Phrase.Debug
+    | typeof Phrase.ParameterName
+    | typeof Phrase.NoEnclosingFunction
+    | typeof Phrase.OutOfRange;

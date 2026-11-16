@@ -1,8 +1,8 @@
 import QuoteIcon from "lucide-solid/icons/quote";
-import XIcon from "lucide-solid/icons/x";
-import {createEffect, Match, Switch} from "solid-js";
+import {createEffect, Match, Show, Switch} from "solid-js";
 
 import {useAppState} from "@/context";
+import {Phrase} from "@/i18n/phrases";
 import {defaultObject, ObjectType, type EverythingObject} from "@/model";
 import {nodeToObject, NodeType, NotANode, objectToNode} from "@/model/nodes";
 import type {DeepReadonly} from "@/util";
@@ -15,6 +15,10 @@ import AtomView from "./AtomView";
 import BinaryOperationView from "./BinaryOperationView";
 import type {Block} from "./blocks";
 import {objectToBlock} from "./blocks";
+import {
+    EnclosingFunctionsContext,
+    useEnclosingFunctions,
+} from "./enclosingFunctions";
 import IntegerView from "./IntegerView";
 import {
     calculateFunctionBodyWidthBudgetInPixels,
@@ -23,6 +27,7 @@ import {
     childCountOfBlock,
     LayoutMode,
 } from "./layout";
+import ParameterNameField from "./ParameterNameField";
 import type {ObjectSelection, ObjectSelectionPath} from "./selection";
 import {useObjectSelection} from "./selection";
 import SetObjectView from "./SetObjectView";
@@ -312,6 +317,7 @@ const handleKeyDown = (props: {
             nodeToObject({
                 type: NodeType.Function,
                 body: props.object,
+                parameterName: undefined,
                 rest: [],
             }),
         );
@@ -469,6 +475,7 @@ export const ObjectView = (props: {
 }) => {
     const objectSelection = useObjectSelection();
     const appState = useAppState();
+    const outerEnclosingFunctions = useEnclosingFunctions();
 
     const block = () => objectToBlock(props.object);
     const blockOptions = () => appState.layoutOptions().block;
@@ -516,73 +523,138 @@ export const ObjectView = (props: {
         >
             <Switch>
                 <Match when={variant(block(), NodeType.Function)}>
-                    {functionNode => (
-                        <>
-                            <XIcon />
-                            <MapsToIcon />
-                            <ObjectView
-                                indentLeft={false}
-                                parentObjectLayoutMode={layoutMode()}
-                                replaceParentWithThis={
-                                    props.setObject
-                                    && (() => {
-                                        if (!props.setObject) return;
+                    {functionNode => {
+                        const enclosingFunctionsForBody = () => [
+                            {parameterName: functionNode().parameterName},
+                            ...outerEnclosingFunctions(),
+                        ];
 
-                                        objectSelection.selectParent();
-                                        props.setObject(functionNode().body);
-                                    })
-                                }
-                                siblingCount={1}
-                                object={functionNode().body}
-                                setObject={
-                                    props.setObject
-                                    && (newBody => {
-                                        props.setObject?.(
-                                            nodeToObject({
-                                                ...functionNode(),
-                                                body: newBody ?? defaultObject,
-                                            }),
-                                        );
-                                    })
-                                }
-                                path={[...props.path, 0]}
-                                widthBudgetInPixels={calculateFunctionBodyWidthBudgetInPixels(
-                                    props.widthBudgetInPixels,
-                                    appState.layoutOptions(),
-                                )}
-                            />
-                        </>
-                    )}
+                        return (
+                            <>
+                                <ParameterNameField
+                                    name={functionNode().parameterName}
+                                    setName={
+                                        props.setObject
+                                        && (newName => {
+                                            props.setObject?.(
+                                                nodeToObject({
+                                                    ...functionNode(),
+                                                    parameterName: newName,
+                                                }),
+                                            );
+                                        })
+                                    }
+                                />
+                                <MapsToIcon />
+                                <EnclosingFunctionsContext.Provider
+                                    value={enclosingFunctionsForBody}
+                                >
+                                    <ObjectView
+                                        indentLeft={false}
+                                        parentObjectLayoutMode={layoutMode()}
+                                        replaceParentWithThis={
+                                            props.setObject
+                                            && (() => {
+                                                if (!props.setObject) return;
+
+                                                objectSelection.selectParent();
+                                                props.setObject(
+                                                    functionNode().body,
+                                                );
+                                            })
+                                        }
+                                        siblingCount={1}
+                                        object={functionNode().body}
+                                        setObject={
+                                            props.setObject
+                                            && (newBody => {
+                                                props.setObject?.(
+                                                    nodeToObject({
+                                                        ...functionNode(),
+                                                        body:
+                                                            newBody
+                                                            ?? defaultObject,
+                                                    }),
+                                                );
+                                            })
+                                        }
+                                        path={[...props.path, 0]}
+                                        widthBudgetInPixels={calculateFunctionBodyWidthBudgetInPixels(
+                                            props.widthBudgetInPixels,
+                                            appState.layoutOptions(),
+                                        )}
+                                    />
+                                </EnclosingFunctionsContext.Provider>
+                            </>
+                        );
+                    }}
                 </Match>
                 <Match when={variant(block(), NodeType.Parameter)}>
                     {parameterNode => {
-                        const enclosingFunctionCount = 10;
+                        const enclosingFunctions = outerEnclosingFunctions;
+
+                        const options = () => {
+                            const depth = parameterNode().depth;
+                            const values = enclosingFunctions().map(
+                                (_, index) => BigInt(index),
+                            );
+
+                            if (!values.some(value => value === depth)) {
+                                // Keep an out-of-range depth selectable so the
+                                // dropdown can display the current value.
+                                values.push(depth);
+                            }
+
+                            return values;
+                        };
+
+                        const labelOf = (depth: bigint) => {
+                            const enclosingFunction =
+                                enclosingFunctions()[Number(depth)];
+
+                            if (!enclosingFunction) {
+                                return `function ${depth} (${appState.translate(Phrase.OutOfRange, undefined)})`;
+                            }
+
+                            if (enclosingFunction.parameterName) {
+                                return `${enclosingFunction.parameterName} (function ${depth})`;
+                            }
+
+                            return `function ${depth}`;
+                        };
 
                         return (
                             <>
                                 <ItalicXIcon />
-                                <Select<bigint, string>
-                                    options={Array.from(
-                                        {length: enclosingFunctionCount},
-                                        (_, i) => BigInt(i),
-                                    )}
-                                    value={parameterNode().depth}
-                                    onChange={newDepth => {
-                                        props.setObject?.(
-                                            nodeToObject({
-                                                ...parameterNode(),
-                                                depth: newDepth,
-                                            }),
-                                        );
-                                    }}
-                                    idFromValue={value => String(value)}
-                                    idToValue={id => BigInt(id)}
-                                    stringifyValue={value =>
-                                        `function ${value}`
+                                <Show
+                                    when={enclosingFunctions().length > 0}
+                                    fallback={
+                                        <span class="italic">
+                                            {appState.translate(
+                                                Phrase.NoEnclosingFunction,
+                                                undefined,
+                                            )}
+                                        </span>
                                     }
-                                    description=""
-                                    class="w-48"
-                                />
+                                >
+                                    <Select<bigint, string>
+                                        options={options()}
+                                        value={parameterNode().depth}
+                                        onChange={newDepth => {
+                                            props.setObject?.(
+                                                nodeToObject({
+                                                    ...parameterNode(),
+                                                    depth: newDepth,
+                                                }),
+                                            );
+                                        }}
+                                        idFromValue={value => String(value)}
+                                        idToValue={id => BigInt(id)}
+                                        stringifyValue={labelOf}
+                                        description=""
+                                        class="w-48"
+                                    />
+                                </Show>
                             </>
                         );
                     }}

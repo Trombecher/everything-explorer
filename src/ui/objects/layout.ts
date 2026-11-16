@@ -84,6 +84,12 @@ const blockIconWidthInPixels = {
     mapsTo: 32,
 } as const satisfies Record<string, 12 | 24 | 32 | 40 | 48 | 56 | 64>;
 
+/**
+ * Width of the editable function parameter name field, excluding the function
+ * block's own padding and gaps.
+ */
+const functionParameterNameFieldWidthInPixels = 80;
+
 export type LayoutOptions = {
     readonly block: BlockLayoutOptions;
     readonly atomNames: ReadonlyMap<bigint, string>;
@@ -131,7 +137,7 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
         case NodeType.Function:
             return rowLayoutWidth(
                 [
-                    blockIconWidthInPixels.x,
+                    functionParameterNameFieldWidthInPixels,
                     blockIconWidthInPixels.mapsTo,
                     calculateRowLayoutWidthOfBlock(
                         objectToBlock(block.body),
@@ -490,7 +496,7 @@ export const calculateFunctionBodyWidthBudgetInPixels = (
             - layoutOptions.block.blockPaddingRightInPixels
             - layoutOptions.block.itemGapInPixels * 2
             - blockIconWidthInPixels.mapsTo
-            - blockIconWidthInPixels.x,
+            - functionParameterNameFieldWidthInPixels,
     );
 
 export const binaryBlockSlotWidthBudgetInPixels = (
