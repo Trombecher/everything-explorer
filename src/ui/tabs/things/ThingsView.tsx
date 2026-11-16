@@ -252,7 +252,7 @@ export default () => {
                             class="-mx-2"
                         />
                         <div
-                            class="shrink-0"
+                            class="shrink-0 self-stretch"
                             style={{
                                 width: `${appState.propertiesPanelWidth()}px`,
                             }}
