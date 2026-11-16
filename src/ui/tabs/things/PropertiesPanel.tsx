@@ -14,7 +14,7 @@ import {LayoutMode} from "@/ui/objects/layout";
 import ObjectView from "@/ui/objects/ObjectView";
 import {ObjectSelectionContext} from "@/ui/objects/selection";
 import {useAtomName} from "@/ui/objects/useAtomName";
-import Button from "@/ui/reuse/Button";
+import Button, {ButtonSeverity} from "@/ui/reuse/Button";
 import WidthMeasurer from "@/ui/reuse/WidthMeasurer";
 
 /**
@@ -233,15 +233,16 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
                         {appState.translate(Phrase.AddProperty, undefined)}
                     </span>
                 </Button>
-                <KobalteButton
-                    class="flex w-fit cursor-pointer items-center gap-2 rounded-2xl bg-neutral-200 px-3 py-1 font-medium hover:bg-neutral-300 active:scale-97"
+                <Button
+                    class="flex"
                     title={copyIdLabel()}
                     aria-label={copyIdLabel()}
                     onClick={copyId}
+                    severity={ButtonSeverity.Secondary}
                 >
                     <CopyIcon />
-                    {copyIdLabel()}
-                </KobalteButton>
+                    <span class="px-1">{copyIdLabel()}</span>
+                </Button>
             </div>
 
             <WidthMeasurer class="flex flex-col gap-2 px-2">

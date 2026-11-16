@@ -12,6 +12,15 @@ export type ButtonSeverity =
     | typeof ButtonSeverity.Secondary
     | typeof ButtonSeverity.Danger;
 
+const severityClasses: Record<ButtonSeverity, string> = {
+    [ButtonSeverity.Primary]:
+        "bg-blue-500 text-white hover:bg-blue-600 active:bg-blue-700 dark:text-black",
+    [ButtonSeverity.Secondary]:
+        "bg-neutral-200 text-neutral-700 hover:bg-neutral-300 active:bg-neutral-400",
+    [ButtonSeverity.Danger]:
+        "bg-red-400 text-black hover:bg-red-500 active:bg-red-600 dark:text-white",
+};
+
 export default (
     props: Parameters<typeof Button>[0] & {severity?: ButtonSeverity},
 ) => {
@@ -20,7 +29,7 @@ export default (
     return (
         <Button
             {...otherProps}
-            class={`cursor-pointer rounded-2xl ${severityProps.severity === ButtonSeverity.Danger ? "bg-red-400 text-black hover:bg-red-500 active:bg-red-600 dark:text-white" : "bg-blue-500 text-white hover:bg-blue-600 active:bg-blue-700 dark:text-black"} p-1 font-medium active:scale-97 ${props.class}`}
+            class={`cursor-pointer rounded-2xl ${severityClasses[severityProps.severity ?? ButtonSeverity.Primary]} p-1 font-medium active:scale-97 ${otherProps.class ?? ""}`}
         />
     );
 };
