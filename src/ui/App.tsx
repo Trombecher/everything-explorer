@@ -7,7 +7,7 @@ import {Theme} from "@/state/theme";
 
 import {useAppState} from "../context";
 import SideBar from "./sidebar/SideBar";
-import ConnectionsView from "./tabs/ConnectionsView";
+import ConnectionsView from "./tabs/connections/ConnectionsView";
 import DebugView from "./tabs/debug/DebugView";
 import EvaluateView from "./tabs/EvaluateView";
 import Home from "./tabs/HomeView";
