@@ -6,7 +6,7 @@ import {useAppState} from "@/context";
 import {Phrase} from "@/i18n/phrases";
 import {defaultObject, ObjectType, type EverythingObject} from "@/model";
 import {nodeToObject, NodeType} from "@/model/nodes";
-import {handleHistoryKeyDown, ObjectHistory} from "@/ui/objects/history";
+import {ObjectHistory} from "@/ui/objects/history";
 import {LayoutMode} from "@/ui/objects/layout";
 import ObjectView from "@/ui/objects/ObjectView";
 import {
@@ -14,6 +14,7 @@ import {
     ObjectSelectionContext,
     type ObjectSelectionPathInfo,
 } from "@/ui/objects/selection";
+import {handleHistoryKeyDown} from "@/ui/objects/undoRedoKeys";
 import Button from "@/ui/reuse/Button";
 import WidthMeasurer from "@/ui/reuse/WidthMeasurer";
 
