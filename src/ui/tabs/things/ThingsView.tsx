@@ -17,6 +17,7 @@ import {
 import {useAppState} from "@/context";
 import {ObjectType} from "@/model";
 import {generateAtomId, MAX_ATOM_ID, type Atom} from "@/model/atoms";
+import Button from "@/ui/reuse/Button";
 import ResizeSeparator from "@/ui/reuse/ResizeSeparator";
 
 import AtomCard from "./AtomCard";
@@ -186,15 +187,15 @@ export default () => {
                                 <XIcon />
                             </Show>
                         </button>
-                        <button
+                        <Button
                             onClick={generateAndSearchNewAtom}
                             disabled={appState.connectionClient() === undefined}
                             aria-label="Add thing"
-                            class="flex shrink-0 cursor-pointer items-center gap-2 rounded-2xl bg-blue-500 px-3 py-1 font-medium text-white hover:bg-blue-600 active:scale-97 active:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 dark:text-black"
+                            class="flex gap-1"
                         >
                             <PlusIcon />
-                            <span class="@max-xs:hidden">Add thing</span>
-                        </button>
+                            <span class="pr-1 @max-xs:hidden">Add thing</span>
+                        </Button>
                     </div>
                     <Show when={isSearchExpanded()}>
                         <label class="mt-2 flex w-full items-center rounded-2xl border border-neutral-200 bg-neutral-100 pl-2 focus-within:outline-2 @min-md:hidden dark:bg-white">

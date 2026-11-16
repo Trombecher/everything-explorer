@@ -222,12 +222,12 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
 
             <div class="flex flex-wrap items-center gap-2 px-2">
                 <Button
-                    class="flex w-fit gap-2"
+                    class="flex w-fit gap-1"
                     disabled={values() === undefined}
                     onClick={addProperty}
                 >
                     <PlusIcon />
-                    Add property
+                    <span class="pr-1">Add property</span>
                 </Button>
                 <KobalteButton
                     class="flex w-fit cursor-pointer items-center gap-2 rounded-2xl bg-neutral-200 px-3 py-1 font-medium hover:bg-neutral-300 active:scale-97"

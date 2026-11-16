@@ -108,7 +108,7 @@ export default (props: {disabled: boolean; onAdd: (atom: Atom) => void}) => {
 
                     <div class="mt-1 flex items-center gap-2">
                         <Button class="text-lg" onClick={regenerate}>
-                            Generate
+                            <span class="px-2">Generate</span>
                         </Button>
                         <div class="grow" />
                         <Dialog.CloseButton class="cursor-pointer rounded-2xl bg-neutral-200 px-3 py-1 text-lg font-medium text-neutral-700 hover:bg-neutral-300 active:scale-97">
@@ -119,7 +119,7 @@ export default (props: {disabled: boolean; onAdd: (atom: Atom) => void}) => {
                             disabled={!parsedAtom()}
                             onClick={confirm}
                         >
-                            Add
+                            <span class="px-2">Add</span>
                         </Button>
                     </div>
                 </Dialog.Content>

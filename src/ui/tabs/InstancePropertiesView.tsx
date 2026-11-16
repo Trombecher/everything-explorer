@@ -30,7 +30,9 @@ export default () => {
                     });
                 }}
             >
-                {appState.translate(Phrase.Compact, undefined)}
+                <span class="px-1">
+                    {appState.translate(Phrase.Compact, undefined)}
+                </span>
             </Button>
         </div>
     );

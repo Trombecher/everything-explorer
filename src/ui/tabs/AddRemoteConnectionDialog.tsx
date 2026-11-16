@@ -1,5 +1,6 @@
 import {Dialog} from "@kobalte/core/dialog";
 import {TextField} from "@kobalte/core/text-field";
+import PlusIcon from "lucide-solid/icons/plus";
 import {createEffect, createMemo, createSignal, Show} from "solid-js";
 
 import {useAppState} from "@/context";
@@ -165,15 +166,18 @@ export default (props: {
 
                     <div class="mt-1 flex items-center gap-2">
                         <div class="grow" />
-                        <Dialog.CloseButton class="cursor-pointer rounded-2xl bg-neutral-200 px-3 py-1 text-lg font-medium text-neutral-700 hover:bg-neutral-300 active:scale-97">
+                        <Dialog.CloseButton class="cursor-pointer rounded-2xl bg-neutral-200 px-2 py-1 font-medium text-neutral-700 hover:bg-neutral-300 active:scale-97">
                             {appState.translate(Phrase.Cancel, undefined)}
                         </Dialog.CloseButton>
                         <Button
-                            class="text-lg"
+                            class="flex"
                             disabled={!canSubmit()}
                             onClick={confirm}
                         >
-                            {appState.translate(Phrase.Add, undefined)}
+                            <PlusIcon />
+                            <span class="px-1">
+                                {appState.translate(Phrase.Add, undefined)}
+                            </span>
                         </Button>
                     </div>
                 </Dialog.Content>

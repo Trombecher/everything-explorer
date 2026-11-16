@@ -21,7 +21,7 @@ export default () => {
                         location.href = "/";
                     }}
                 >
-                    Reload
+                    <span class="px-2">Reload</span>
                 </Button>
             </div>
         </div>

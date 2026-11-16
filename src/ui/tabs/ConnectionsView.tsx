@@ -252,12 +252,14 @@ export default () => {
                                             );
                                     }}
                                 >
-                                    {appState.translate(
-                                        isConnected(connectionIndex)
-                                            ? Phrase.Disconnect
-                                            : Phrase.Connect,
-                                        undefined,
-                                    )}
+                                    <span class="px-1">
+                                        {appState.translate(
+                                            isConnected(connectionIndex)
+                                                ? Phrase.Disconnect
+                                                : Phrase.Connect,
+                                            undefined,
+                                        )}
+                                    </span>
                                 </Button>
                             </div>
                         )}
