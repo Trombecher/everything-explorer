@@ -71,6 +71,7 @@ const handleKeyDown = (props: {
     setObject: ((newObject: EverythingObject | undefined) => void) | undefined;
     replaceParentWithThis: (() => void) | undefined;
     parentObjectLayoutMode: LayoutMode;
+    leftArrowSiblingIndex: number | undefined;
 }) => {
     if (
         props.event.target.tagName === "INPUT"
@@ -105,6 +106,10 @@ const handleKeyDown = (props: {
     } else if (props.event.key === "ArrowLeft") {
         if (props.event.shiftKey) {
             props.objectSelection.selectParent();
+        } else if (props.leftArrowSiblingIndex !== undefined) {
+            // The sibling layout of this object is not simply row or column,
+            // so the block tells us which sibling the left arrow selects.
+            props.objectSelection.selectSibling(props.leftArrowSiblingIndex);
         } else if (props.parentObjectLayoutMode === LayoutMode.Row) {
             // Only allow left sibling selection if the layout mode is Row.
             props.objectSelection.selectPreviousSibling();
@@ -535,6 +540,12 @@ export const ObjectView = (props: {
     parentObjectLayoutMode: LayoutMode;
 
     /**
+     * Overrides which sibling the left arrow selects. This is needed for blocks
+     * whose children are laid out both vertically and horizontally.
+     */
+    leftArrowSiblingIndex?: number;
+
+    /**
      * Whether to apply margin-left for indentation.
      */
     indentLeft: boolean;
@@ -564,6 +575,7 @@ export const ObjectView = (props: {
                     replaceParentWithThis: props.replaceParentWithThis,
                     setObject: props.setObject,
                     parentObjectLayoutMode: props.parentObjectLayoutMode,
+                    leftArrowSiblingIndex: props.leftArrowSiblingIndex,
                 })
             }
             ref={div => {

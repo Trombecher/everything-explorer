@@ -117,6 +117,23 @@ export class ObjectSelection {
         );
     }
 
+    selectSibling(index: number) {
+        // Replace the last path position.
+        this.setPathInfo(
+            (pathInfo: ObjectSelectionPathInfo): ObjectSelectionPathInfo => {
+                if (pathInfo.effectiveLength === 0) return pathInfo;
+
+                return {
+                    path: [
+                        ...pathInfo.path.slice(0, pathInfo.effectiveLength - 1),
+                        index,
+                    ],
+                    effectiveLength: pathInfo.effectiveLength,
+                };
+            },
+        );
+    }
+
     selectNextSibling(siblingCount: number) {
         // Increment last position and discard non-effective tail.
         this.setPathInfo(

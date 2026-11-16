@@ -21,7 +21,9 @@ const IfBranchRow = (props: {
     widthBudgetInPixels: number;
     replaceParentWithThis: (() => void) | undefined;
     setObject: ((newObject: EverythingObject | undefined) => void) | undefined;
+    leftArrowSiblingIndex: number | undefined;
 }) => {
+    // One row of the stacked branches, with its icon in front of the child.
     const appState = useAppState();
 
     const itemGap = () => `${appState.layoutOptions().block.itemGapInPixels}px`;
@@ -38,6 +40,7 @@ const IfBranchRow = (props: {
                 setObject={props.setObject}
                 path={props.path}
                 widthBudgetInPixels={props.widthBudgetInPixels}
+                leftArrowSiblingIndex={props.leftArrowSiblingIndex}
             />
         </div>
     );
@@ -127,6 +130,9 @@ export default (props: {
                         props.setObject
                         && (newObject => changeChild("thenBranch", newObject))
                     }
+                    leftArrowSiblingIndex={
+                        layoutMode() === LayoutMode.Row ? 0 : undefined
+                    }
                 />
                 <IfBranchRow
                     icon="x"
@@ -145,6 +151,9 @@ export default (props: {
                         props.setObject
                         && (newObject =>
                             changeChild("otherwiseBranch", newObject))
+                    }
+                    leftArrowSiblingIndex={
+                        layoutMode() === LayoutMode.Row ? 0 : undefined
                     }
                 />
             </div>
