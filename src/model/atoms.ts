@@ -140,11 +140,9 @@ export namespace Atom {
 
     /**
      * Annotation on function nodes that names their parameter.
-     *
-     * TODO: Replace this placeholder id with a proper generated ULID.
      */
     export const ParameterName = {
         type: ObjectType.Atom,
-        value: 136280194033009886674776485662079471819n,
+        value: 2169830255009180635251211412954087391n,
     } as const satisfies Atom;
 }

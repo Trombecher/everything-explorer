@@ -395,27 +395,24 @@ const singleSetAtomValue = (
     set: EverythingSet,
     atomValue: bigint,
 ): EverythingObject | undefined => {
-    // TODO: optimize
+    let found: EverythingObject | undefined;
 
-    const [element1, element2] = set.elements
-        .filter(element => {
-            return (
-                element.type === ObjectType.Construction
-                && element.constructor.type === ObjectType.Atom
-                && element.constructor.value === atomValue
-            );
-        })
-        .map(
-            element =>
-                (
-                    element as EverythingObject & {
-                        type: typeof ObjectType.Construction;
-                    }
-                ).value,
-        );
+    for (const element of set.elements) {
+        if (
+            element.type !== ObjectType.Construction
+            || element.constructor.type !== ObjectType.Atom
+            || element.constructor.value !== atomValue
+        ) {
+            continue;
+        }
 
-    if (element2) return;
-    return element1;
+        // A second match makes the atom ambiguous.
+        if (found) return undefined;
+
+        found = element.value;
+    }
+
+    return found;
 };
 
 export const nodeToObject = (node: Node): EverythingObject => {
