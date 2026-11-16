@@ -22,7 +22,7 @@ import Button from "@/ui/reuse/Button";
 import ResizeSeparator from "@/ui/reuse/ResizeSeparator";
 
 import AtomCard from "./AtomCard";
-import PropertiesPanel from "./PropertiesPanel";
+import PropertiesPanel from "./properties/PropertiesPanel";
 
 const MIN_PROPERTIES_PANEL_WIDTH = 240;
 
