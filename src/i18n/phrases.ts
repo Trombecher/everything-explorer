@@ -31,6 +31,7 @@ export namespace Phrase {
         [DeleteConnection]: undefined;
         [NoConnectionsYet]: undefined;
         [Things]: undefined;
+        [CopyId]: undefined;
         [German]: undefined;
         [English]: undefined;
         [System]: undefined;
@@ -74,6 +75,7 @@ export namespace Phrase {
     export const DeleteConnection = Symbol();
     export const NoConnectionsYet = Symbol();
     export const Things = Symbol();
+    export const CopyId = Symbol();
     export const German = Symbol();
     export const English = Symbol();
     export const System = Symbol();
@@ -118,6 +120,7 @@ export type Phrase =
     | typeof Phrase.DeleteConnection
     | typeof Phrase.NoConnectionsYet
     | typeof Phrase.Things
+    | typeof Phrase.CopyId
     | typeof Phrase.German
     | typeof Phrase.English
     | typeof Phrase.System

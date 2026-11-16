@@ -1,10 +1,12 @@
 import {Button as KobalteButton} from "@kobalte/core/button";
+import CopyIcon from "lucide-solid/icons/copy";
 import PlusIcon from "lucide-solid/icons/plus";
 import TablePropertiesIcon from "lucide-solid/icons/table-properties";
 import XIcon from "lucide-solid/icons/x";
 import {createEffect, createResource, Index, on, Show} from "solid-js";
 
 import {useAppState} from "@/context";
+import {Phrase} from "@/i18n/phrases";
 import {defaultObject, type EverythingObject} from "@/model";
 import type {Atom} from "@/model/atoms";
 import {handleHistoryKeyDown, ObjectHistory} from "@/ui/objects/history";
@@ -163,6 +165,16 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
         history.pushObjects(history.objects().filter((_, i) => i !== index));
     };
 
+    const copyIdLabel = () => appState.translate(Phrase.CopyId, undefined);
+
+    const copyId = () => {
+        void navigator.clipboard
+            .writeText(String(props.selectedAtom.value))
+            .catch(error => {
+                console.error("failed to copy atom id", error);
+            });
+    };
+
     return (
         <div
             class="relative flex w-full flex-col gap-2 rounded-4xl border border-neutral-200 bg-white p-2 dark:bg-neutral-100"
@@ -200,7 +212,7 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
                 </h2>
             </div>
             <KobalteButton
-                class="absolute top-2 right-2 rounded-2xl p-2 hover:bg-neutral-100"
+                class="absolute top-2 right-2 rounded-2xl p-2 hover:bg-neutral-200"
                 onClick={() => {
                     props.close();
                 }}
@@ -208,7 +220,7 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
                 <XIcon />
             </KobalteButton>
 
-            <div class="px-2">
+            <div class="flex flex-wrap items-center gap-2 px-2">
                 <Button
                     class="flex w-fit gap-2"
                     disabled={values() === undefined}
@@ -217,10 +229,18 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
                     <PlusIcon />
                     Add property
                 </Button>
-                <p>Id: {String(props.selectedAtom.value)}</p>
+                <KobalteButton
+                    class="flex w-fit cursor-pointer items-center gap-2 rounded-2xl bg-neutral-200 px-3 py-1 font-medium hover:bg-neutral-300 active:scale-97"
+                    title={copyIdLabel()}
+                    aria-label={copyIdLabel()}
+                    onClick={copyId}
+                >
+                    <CopyIcon />
+                    {copyIdLabel()}
+                </KobalteButton>
             </div>
 
-            <WidthMeasurer class="px-2">
+            <WidthMeasurer class="flex flex-col gap-2 px-2">
                 {widthBudgetInPixels => (
                     <ObjectSelectionContext.Provider
                         value={history.objectSelection}
@@ -231,8 +251,8 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
                         >
                             <Index each={history.objects()}>
                                 {(object, index) => (
-                                    <div class="flex items-center gap-2">
-                                        <div class="min-w-0 flex-1">
+                                    <div class="flex items-stretch gap-2">
+                                        <div class="grid min-w-0 flex-1">
                                             <ObjectView
                                                 indentLeft={false}
                                                 widthBudgetInPixels={Math.max(
@@ -267,7 +287,7 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
                                             />
                                         </div>
                                         <KobalteButton
-                                            class="shrink-0 rounded-2xl p-2 text-neutral-500 hover:bg-neutral-100 hover:text-red-500"
+                                            class="shrink-0 self-center rounded-2xl p-2 text-neutral-500 hover:bg-red-500/10 hover:text-red-500"
                                             title="Remove property"
                                             aria-label="Remove property"
                                             onClick={() =>

@@ -32,6 +32,7 @@ export const german = {
     [Phrase.DeleteConnection]: () => "Verbindung löschen",
     [Phrase.NoConnectionsYet]: () => "Noch keine Verbindungen.",
     [Phrase.Things]: () => "Dinge",
+    [Phrase.CopyId]: () => "ID kopieren",
     [Phrase.English]: () => "Englisch",
     [Phrase.German]: () => "Deutsch",
     [Phrase.System]: () => "System",
