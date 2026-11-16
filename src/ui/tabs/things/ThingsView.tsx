@@ -15,6 +15,7 @@ import {
 } from "solid-js";
 
 import {useAppState} from "@/context";
+import {Phrase} from "@/i18n/phrases";
 import {ObjectType} from "@/model";
 import {generateAtomId, MAX_ATOM_ID, type Atom} from "@/model/atoms";
 import Button from "@/ui/reuse/Button";
@@ -118,7 +119,10 @@ export default () => {
     const [isSearchExpanded, setIsSearchExpanded] = createSignal(false);
 
     const searchToggleLabel = () =>
-        isSearchExpanded() ? "Close search" : "Search things";
+        appState.translate(
+            isSearchExpanded() ? Phrase.CloseSearch : Phrase.SearchThings,
+            undefined,
+        );
 
     const parseAtomId = (input: string): Atom | undefined => {
         const trimmed = input.trim();
@@ -158,12 +162,17 @@ export default () => {
                 <div class="@container">
                     <div class="flex flex-wrap items-center gap-2 px-2 text-black">
                         <LayoutGridIcon class="shrink-0" />
-                        <h2 class="shrink-0 text-xl font-semibold">Things</h2>
+                        <h2 class="shrink-0 text-xl font-semibold">
+                            {appState.translate(Phrase.Things, undefined)}
+                        </h2>
                         <label class="mx-2 flex grow items-center rounded-2xl border border-neutral-200 bg-neutral-100 pl-2 focus-within:outline-2 @max-md:hidden dark:bg-white">
                             <SearchIcon />
                             <input
                                 type="search"
-                                placeholder="Search by atom ID..."
+                                placeholder={appState.translate(
+                                    Phrase.SearchByAtomId,
+                                    undefined,
+                                )}
                                 value={searchValue()}
                                 onInput={e => {
                                     setSearchValue(e.currentTarget.value);
@@ -190,11 +199,16 @@ export default () => {
                         <Button
                             onClick={generateAndSearchNewAtom}
                             disabled={appState.connectionClient() === undefined}
-                            aria-label="Add thing"
+                            aria-label={appState.translate(
+                                Phrase.AddThing,
+                                undefined,
+                            )}
                             class="flex gap-1"
                         >
                             <PlusIcon />
-                            <span class="pr-1 @max-xs:hidden">Add thing</span>
+                            <span class="pr-1 @max-xs:hidden">
+                                {appState.translate(Phrase.AddThing, undefined)}
+                            </span>
                         </Button>
                     </div>
                     <Show when={isSearchExpanded()}>
@@ -202,7 +216,10 @@ export default () => {
                             <SearchIcon />
                             <input
                                 type="search"
-                                placeholder="Search by atom ID..."
+                                placeholder={appState.translate(
+                                    Phrase.SearchByAtomId,
+                                    undefined,
+                                )}
                                 value={searchValue()}
                                 ref={el => queueMicrotask(() => el.focus())}
                                 onInput={e => {
@@ -221,7 +238,10 @@ export default () => {
                 </div>
 
                 <div class="mt-4 flex flex-wrap gap-2">
-                    <Show when={!atoms.loading} fallback={"loading..."}>
+                    <Show
+                        when={!atoms.loading}
+                        fallback={appState.translate(Phrase.Loading, undefined)}
+                    >
                         <For each={displayedAtoms()}>
                             {atom => (
                                 <AtomCard
@@ -243,7 +263,10 @@ export default () => {
                          * `gap-2` between the panels instead of adding to it.
                          */}
                         <ResizeSeparator
-                            label="Resize properties panel"
+                            label={appState.translate(
+                                Phrase.ResizePropertiesPanel,
+                                undefined,
+                            )}
                             width={appState.propertiesPanelWidth}
                             setWidth={appState.setPropertiesPanelWidth}
                             minWidth={MIN_PROPERTIES_PANEL_WIDTH}

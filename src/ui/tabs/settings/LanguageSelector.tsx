@@ -1,3 +1,5 @@
+import {Show} from "solid-js";
+
 import {useAppState} from "@/context";
 import {Language, translate} from "@/i18n";
 import {Phrase} from "@/i18n/phrases";
@@ -40,7 +42,7 @@ const languageSettingDisplayString = (
     if (languageSetting === System) {
         const browserLanguage = appState.browserLanguage();
 
-        return `${nativeLanguageTranslation} (${browserLanguage === undefined ? "unknown - fallback to english" : `${translate(languageSettingToPhrase[browserLanguage], Language.English, undefined)} - detected`})`;
+        return `${nativeLanguageTranslation} (${browserLanguage === undefined ? appState.translate(Phrase.UnknownFallbackToEnglish, undefined) : `${translate(languageSettingToPhrase[browserLanguage], Language.English, undefined)} - ${appState.translate(Phrase.Detected, undefined)}`})`;
     } else {
         const englishLanguageTranslation = translate(
             languageSettingToPhrase[languageSetting],
@@ -70,8 +72,16 @@ export default () => {
             }
             description={
                 <>
-                    {appState.translate(Phrase.Language, undefined)} (
-                    {translate(Phrase.Language, Language.English, undefined)})
+                    {appState.translate(Phrase.Language, undefined)}
+                    <Show when={appState.language() !== Language.English}>
+                        {" ("}
+                        {translate(
+                            Phrase.Language,
+                            Language.English,
+                            undefined,
+                        )}
+                        {")"}
+                    </Show>
                 </>
             }
         />

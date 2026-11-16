@@ -46,6 +46,27 @@ export namespace Phrase {
         [ParameterName]: undefined;
         [NoEnclosingFunction]: undefined;
         [OutOfRange]: undefined;
+        [SearchByAtomId]: undefined;
+        [SearchThings]: undefined;
+        [CloseSearch]: undefined;
+        [AddThing]: undefined;
+        [Loading]: undefined;
+        [LoadingProperties]: undefined;
+        [ResizePropertiesPanel]: undefined;
+        [PropertiesOf]: {forName: string};
+        [AddProperty]: undefined;
+        [RemoveProperty]: undefined;
+        [Reload]: undefined;
+        [Views]: undefined;
+        [Connection]: undefined;
+        [ConnectTo]: {forName: string};
+        [DisconnectFrom]: {forName: string};
+        [New]: undefined;
+        [FunctionDepth]: {depth: string};
+        [NotImplemented]: undefined;
+        [UnknownFallbackToEnglish]: undefined;
+        [Detected]: undefined;
+        [ObjectPlaceholder]: undefined;
     }>;
 
     export const AppSettings = Symbol();
@@ -90,6 +111,27 @@ export namespace Phrase {
     export const ParameterName = Symbol();
     export const NoEnclosingFunction = Symbol();
     export const OutOfRange = Symbol();
+    export const SearchByAtomId = Symbol();
+    export const SearchThings = Symbol();
+    export const CloseSearch = Symbol();
+    export const AddThing = Symbol();
+    export const Loading = Symbol();
+    export const LoadingProperties = Symbol();
+    export const ResizePropertiesPanel = Symbol();
+    export const PropertiesOf = Symbol();
+    export const AddProperty = Symbol();
+    export const RemoveProperty = Symbol();
+    export const Reload = Symbol();
+    export const Views = Symbol();
+    export const Connection = Symbol();
+    export const ConnectTo = Symbol();
+    export const DisconnectFrom = Symbol();
+    export const New = Symbol();
+    export const FunctionDepth = Symbol();
+    export const NotImplemented = Symbol();
+    export const UnknownFallbackToEnglish = Symbol();
+    export const Detected = Symbol();
+    export const ObjectPlaceholder = Symbol();
 }
 
 export type Phrase =
@@ -134,4 +176,25 @@ export type Phrase =
     | typeof Phrase.Debug
     | typeof Phrase.ParameterName
     | typeof Phrase.NoEnclosingFunction
-    | typeof Phrase.OutOfRange;
+    | typeof Phrase.OutOfRange
+    | typeof Phrase.SearchByAtomId
+    | typeof Phrase.SearchThings
+    | typeof Phrase.CloseSearch
+    | typeof Phrase.AddThing
+    | typeof Phrase.Loading
+    | typeof Phrase.LoadingProperties
+    | typeof Phrase.ResizePropertiesPanel
+    | typeof Phrase.PropertiesOf
+    | typeof Phrase.AddProperty
+    | typeof Phrase.RemoveProperty
+    | typeof Phrase.Reload
+    | typeof Phrase.Views
+    | typeof Phrase.Connection
+    | typeof Phrase.ConnectTo
+    | typeof Phrase.DisconnectFrom
+    | typeof Phrase.New
+    | typeof Phrase.FunctionDepth
+    | typeof Phrase.NotImplemented
+    | typeof Phrase.UnknownFallbackToEnglish
+    | typeof Phrase.Detected
+    | typeof Phrase.ObjectPlaceholder;

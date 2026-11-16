@@ -208,7 +208,9 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
             <div class="flex items-center gap-2 p-2">
                 <TablePropertiesIcon />
                 <h2 class="text-xl font-semibold text-black">
-                    Properties of {name() ?? String(props.selectedAtom.value)}
+                    {appState.translate(Phrase.PropertiesOf, {
+                        forName: name() ?? String(props.selectedAtom.value),
+                    })}
                 </h2>
             </div>
             <KobalteButton
@@ -227,7 +229,9 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
                     onClick={addProperty}
                 >
                     <PlusIcon />
-                    <span class="pr-1">Add property</span>
+                    <span class="pr-1">
+                        {appState.translate(Phrase.AddProperty, undefined)}
+                    </span>
                 </Button>
                 <KobalteButton
                     class="flex w-fit cursor-pointer items-center gap-2 rounded-2xl bg-neutral-200 px-3 py-1 font-medium hover:bg-neutral-300 active:scale-97"
@@ -247,7 +251,14 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
                     >
                         <Show
                             when={values()}
-                            fallback={<>loading properties...</>}
+                            fallback={
+                                <>
+                                    {appState.translate(
+                                        Phrase.LoadingProperties,
+                                        undefined,
+                                    )}
+                                </>
+                            }
                         >
                             <Index each={history.objects()}>
                                 {(object, index) => (
@@ -288,8 +299,14 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
                                         </div>
                                         <KobalteButton
                                             class="shrink-0 self-center rounded-2xl p-2 text-neutral-500 hover:bg-red-500/10 hover:text-red-500"
-                                            title="Remove property"
-                                            aria-label="Remove property"
+                                            title={appState.translate(
+                                                Phrase.RemoveProperty,
+                                                undefined,
+                                            )}
+                                            aria-label={appState.translate(
+                                                Phrase.RemoveProperty,
+                                                undefined,
+                                            )}
                                             onClick={() =>
                                                 removeProperty(index)
                                             }

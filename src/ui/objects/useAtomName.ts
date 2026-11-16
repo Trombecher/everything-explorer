@@ -2,6 +2,7 @@ import type {Accessor} from "solid-js";
 import {createResource} from "solid-js";
 
 import {useAppState} from "@/context";
+import {Phrase} from "@/i18n/phrases";
 import {Atom} from "@/model/atoms";
 
 import {formatAtomNames} from "./formatAtomNames";
@@ -46,6 +47,9 @@ export const useAtomName = (
 
         return loaded.names.length === 0
             ? undefined
-            : formatAtomNames(loaded.names);
+            : formatAtomNames(
+                  loaded.names,
+                  appState.translate(Phrase.ObjectPlaceholder, undefined),
+              );
     };
 };

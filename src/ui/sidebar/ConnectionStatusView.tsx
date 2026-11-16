@@ -15,7 +15,9 @@ export default (props: {compact?: boolean}) => {
     return (
         <div class="rounded-4xl border border-neutral-200 bg-white p-2 dark:bg-neutral-100">
             <Show when={!props.compact}>
-                <h2 class="m-2 font-semibold">Connection</h2>
+                <h2 class="m-2 font-semibold">
+                    {appState.translate(Phrase.Connection, undefined)}
+                </h2>
             </Show>
             <Button
                 class={`flex items-center justify-center gap-2 text-sm ${props.compact ? "mx-auto px-1.5! py-1.5!" : "w-full"}`}
@@ -60,10 +62,15 @@ export default (props: {compact?: boolean}) => {
                 <UnplugIcon class="shrink-0" />
                 <Show when={!props.compact}>
                     <span class="overflow-hidden py-1 pr-2 text-ellipsis whitespace-nowrap">
-                        {appState.isConnected()
-                            ? "Disconnect from "
-                            : "Connect to "}
-                        {appState.lastUsedConnection()?.name}
+                        {appState.translate(
+                            appState.isConnected()
+                                ? Phrase.DisconnectFrom
+                                : Phrase.ConnectTo,
+                            {
+                                forName:
+                                    appState.lastUsedConnection()?.name ?? "",
+                            },
+                        )}
                     </span>
                 </Show>
             </Button>

@@ -1,6 +1,8 @@
 import {Button} from "@kobalte/core/button";
 import {Show, type Setter} from "solid-js";
 
+import {useAppState} from "@/context";
+import {Phrase} from "@/i18n/phrases";
 import type {Atom} from "@/model/atoms";
 import {useAtomName} from "@/ui/objects/useAtomName";
 
@@ -10,6 +12,7 @@ export default (props: {
     selectedAtom: Atom | undefined;
     setSelectedAtom: Setter<Atom | undefined>;
 }) => {
+    const appState = useAppState();
     const name = useAtomName(() => props.atom);
 
     return (
@@ -26,7 +29,7 @@ export default (props: {
         >
             <Show when={props.isNew}>
                 <span class="shrink-0 rounded-full bg-blue-400/20 px-1.5 py-0.5 text-[10px] font-medium whitespace-nowrap text-blue-500">
-                    New
+                    {appState.translate(Phrase.New, undefined)}
                 </span>
             </Show>
             <span class="line-clamp-3 w-full text-sm leading-tight font-medium break-all">

@@ -609,18 +609,23 @@ export const ObjectView = (props: {
                         };
 
                         const labelOf = (depth: bigint) => {
+                            const functionDepth = appState.translate(
+                                Phrase.FunctionDepth,
+                                {depth: String(depth)},
+                            );
+
                             const enclosingFunction =
                                 enclosingFunctions()[Number(depth)];
 
                             if (!enclosingFunction) {
-                                return `function ${depth} (${appState.translate(Phrase.OutOfRange, undefined)})`;
+                                return `${functionDepth} (${appState.translate(Phrase.OutOfRange, undefined)})`;
                             }
 
                             if (enclosingFunction.parameterName) {
-                                return `${enclosingFunction.parameterName} (function ${depth})`;
+                                return `${enclosingFunction.parameterName} (${functionDepth})`;
                             }
 
-                            return `function ${depth}`;
+                            return functionDepth;
                         };
 
                         return (
@@ -818,7 +823,9 @@ export const ObjectView = (props: {
                     )}
                 </Match>
 
-                <Match when={true}>NOT IMPL</Match>
+                <Match when={true}>
+                    {appState.translate(Phrase.NotImplemented, undefined)}
+                </Match>
             </Switch>
         </div>
     );

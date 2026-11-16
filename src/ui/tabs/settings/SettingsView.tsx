@@ -21,7 +21,9 @@ export default () => {
                         location.href = "/";
                     }}
                 >
-                    <span class="px-2">Reload</span>
+                    <span class="px-2">
+                        {appState.translate(Phrase.Reload, undefined)}
+                    </span>
                 </Button>
             </div>
         </div>
