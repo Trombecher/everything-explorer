@@ -233,6 +233,7 @@ export class AppState {
         if (
             this.state.currentTab === Tab.InstanceProperties
             || this.state.currentTab === Tab.Things
+            || this.state.currentTab === Tab.Evaluate
         )
             this.setCurrentTab(Tab.Home);
     }

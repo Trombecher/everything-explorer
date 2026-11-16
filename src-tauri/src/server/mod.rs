@@ -137,6 +137,7 @@ impl PrivateKnowledgeServer {
                 get(routes_v1::serving_knowledge_base_path),
             )
             .route("/api/v1/knownAtoms", get(routes_v1::known_atoms))
+            .route("/api/v1/evaluate", post(routes_v1::evaluate_object))
             .route("/api/v1/valuesOf", post(routes_v1::values_of_object))
             .route(
                 "/api/v1/constructionValues",

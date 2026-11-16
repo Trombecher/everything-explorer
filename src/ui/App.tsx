@@ -9,6 +9,7 @@ import {useAppState} from "../context";
 import SideBar from "./sidebar/SideBar";
 import ConnectionsView from "./tabs/ConnectionsView";
 import DebugView from "./tabs/debug/DebugView";
+import EvaluateView from "./tabs/EvaluateView";
 import Home from "./tabs/HomeView";
 import InstancePropertiesView from "./tabs/InstancePropertiesView";
 import SettingsView from "./tabs/settings/SettingsView";
@@ -58,6 +59,9 @@ export default () => {
             <Switch>
                 <Match when={appState.state.currentTab === Tab.Things}>
                     <ThingsView />
+                </Match>
+                <Match when={appState.state.currentTab === Tab.Evaluate}>
+                    <EvaluateView />
                 </Match>
                 <Match
                     when={appState.state.currentTab === Tab.InstanceProperties}

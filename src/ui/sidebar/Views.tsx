@@ -1,3 +1,4 @@
+import FlaskConicalIcon from "lucide-solid/icons/flask-conical";
 import LayoutGrid from "lucide-solid/icons/layout-grid";
 import Settings2Icon from "lucide-solid/icons/settings-2";
 import {Show} from "solid-js";
@@ -21,6 +22,7 @@ export default (props: {compact?: boolean}) => {
             {(
                 [
                     [Tab.Things, <LayoutGrid />],
+                    [Tab.Evaluate, <FlaskConicalIcon />],
                     [Tab.InstanceProperties, <Settings2Icon />],
                 ] as const
             ).map(([tab, icon]) => (

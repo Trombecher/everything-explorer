@@ -1,7 +1,11 @@
 use std::sync::Arc;
 
 use axum::{Json, extract::State, http::StatusCode, response::IntoResponse};
-use everything::{knowledge::Statement, model::Object};
+use everything::{
+    compute::{self, LazyObject, Node},
+    knowledge::{Knowledge, Statement},
+    model::{Object, Set},
+};
 
 use crate::server::{
     WebServerState,
@@ -49,6 +53,40 @@ pub async fn construction_values_of_object(
         .collect();
 
     Ok(Json(values))
+}
+
+/// Evaluates the given object in the knowledge base and returns the result.
+///
+/// Objects that are not nodes evaluate to themselves.
+pub async fn evaluate_object(
+    State(state): State<Arc<WebServerState>>,
+    Json(json): Json<JsonObject>,
+) -> Result<Json<JsonObject>, (StatusCode, String)> {
+    let object =
+        Object::try_from(json).map_err(|error| (StatusCode::BAD_REQUEST, error.to_string()))?;
+    let knowledge = state.knowledge().await;
+
+    Ok(Json(evaluate(&object, &knowledge).into()))
+}
+
+fn evaluate(object: &Object, knowledge: &Knowledge) -> Object {
+    let Ok(node) = Node::new(object, knowledge) else {
+        return object.clone();
+    };
+
+    materialize(compute::evaluate(&node, knowledge), knowledge)
+}
+
+/// Turns a (potentially lazy) evaluation result into a concrete object.
+fn materialize(lazy_object: LazyObject, knowledge: &Knowledge) -> Object {
+    match lazy_object {
+        LazyObject::Eager(object) => object,
+        LazyObject::Node(node) => node.into_object(),
+        lazy_object => {
+            let mut values = lazy_object.iter(knowledge).collect::<Vec<_>>();
+            Object::Set(Set::from(values.as_mut_slice()))
+        }
+    }
 }
 
 pub async fn known_atoms(State(state): State<Arc<WebServerState>>) -> Json<Vec<String>> {
@@ -101,4 +139,68 @@ pub async fn compact(
         .map_err(|error| (StatusCode::INTERNAL_SERVER_ERROR, error.to_string()))?;
 
     Ok(StatusCode::NO_CONTENT)
+}
+
+#[cfg(test)]
+mod tests {
+    use everything::{
+        knowledge::Knowledge,
+        model::{Atom, Construction, Object, Set},
+        num_bigint::BigInt,
+    };
+
+    use super::evaluate;
+
+    fn literal(object: Object) -> Object {
+        Set::from([Construction::new(Atom::NODE_LITERAL.into(), object).into()]).into()
+    }
+
+    fn addition(first: Object, second: Object) -> Object {
+        Set::from([
+            Construction::new(Atom::NODE_ADD_FIRST.into(), first).into(),
+            Construction::new(Atom::NODE_ADD_SECOND.into(), second).into(),
+        ])
+        .into()
+    }
+
+    #[test]
+    fn evaluates_addition() {
+        let knowledge = Knowledge::empty();
+        let one = literal(Object::new_integer(BigInt::from(1)));
+
+        assert_eq!(
+            evaluate(&addition(one.clone(), one), &knowledge),
+            Object::new_integer(BigInt::from(2))
+        );
+    }
+
+    #[test]
+    fn non_node_evaluates_to_itself() {
+        let knowledge = Knowledge::empty();
+        let object = Object::new_integer(BigInt::from(7));
+
+        assert_eq!(evaluate(&object, &knowledge), object);
+    }
+
+    #[test]
+    fn materializes_lazy_union() {
+        let knowledge = Knowledge::empty();
+        let union = Set::from([
+            Construction::new(
+                Atom::NODE_UNION_FIRST.into(),
+                literal(Object::new_integer(BigInt::from(1))),
+            )
+            .into(),
+            Construction::new(
+                Atom::NODE_UNION_SECOND.into(),
+                literal(Object::new_integer(BigInt::from(1))),
+            )
+            .into(),
+        ]);
+
+        assert_eq!(
+            evaluate(&Object::Set(union), &knowledge),
+            Object::new_integer(BigInt::from(1))
+        );
+    }
 }

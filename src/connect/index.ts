@@ -4,6 +4,7 @@ import {ObjectType, type EverythingObject, type Statement} from "@/model";
 import type {Atom} from "@/model/atoms";
 
 import {
+    jsonObjectSchema,
     jsonObjectToObject,
     jsonObjectsSchema,
     objectToJsonObject,
@@ -82,6 +83,29 @@ export class ConnectionClient {
         return jsonObjectsSchema
             .parse(await response.json())
             .map(jsonObjectToObject);
+    }
+
+    /**
+     * Evaluates the given object in the knowledge base and returns the result.
+     */
+    public async evaluateObject(
+        object: EverythingObject,
+    ): Promise<EverythingObject> {
+        const response = await fetch(`${this.url}/api/v1/evaluate`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(objectToJsonObject(object)),
+        });
+
+        if (!response.ok) {
+            throw new Error(
+                `failed to evaluate object (${response.status}): ${await response.text()}`,
+            );
+        }
+
+        return jsonObjectToObject(
+            jsonObjectSchema.parse(await response.json()),
+        );
     }
 
     /**

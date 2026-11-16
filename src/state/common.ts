@@ -2,6 +2,7 @@ export const System = Symbol();
 
 export namespace Tab {
     export const Things = Symbol();
+    export const Evaluate = Symbol();
     export const InstanceProperties = Symbol();
     export const Connections = Symbol();
     export const AppSettings = Symbol();
@@ -11,6 +12,7 @@ export namespace Tab {
 
 export type Tab =
     | typeof Tab.Things
+    | typeof Tab.Evaluate
     | typeof Tab.InstanceProperties
     | typeof Tab.Connections
     | typeof Tab.AppSettings
