@@ -1,9 +1,18 @@
 import {Button as KobalteButton} from "@kobalte/core/button";
+import CheckIcon from "lucide-solid/icons/check";
 import CopyIcon from "lucide-solid/icons/copy";
 import PlusIcon from "lucide-solid/icons/plus";
 import TablePropertiesIcon from "lucide-solid/icons/table-properties";
 import XIcon from "lucide-solid/icons/x";
-import {createEffect, createResource, Index, on, Show} from "solid-js";
+import {
+    createEffect,
+    createResource,
+    createSignal,
+    Index,
+    on,
+    onCleanup,
+    Show,
+} from "solid-js";
 
 import {useAppState} from "@/context";
 import {Phrase} from "@/i18n/phrases";
@@ -167,9 +176,27 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
 
     const copyIdLabel = () => appState.translate(Phrase.CopyId, undefined);
 
+    /**
+     * How long the copy button shows a check mark after copying, in ms.
+     */
+    const COPIED_FEEDBACK_DURATION = 2000;
+
+    const [copied, setCopied] = createSignal(false);
+    let copiedFeedbackTimeout: ReturnType<typeof setTimeout> | undefined;
+
+    onCleanup(() => clearTimeout(copiedFeedbackTimeout));
+
     const copyId = () => {
         void navigator.clipboard
             .writeText(String(props.selectedAtom.value))
+            .then(() => {
+                setCopied(true);
+                clearTimeout(copiedFeedbackTimeout);
+                copiedFeedbackTimeout = setTimeout(
+                    () => setCopied(false),
+                    COPIED_FEEDBACK_DURATION,
+                );
+            })
             .catch(error => {
                 console.error("failed to copy atom id", error);
             });
@@ -240,7 +267,9 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
                     onClick={copyId}
                     severity={ButtonSeverity.Secondary}
                 >
-                    <CopyIcon />
+                    <Show when={copied()} fallback={<CopyIcon />}>
+                        <CheckIcon />
+                    </Show>
                     <span class="px-1">{copyIdLabel()}</span>
                 </Button>
             </div>
