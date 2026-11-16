@@ -82,6 +82,7 @@ const blockIconWidthInPixels = {
     brace: 12,
     blackboardZ: 24,
     mapsTo: 32,
+    call: 40,
 } as const satisfies Record<string, 12 | 24 | 32 | 40 | 48 | 56 | 64>;
 
 /**
@@ -277,6 +278,21 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                 ],
                 options,
             );
+        case NodeType.Call:
+            return rowLayoutWidth(
+                [
+                    calculateRowLayoutWidthOfBlock(
+                        objectToBlock(block.callee),
+                        options,
+                    ),
+                    blockIconWidthInPixels.call,
+                    calculateRowLayoutWidthOfBlock(
+                        objectToBlock(block.with),
+                        options,
+                    ),
+                ],
+                options,
+            );
         case NodeType.Parameter:
             return rowLayoutWidth(
                 [blockIconWidthInPixels.x, 192 + options.block.itemGapInPixels],
@@ -406,6 +422,7 @@ export const childCountOfBlock = (block: Block): number => {
         case NodeType.Or:
         case NodeType.Union:
         case NodeType.Filter:
+        case NodeType.Call:
             return 2;
         case ObjectType.Set:
             return block.elements.length;

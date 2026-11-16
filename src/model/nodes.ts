@@ -13,6 +13,7 @@ export namespace NodeType {
     export const Or = Symbol("NodeType.Or");
     export const Union = Symbol("NodeType.Union");
     export const Filter = Symbol("NodeType.Filter");
+    export const Call = Symbol("NodeType.Call");
     export const Parameter = Symbol("NodeType.Parameter");
 }
 
@@ -87,6 +88,13 @@ export type FilterNode = {
     readonly rest: readonly EverythingObject[];
 };
 
+export type CallNode = {
+    readonly type: typeof NodeType.Call;
+    readonly callee: EverythingObject;
+    readonly with: EverythingObject;
+    readonly rest: readonly EverythingObject[];
+};
+
 export type ParameterNode = {
     readonly type: typeof NodeType.Parameter;
     readonly depth: bigint;
@@ -104,6 +112,7 @@ export type Node =
     | OrNode
     | UnionNode
     | FilterNode
+    | CallNode
     | ParameterNode;
 
 export const NotANode = Symbol("NotANode");
@@ -290,6 +299,25 @@ const objectToNodeWithoutCache = (
                 rest: withoutAtomConstructors(object.elements, [
                     Atom.NodeFilterSet.value,
                     Atom.NodeFilterFilter.value,
+                ]),
+            };
+        }
+    }
+
+    some = singleSetAtomValue(object, Atom.NodeCallCallee.value);
+    if (some) {
+        const withObject = singleSetAtomValue(object, Atom.NodeCallWith.value);
+
+        if (withObject) {
+            if (finalNode) return NotANode;
+
+            finalNode = {
+                type: NodeType.Call,
+                callee: some,
+                with: withObject,
+                rest: withoutAtomConstructors(object.elements, [
+                    Atom.NodeCallCallee.value,
+                    Atom.NodeCallWith.value,
                 ]),
             };
         }
@@ -485,6 +513,15 @@ export const nodeToObject = (node: Node): EverythingObject => {
                 elements: [
                     construction(Atom.NodeFilterSet, node.set),
                     construction(Atom.NodeFilterFilter, node.filterFunction),
+                    ...node.rest,
+                ],
+            };
+        case NodeType.Call:
+            return {
+                type: ObjectType.Set,
+                elements: [
+                    construction(Atom.NodeCallCallee, node.callee),
+                    construction(Atom.NodeCallWith, node.with),
                     ...node.rest,
                 ],
             };

@@ -92,6 +92,21 @@ const createInitialObject2 = (): EverythingObject => ({
             }),
             rest: [],
         }),
+        nodeToObject({
+            type: NodeType.Call,
+            callee: nodeToObject({
+                type: NodeType.Function,
+                body: nodeToObject({
+                    type: NodeType.Parameter,
+                    depth: 0n,
+                    rest: [],
+                }),
+                parameterName: undefined,
+                rest: [],
+            }),
+            with: {type: ObjectType.Integer, value: 42n},
+            rest: [],
+        }),
         nodeToObject({type: NodeType.Parameter, depth: 0n, rest: []}),
         {
             type: ObjectType.Construction,

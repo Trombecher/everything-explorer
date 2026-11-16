@@ -55,6 +55,7 @@ const isHandledKey = (key: string): boolean =>
     || key === "a"
     || key === "t"
     || key === "p"
+    || key === "c"
     || (key.length === 1 && "0123456789".includes(key));
 
 const handleKeyDown = (props: {
@@ -204,6 +205,12 @@ const handleKeyDown = (props: {
                     props.setObject(node.element);
                     break;
                 }
+                case NodeType.Call: {
+                    // Retain callee.
+
+                    props.setObject(node.callee);
+                    break;
+                }
             }
         } else {
             // We just delete everything.
@@ -342,6 +349,19 @@ const handleKeyDown = (props: {
         );
 
         props.objectSelection.selectChild(1);
+    } else if (props.event.key === "c") {
+        if (!props.setObject) return;
+
+        props.setObject(
+            nodeToObject({
+                type: NodeType.Call,
+                callee: props.object,
+                with: defaultObject,
+                rest: [],
+            }),
+        );
+
+        props.objectSelection.selectChild(1);
     } else if ("0123456789".includes(props.event.key)) {
         if (!props.setObject) return;
 
@@ -402,6 +422,8 @@ const objectViewColorHue = (object: EverythingObject): number => {
                 return 230;
             case NodeType.Filter:
                 return 205;
+            case NodeType.Call:
+                return 320;
         }
     }
 
@@ -433,6 +455,7 @@ const blockInColumnModeIsItemsCenter = (blockType: Block["type"]) => {
         case NodeType.Or:
         case NodeType.Union:
         case NodeType.Filter:
+        case NodeType.Call:
         case ObjectType.Construction:
             return true;
         default:
@@ -777,6 +800,16 @@ export const ObjectView = (props: {
                     {filterNode => (
                         <BinaryOperationView
                             block={filterNode()}
+                            path={props.path}
+                            wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                            setObject={props.setObject}
+                        />
+                    )}
+                </Match>
+                <Match when={variant(block(), NodeType.Call)}>
+                    {callNode => (
+                        <BinaryOperationView
+                            block={callNode()}
                             path={props.path}
                             wholeWidthBudgetInPixels={props.widthBudgetInPixels}
                             setObject={props.setObject}

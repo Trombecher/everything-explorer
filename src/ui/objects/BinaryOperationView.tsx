@@ -9,6 +9,7 @@ import {
     nodeToObject,
     NodeType,
     type AndNode,
+    type CallNode,
     type ContainsNode,
     type EqualNode,
     type FilterNode,
@@ -18,6 +19,7 @@ import {
     type UnionNode,
 } from "@/model/nodes";
 
+import CallIcon from "../icons/CallIcon";
 import DotDotIcon from "../icons/DotDotIcon";
 import ElementOfIcon from "../icons/ElementOfIcon";
 import FilterIcon from "../icons/FilterIcon";
@@ -40,6 +42,7 @@ type BinaryOperationBlock =
     | OrNode
     | UnionNode
     | FilterNode
+    | CallNode
     | Construction;
 
 const BlockIcon = {
@@ -51,6 +54,7 @@ const BlockIcon = {
     [NodeType.Or]: VeeIcon,
     [NodeType.Union]: UnionIcon,
     [NodeType.Filter]: FilterIcon,
+    [NodeType.Call]: CallIcon,
     [ObjectType.Construction]: DotDotIcon,
 };
 
@@ -67,6 +71,8 @@ const getFirst = (block: BinaryOperationBlock) => {
             return block.element;
         case NodeType.Filter:
             return block.set;
+        case NodeType.Call:
+            return block.callee;
         case ObjectType.Construction:
             return block.constructor;
     }
@@ -85,6 +91,8 @@ const getSecond = (block: BinaryOperationBlock) => {
             return block.set;
         case NodeType.Filter:
             return block.filterFunction;
+        case NodeType.Call:
+            return block.with;
         case ObjectType.Construction:
             return block.value;
     }
@@ -106,6 +114,8 @@ const changeBlockFirst = (
             return nodeToObject({...block, element: newFirst});
         case NodeType.Filter:
             return nodeToObject({...block, set: newFirst});
+        case NodeType.Call:
+            return nodeToObject({...block, callee: newFirst});
         case ObjectType.Construction:
             return {...block, constructor: newFirst};
     }
@@ -127,6 +137,8 @@ const changeBlockSecond = (
             return nodeToObject({...block, set: newSecond});
         case NodeType.Filter:
             return nodeToObject({...block, filterFunction: newSecond});
+        case NodeType.Call:
+            return nodeToObject({...block, with: newSecond});
         case ObjectType.Construction:
             return {...block, value: newSecond};
     }

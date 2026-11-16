@@ -118,6 +118,16 @@ export namespace Atom {
         value: 2150955291897679523990373018161137292n,
     } as const satisfies Atom;
 
+    export const NodeCallCallee = {
+        type: ObjectType.Atom,
+        value: 2150967257692765401288058191156339282n,
+    } as const satisfies Atom;
+
+    export const NodeCallWith = {
+        type: ObjectType.Atom,
+        value: 2150967257692538503396115970645049110n,
+    } as const satisfies Atom;
+
     export const NodeParameter = {
         type: ObjectType.Atom,
         value: 2148623964016728126166347458070520202n,
