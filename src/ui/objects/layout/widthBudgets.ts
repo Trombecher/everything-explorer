@@ -166,6 +166,20 @@ export const calculateValuesOfNodeOperandWidthBudgetInPixels = (
             - layoutOptions.block.itemGapInPixels,
     );
 
+export const calculateUnwrapNodeOperandWidthBudgetInPixels = (
+    widthBudgetInPixels: number,
+    layoutOptions: LayoutOptions,
+): number =>
+    Math.max(
+        0,
+        widthBudgetInPixels
+            - layoutOptions.block.blockBorderWidthInPixels * 2
+            - layoutOptions.block.blockPaddingLeftInPixels
+            - layoutOptions.block.blockPaddingRightInPixels
+            - blockIconWidthInPixels.unwrap
+            - layoutOptions.block.itemGapInPixels,
+    );
+
 export const calculateLiteralNodeInnerObjectWidthBudgetInPixels = (
     widthBudgetInPixels: number,
     layoutOptions: LayoutOptions,

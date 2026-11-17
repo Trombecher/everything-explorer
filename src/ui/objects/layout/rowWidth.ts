@@ -217,6 +217,17 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                 ],
                 options,
             );
+        case NodeType.Unwrap:
+            return rowLayoutWidth(
+                [
+                    blockIconWidthInPixels.unwrap,
+                    calculateRowLayoutWidthOfBlock(
+                        objectToBlock(block.set),
+                        options,
+                    ),
+                ],
+                options,
+            );
         case NodeType.If:
             return rowLayoutWidth(
                 [

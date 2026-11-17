@@ -7,16 +7,19 @@ import {
     NodeType,
     type NotNode,
     type QueryAtomsWithPropertyNode,
+    type UnwrapNode,
     type ValuesOfNode,
 } from "@/model/nodes";
 
 import AtomsWithPropertyIcon from "../icons/AtomsWithPropertyIcon";
 import NotIcon from "../icons/NotIcon";
+import UnwrapIcon from "../icons/UnwrapIcon";
 import ValuesOfIcon from "../icons/ValuesOfIcon";
 import {
     calculateLayoutModeOfBlock,
     calculateNotNodeOperandWidthBudgetInPixels,
     calculateQueryAtomsWithPropertyNodeOperandWidthBudgetInPixels,
+    calculateUnwrapNodeOperandWidthBudgetInPixels,
     calculateValuesOfNodeOperandWidthBudgetInPixels,
 } from "./layout";
 import ObjectView from "./ObjectView";
@@ -25,12 +28,14 @@ import {useObjectSelection, type ObjectSelectionPath} from "./selection";
 export type UnaryOperationBlock =
     | NotNode
     | QueryAtomsWithPropertyNode
-    | ValuesOfNode;
+    | ValuesOfNode
+    | UnwrapNode;
 
 const BlockIcon = {
     [NodeType.Not]: NotIcon,
     [NodeType.QueryAtomsWithProperty]: AtomsWithPropertyIcon,
     [NodeType.ValuesOf]: ValuesOfIcon,
+    [NodeType.Unwrap]: UnwrapIcon,
 };
 
 const operandOf = (block: UnaryOperationBlock): EverythingObject => {
@@ -41,6 +46,8 @@ const operandOf = (block: UnaryOperationBlock): EverythingObject => {
             return block.property;
         case NodeType.ValuesOf:
             return block.inner;
+        case NodeType.Unwrap:
+            return block.set;
     }
 };
 
@@ -55,6 +62,8 @@ const withOperand = (
             return nodeToObject({...block, property: operand});
         case NodeType.ValuesOf:
             return nodeToObject({...block, inner: operand});
+        case NodeType.Unwrap:
+            return nodeToObject({...block, set: operand});
     }
 };
 
@@ -92,6 +101,11 @@ export default (props: {
                 );
             case NodeType.ValuesOf:
                 return calculateValuesOfNodeOperandWidthBudgetInPixels(
+                    props.wholeWidthBudgetInPixels,
+                    layoutOptions,
+                );
+            case NodeType.Unwrap:
+                return calculateUnwrapNodeOperandWidthBudgetInPixels(
                     props.wholeWidthBudgetInPixels,
                     layoutOptions,
                 );

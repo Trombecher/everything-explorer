@@ -19,6 +19,7 @@ export namespace NodeType {
         "NodeType.QueryAtomsWithProperty",
     );
     export const ValuesOf = Symbol("NodeType.ValuesOf");
+    export const Unwrap = Symbol("NodeType.Unwrap");
     export const If = Symbol("NodeType.If");
     export const Call = Symbol("NodeType.Call");
     export const Parameter = Symbol("NodeType.Parameter");
@@ -133,6 +134,12 @@ export type ValuesOfNode = {
     readonly rest: readonly EverythingObject[];
 };
 
+export type UnwrapNode = {
+    readonly type: typeof NodeType.Unwrap;
+    readonly set: EverythingObject;
+    readonly rest: readonly EverythingObject[];
+};
+
 export type IfNode = {
     readonly type: typeof NodeType.If;
     readonly condition: EverythingObject;
@@ -171,6 +178,7 @@ export type Node =
     | MapNode
     | QueryAtomsWithPropertyNode
     | ValuesOfNode
+    | UnwrapNode
     | IfNode
     | CallNode
     | ParameterNode;
