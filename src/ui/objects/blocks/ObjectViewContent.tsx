@@ -211,6 +211,18 @@ export default (props: {
                     />
                 )}
             </Match>
+            <Match
+                when={variant(props.block, NodeType.QueryConstructionValues)}
+            >
+                {queryConstructionValuesNode => (
+                    <BinaryOperationView
+                        block={queryConstructionValuesNode()}
+                        path={props.path}
+                        wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                        setObject={props.setObject}
+                    />
+                )}
+            </Match>
             <Match when={variant(props.block, NodeType.If)}>
                 {ifNode => (
                     <IfOperationView

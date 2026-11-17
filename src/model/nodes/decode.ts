@@ -264,6 +264,28 @@ const objectToNodeWithoutCache = (
         };
     }
 
+    some = singleSetAtomValue(object, Atom.NodeConstructionValuesSet.value);
+    if (some) {
+        const propertyConstructor = singleSetAtomValue(
+            object,
+            Atom.NodeConstructionValuesPropertyConstructor.value,
+        );
+
+        if (propertyConstructor) {
+            if (finalNode) return NotANode;
+
+            finalNode = {
+                type: NodeType.QueryConstructionValues,
+                set: some,
+                propertyConstructor,
+                rest: withoutAtomConstructors(object.elements, [
+                    Atom.NodeConstructionValuesSet.value,
+                    Atom.NodeConstructionValuesPropertyConstructor.value,
+                ]),
+            };
+        }
+    }
+
     some = singleSetAtomValue(object, Atom.NodeIfCondition.value);
     if (some) {
         const thenObject = singleSetAtomValue(object, Atom.NodeIfThen.value);

@@ -15,6 +15,7 @@ import {
     type MapNode,
     type OrNode,
     type PlusNode,
+    type QueryConstructionValuesNode,
     type TimesNode,
     type UnionNode,
 } from "@/model/nodes";
@@ -24,6 +25,7 @@ import DotDotIcon from "../../icons/DotDotIcon";
 import ElementOfIcon from "../../icons/ElementOfIcon";
 import FilterIcon from "../../icons/FilterIcon";
 import LessThanIcon from "../../icons/LessThanIcon";
+import QueryConstructionValuesIcon from "../../icons/QueryConstructionValuesIcon";
 import SetMapIcon from "../../icons/SetMapIcon";
 import UnionIcon from "../../icons/UnionIcon";
 import VeeIcon from "../../icons/VeeIcon";
@@ -40,6 +42,7 @@ export type BinaryOperationBlock =
     | UnionNode
     | FilterNode
     | MapNode
+    | QueryConstructionValuesNode
     | CallNode
     | Construction;
 
@@ -54,6 +57,7 @@ export const BlockIcon = {
     [NodeType.Union]: UnionIcon,
     [NodeType.Filter]: FilterIcon,
     [NodeType.Map]: SetMapIcon,
+    [NodeType.QueryConstructionValues]: QueryConstructionValuesIcon,
     [NodeType.Call]: CallIcon,
     [ObjectType.Construction]: DotDotIcon,
 };
@@ -72,6 +76,7 @@ export const getFirst = (block: BinaryOperationBlock) => {
             return block.element;
         case NodeType.Filter:
         case NodeType.Map:
+        case NodeType.QueryConstructionValues:
             return block.set;
         case NodeType.Call:
             return block.callee;
@@ -96,6 +101,8 @@ export const getSecond = (block: BinaryOperationBlock) => {
             return block.filterFunction;
         case NodeType.Map:
             return block.mapperFunction;
+        case NodeType.QueryConstructionValues:
+            return block.propertyConstructor;
         case NodeType.Call:
             return block.with;
         case ObjectType.Construction:
@@ -120,6 +127,7 @@ export const changeBlockFirst = (
             return nodeToObject({...block, element: newFirst});
         case NodeType.Filter:
         case NodeType.Map:
+        case NodeType.QueryConstructionValues:
             return nodeToObject({...block, set: newFirst});
         case NodeType.Call:
             return nodeToObject({...block, callee: newFirst});
@@ -147,6 +155,8 @@ export const changeBlockSecond = (
             return nodeToObject({...block, filterFunction: newSecond});
         case NodeType.Map:
             return nodeToObject({...block, mapperFunction: newSecond});
+        case NodeType.QueryConstructionValues:
+            return nodeToObject({...block, propertyConstructor: newSecond});
         case NodeType.Call:
             return nodeToObject({...block, with: newSecond});
         case ObjectType.Construction:

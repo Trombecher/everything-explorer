@@ -20,6 +20,9 @@ export namespace NodeType {
     );
     export const ValuesOf = Symbol("NodeType.ValuesOf");
     export const Unwrap = Symbol("NodeType.Unwrap");
+    export const QueryConstructionValues = Symbol(
+        "NodeType.QueryConstructionValues",
+    );
     export const If = Symbol("NodeType.If");
     export const Call = Symbol("NodeType.Call");
     export const Parameter = Symbol("NodeType.Parameter");
@@ -140,6 +143,13 @@ export type UnwrapNode = {
     readonly rest: readonly EverythingObject[];
 };
 
+export type QueryConstructionValuesNode = {
+    readonly type: typeof NodeType.QueryConstructionValues;
+    readonly set: EverythingObject;
+    readonly propertyConstructor: EverythingObject;
+    readonly rest: readonly EverythingObject[];
+};
+
 export type IfNode = {
     readonly type: typeof NodeType.If;
     readonly condition: EverythingObject;
@@ -179,6 +189,7 @@ export type Node =
     | QueryAtomsWithPropertyNode
     | ValuesOfNode
     | UnwrapNode
+    | QueryConstructionValuesNode
     | IfNode
     | CallNode
     | ParameterNode;

@@ -44,6 +44,8 @@ export const objectViewColorHue = (object: EverythingObject): number => {
                 return 140;
             case NodeType.Unwrap:
                 return 310;
+            case NodeType.QueryConstructionValues:
+                return 240;
             case NodeType.If:
                 return 260;
             case NodeType.Call:
@@ -81,6 +83,7 @@ export const blockInColumnModeIsItemsCenter = (blockType: Block["type"]) => {
         case NodeType.Union:
         case NodeType.Filter:
         case NodeType.Map:
+        case NodeType.QueryConstructionValues:
         case NodeType.Call:
         case ObjectType.Construction:
             return true;
