@@ -55,6 +55,16 @@ export class AppState {
     public readonly setPropertiesPanelWidth: Setter<number>;
 
     /**
+     * Id of the atom whose properties are open in the things tab.
+     *
+     * This is runtime state, not part of the persisted app state. It lives here
+     * (and not in the things tab) so that it survives tab changes and other
+     * tabs can preselect an atom before switching to the things tab.
+     */
+    public readonly selectedAtomId: Accessor<bigint | undefined>;
+    public readonly setSelectedAtomId: Setter<bigint | undefined>;
+
+    /**
      * Whether the sidebar is collapsed to a slim icon rail.
      *
      * This is runtime state, not part of the persisted app state.
@@ -117,6 +127,15 @@ export class AppState {
         this.propertiesPanelWidth = propertiesPanelWidth;
         this.setPropertiesPanelWidth = setPropertiesPanelWidth;
 
+        // Selected atom id
+
+        const [selectedAtomId, setSelectedAtomId] = createSignal<
+            bigint | undefined
+        >(undefined);
+
+        this.selectedAtomId = selectedAtomId;
+        this.setSelectedAtomId = setSelectedAtomId;
+
         // Sidebar collapsed
         const [sidebarCollapsed, setSidebarCollapsed] = createSignal(false);
 
@@ -124,7 +143,8 @@ export class AppState {
         this.setSidebarCollapsed = setSidebarCollapsed;
 
         // Atom names belong to a specific knowledge base, so drop them when
-        // reconnecting.
+        // reconnecting. The selected atom belongs to the knowledge base as
+        // well, so drop it too.
         createEffect(
             on(
                 connectionClient,
@@ -134,6 +154,8 @@ export class AppState {
                             ? previous
                             : {...previous, atomNames: new Map()},
                     );
+
+                    setSelectedAtomId(undefined);
                 },
                 {defer: true},
             ),
