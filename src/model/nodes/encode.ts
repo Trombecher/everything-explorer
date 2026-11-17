@@ -117,6 +117,15 @@ export const nodeToObject = (node: Node): EverythingObject => {
                     ...node.rest,
                 ],
             };
+        case NodeType.Map:
+            return {
+                type: ObjectType.Set,
+                elements: [
+                    construction(Atom.NodeMapSet, node.set),
+                    construction(Atom.NodeMapMapper, node.mapperFunction),
+                    ...node.rest,
+                ],
+            };
         case NodeType.If:
             return {
                 type: ObjectType.Set,

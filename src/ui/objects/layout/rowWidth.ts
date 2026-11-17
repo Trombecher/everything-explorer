@@ -180,6 +180,21 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                 ],
                 options,
             );
+        case NodeType.Map:
+            return rowLayoutWidth(
+                [
+                    calculateRowLayoutWidthOfBlock(
+                        objectToBlock(block.set),
+                        options,
+                    ),
+                    blockIconWidthInPixels.map,
+                    calculateRowLayoutWidthOfBlock(
+                        objectToBlock(block.mapperFunction),
+                        options,
+                    ),
+                ],
+                options,
+            );
         case NodeType.If:
             return rowLayoutWidth(
                 [

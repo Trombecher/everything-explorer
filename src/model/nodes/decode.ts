@@ -203,6 +203,28 @@ const objectToNodeWithoutCache = (
         }
     }
 
+    some = singleSetAtomValue(object, Atom.NodeMapSet.value);
+    if (some) {
+        const mapperFunction = singleSetAtomValue(
+            object,
+            Atom.NodeMapMapper.value,
+        );
+
+        if (mapperFunction) {
+            if (finalNode) return NotANode;
+
+            finalNode = {
+                type: NodeType.Map,
+                set: some,
+                mapperFunction,
+                rest: withoutAtomConstructors(object.elements, [
+                    Atom.NodeMapSet.value,
+                    Atom.NodeMapMapper.value,
+                ]),
+            };
+        }
+    }
+
     some = singleSetAtomValue(object, Atom.NodeIfCondition.value);
     if (some) {
         const thenObject = singleSetAtomValue(object, Atom.NodeIfThen.value);

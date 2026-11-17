@@ -171,6 +171,16 @@ export default (props: {
                     />
                 )}
             </Match>
+            <Match when={variant(props.block, NodeType.Map)}>
+                {mapNode => (
+                    <BinaryOperationView
+                        block={mapNode()}
+                        path={props.path}
+                        wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                        setObject={props.setObject}
+                    />
+                )}
+            </Match>
             <Match when={variant(props.block, NodeType.If)}>
                 {ifNode => (
                     <IfOperationView

@@ -107,6 +107,21 @@ export const createInitialObject2 = (): EverythingObject => ({
             rest: [],
         }),
         nodeToObject({
+            type: NodeType.Map,
+            set: defaultObject,
+            mapperFunction: nodeToObject({
+                type: NodeType.Function,
+                body: nodeToObject({
+                    type: NodeType.Parameter,
+                    depth: 0n,
+                    rest: [],
+                }),
+                parameterName: undefined,
+                rest: [],
+            }),
+            rest: [],
+        }),
+        nodeToObject({
             type: NodeType.If,
             condition: {type: ObjectType.Integer, value: 1n},
             thenBranch: {type: ObjectType.Integer, value: 42n},

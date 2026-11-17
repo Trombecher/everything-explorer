@@ -12,6 +12,7 @@ import {
     type EqualNode,
     type FilterNode,
     type LessNode,
+    type MapNode,
     type OrNode,
     type PlusNode,
     type TimesNode,
@@ -23,6 +24,7 @@ import DotDotIcon from "../../icons/DotDotIcon";
 import ElementOfIcon from "../../icons/ElementOfIcon";
 import FilterIcon from "../../icons/FilterIcon";
 import LessThanIcon from "../../icons/LessThanIcon";
+import SetMapIcon from "../../icons/SetMapIcon";
 import UnionIcon from "../../icons/UnionIcon";
 import VeeIcon from "../../icons/VeeIcon";
 import WedgeIcon from "../../icons/WedgeIcon";
@@ -37,6 +39,7 @@ export type BinaryOperationBlock =
     | OrNode
     | UnionNode
     | FilterNode
+    | MapNode
     | CallNode
     | Construction;
 
@@ -50,6 +53,7 @@ export const BlockIcon = {
     [NodeType.Or]: VeeIcon,
     [NodeType.Union]: UnionIcon,
     [NodeType.Filter]: FilterIcon,
+    [NodeType.Map]: SetMapIcon,
     [NodeType.Call]: CallIcon,
     [ObjectType.Construction]: DotDotIcon,
 };
@@ -67,6 +71,7 @@ export const getFirst = (block: BinaryOperationBlock) => {
         case NodeType.Contains:
             return block.element;
         case NodeType.Filter:
+        case NodeType.Map:
             return block.set;
         case NodeType.Call:
             return block.callee;
@@ -89,6 +94,8 @@ export const getSecond = (block: BinaryOperationBlock) => {
             return block.set;
         case NodeType.Filter:
             return block.filterFunction;
+        case NodeType.Map:
+            return block.mapperFunction;
         case NodeType.Call:
             return block.with;
         case ObjectType.Construction:
@@ -112,6 +119,7 @@ export const changeBlockFirst = (
         case NodeType.Contains:
             return nodeToObject({...block, element: newFirst});
         case NodeType.Filter:
+        case NodeType.Map:
             return nodeToObject({...block, set: newFirst});
         case NodeType.Call:
             return nodeToObject({...block, callee: newFirst});
@@ -137,6 +145,8 @@ export const changeBlockSecond = (
             return nodeToObject({...block, set: newSecond});
         case NodeType.Filter:
             return nodeToObject({...block, filterFunction: newSecond});
+        case NodeType.Map:
+            return nodeToObject({...block, mapperFunction: newSecond});
         case NodeType.Call:
             return nodeToObject({...block, with: newSecond});
         case ObjectType.Construction:

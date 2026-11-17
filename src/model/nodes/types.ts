@@ -14,6 +14,7 @@ export namespace NodeType {
     export const Not = Symbol("NodeType.Not");
     export const Union = Symbol("NodeType.Union");
     export const Filter = Symbol("NodeType.Filter");
+    export const Map = Symbol("NodeType.Map");
     export const If = Symbol("NodeType.If");
     export const Call = Symbol("NodeType.Call");
     export const Parameter = Symbol("NodeType.Parameter");
@@ -109,6 +110,13 @@ export type FilterNode = {
     readonly rest: readonly EverythingObject[];
 };
 
+export type MapNode = {
+    readonly type: typeof NodeType.Map;
+    readonly set: EverythingObject;
+    readonly mapperFunction: EverythingObject;
+    readonly rest: readonly EverythingObject[];
+};
+
 export type IfNode = {
     readonly type: typeof NodeType.If;
     readonly condition: EverythingObject;
@@ -144,6 +152,7 @@ export type Node =
     | NotNode
     | UnionNode
     | FilterNode
+    | MapNode
     | IfNode
     | CallNode
     | ParameterNode;

@@ -27,6 +27,7 @@ const isHandledKey = (key: string): boolean =>
     || key === "*"
     || key === "l"
     || key === "f"
+    || key === "m"
     || key === "e"
     || key === "a"
     || key === "t"
@@ -187,7 +188,8 @@ export const handleKeyDown = (props: {
                     props.setObject(node.first);
                     break;
                 }
-                case NodeType.Filter: {
+                case NodeType.Filter:
+                case NodeType.Map: {
                     // Retain set.
 
                     props.setObject(node.set);
@@ -325,6 +327,19 @@ export const handleKeyDown = (props: {
                 type: NodeType.Filter,
                 set: props.object,
                 filterFunction: defaultObject,
+                rest: [],
+            }),
+        );
+
+        props.objectSelection.selectChild(1);
+    } else if (props.event.key === "m") {
+        if (!props.setObject) return;
+
+        props.setObject(
+            nodeToObject({
+                type: NodeType.Map,
+                set: props.object,
+                mapperFunction: defaultObject,
                 rest: [],
             }),
         );

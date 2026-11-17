@@ -108,6 +108,16 @@ export namespace Atom {
         value: 2150755715328094057860222292607728283n,
     } as const satisfies Atom;
 
+    export const NodeMapSet = {
+        type: ObjectType.Atom,
+        value: 2150755705084816915741037497738372617n,
+    } as const satisfies Atom;
+
+    export const NodeMapMapper = {
+        type: ObjectType.Atom,
+        value: 2150755713297709286586583523030939076n,
+    } as const satisfies Atom;
+
     export const NodeIfCondition = {
         type: ObjectType.Atom,
         value: 2150756911395278548780220055702389669n,
