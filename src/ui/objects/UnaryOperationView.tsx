@@ -5,6 +5,7 @@ import type {EverythingObject} from "@/model";
 import {
     nodeToObject,
     NodeType,
+    type HasValueNode,
     type NotNode,
     type QueryAtomsWithConstructorNode,
     type QueryAtomsWithPropertyNode,
@@ -15,12 +16,14 @@ import {
 
 import AtomsWithConstructorIcon from "../icons/AtomsWithConstructorIcon";
 import AtomsWithPropertyIcon from "../icons/AtomsWithPropertyIcon";
+import HasValueIcon from "../icons/HasValueIcon";
 import NotIcon from "../icons/NotIcon";
 import QueryConstructionsIcon from "../icons/QueryConstructionsIcon";
 import UnwrapIcon from "../icons/UnwrapIcon";
 import ValuesOfIcon from "../icons/ValuesOfIcon";
 import {
     calculateLayoutModeOfBlock,
+    calculateHasValueNodeOperandWidthBudgetInPixels,
     calculateNotNodeOperandWidthBudgetInPixels,
     calculateQueryAtomsWithConstructorNodeOperandWidthBudgetInPixels,
     calculateQueryAtomsWithPropertyNodeOperandWidthBudgetInPixels,
@@ -32,6 +35,7 @@ import ObjectView from "./ObjectView";
 import {useObjectSelection, type ObjectSelectionPath} from "./selection";
 
 export type UnaryOperationBlock =
+    | HasValueNode
     | NotNode
     | QueryAtomsWithConstructorNode
     | QueryAtomsWithPropertyNode
@@ -40,6 +44,7 @@ export type UnaryOperationBlock =
     | UnwrapNode;
 
 const BlockIcon = {
+    [NodeType.HasValue]: HasValueIcon,
     [NodeType.Not]: NotIcon,
     [NodeType.QueryAtomsWithConstructor]: AtomsWithConstructorIcon,
     [NodeType.QueryAtomsWithProperty]: AtomsWithPropertyIcon,
@@ -50,6 +55,8 @@ const BlockIcon = {
 
 const operandOf = (block: UnaryOperationBlock): EverythingObject => {
     switch (block.type) {
+        case NodeType.HasValue:
+            return block.inner;
         case NodeType.Not:
             return block.operand;
         case NodeType.QueryAtomsWithConstructor:
@@ -70,6 +77,8 @@ const withOperand = (
     operand: EverythingObject,
 ): EverythingObject => {
     switch (block.type) {
+        case NodeType.HasValue:
+            return nodeToObject({...block, inner: operand});
         case NodeType.Not:
             return nodeToObject({...block, operand});
         case NodeType.QueryAtomsWithConstructor:
@@ -107,6 +116,11 @@ export default (props: {
         const layoutOptions = appState.layoutOptions();
 
         switch (props.block.type) {
+            case NodeType.HasValue:
+                return calculateHasValueNodeOperandWidthBudgetInPixels(
+                    props.wholeWidthBudgetInPixels,
+                    layoutOptions,
+                );
             case NodeType.Not:
                 return calculateNotNodeOperandWidthBudgetInPixels(
                     props.wholeWidthBudgetInPixels,

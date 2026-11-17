@@ -22,6 +22,7 @@ export namespace NodeType {
         "NodeType.QueryAtomsWithConstructor",
     );
     export const ValuesOf = Symbol("NodeType.ValuesOf");
+    export const HasValue = Symbol("NodeType.HasValue");
     export const Unwrap = Symbol("NodeType.Unwrap");
     export const QueryConstructionValues = Symbol(
         "NodeType.QueryConstructionValues",
@@ -147,6 +148,12 @@ export type ValuesOfNode = {
     readonly rest: readonly EverythingObject[];
 };
 
+export type HasValueNode = {
+    readonly type: typeof NodeType.HasValue;
+    readonly inner: EverythingObject;
+    readonly rest: readonly EverythingObject[];
+};
+
 export type UnwrapNode = {
     readonly type: typeof NodeType.Unwrap;
     readonly set: EverythingObject;
@@ -205,6 +212,7 @@ export type Node =
     | QueryAtomsWithPropertyNode
     | QueryAtomsWithConstructorNode
     | ValuesOfNode
+    | HasValueNode
     | UnwrapNode
     | QueryConstructionValuesNode
     | QueryConstructionsNode

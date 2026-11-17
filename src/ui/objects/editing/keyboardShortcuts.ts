@@ -25,6 +25,7 @@ const isHandledKey = (key: string): boolean =>
     || key === "q"
     || key === "k"
     || key === "K"
+    || key === "h"
     || key === "v"
     || key === "U"
     || key === "Q"
@@ -212,6 +213,12 @@ export const handleKeyDown = (props: {
                     props.setObject(node.inner);
                     break;
                 }
+                case NodeType.HasValue: {
+                    // Retain inner object.
+
+                    props.setObject(node.inner);
+                    break;
+                }
                 case NodeType.Unwrap: {
                     // Retain set.
 
@@ -384,6 +391,18 @@ export const handleKeyDown = (props: {
         props.setObject(
             nodeToObject({
                 type: NodeType.ValuesOf,
+                inner: props.object,
+                rest: [],
+            }),
+        );
+
+        props.objectSelection.selectChild(0);
+    } else if (props.event.key === "h") {
+        if (!props.setObject) return;
+
+        props.setObject(
+            nodeToObject({
+                type: NodeType.HasValue,
                 inner: props.object,
                 rest: [],
             }),

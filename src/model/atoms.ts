@@ -163,6 +163,11 @@ export namespace Atom {
         value: 2169866792562131836262938477060325203n,
     } as const satisfies Atom;
 
+    export const NodeHasValue = {
+        type: ObjectType.Atom,
+        value: 2169868497815503720673833180838489269n,
+    } as const satisfies Atom;
+
     export const NodeUnwrapSet = {
         type: ObjectType.Atom,
         value: 2150860435707265317782695126754608091n,

@@ -213,6 +213,16 @@ export default (props: {
                     />
                 )}
             </Match>
+            <Match when={variant(props.block, NodeType.HasValue)}>
+                {hasValueNode => (
+                    <UnaryOperationView
+                        block={hasValueNode()}
+                        path={props.path}
+                        wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                        setObject={props.setObject}
+                    />
+                )}
+            </Match>
             <Match when={variant(props.block, NodeType.Unwrap)}>
                 {unwrapNode => (
                     <UnaryOperationView

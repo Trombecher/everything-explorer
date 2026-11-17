@@ -136,6 +136,11 @@ export const createInitialObject2 = (): EverythingObject => ({
             inner: {type: ObjectType.Atom, value: 1n},
             rest: [],
         }),
+        nodeToObject({
+            type: NodeType.HasValue,
+            inner: {type: ObjectType.Atom, value: 1n},
+            rest: [],
+        }),
         nodeToObject({type: NodeType.Unwrap, set: defaultObject, rest: []}),
         nodeToObject({
             type: NodeType.QueryConstructionValues,

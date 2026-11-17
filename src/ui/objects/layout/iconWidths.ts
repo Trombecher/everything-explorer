@@ -15,6 +15,7 @@ export const blockIconWidthInPixels = {
     union: 24,
     unwrap: 24,
     valuesOf: 48,
+    hasValue: 24,
     vee: 24,
     wedge: 24,
     x: 24,
