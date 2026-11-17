@@ -15,6 +15,7 @@ import {Language, translate} from "@/i18n";
 import type {Phrase} from "@/i18n/phrases";
 import {System, Tab} from "@/state/common";
 import type {ThemeSetting} from "@/state/theme";
+import type {ObjectHistory} from "@/ui/objects/history";
 import {
     defaultBlockLayoutOptions,
     type LayoutOptions,
@@ -22,6 +23,7 @@ import {
 import type {DeepReadonly} from "@/util";
 
 import {enforceInvariants} from "./connections";
+import {createEvaluateHistory} from "./evaluate";
 import {type BrowserLanguage, detectBrowserLanguage} from "./language";
 import {
     ConnectionType,
@@ -45,6 +47,14 @@ export class AppState {
      */
     public readonly layoutOptions: Accessor<LayoutOptions>;
     public readonly setLayoutOptions: Setter<LayoutOptions>;
+
+    /**
+     * Object, undo/redo history and selection of the evaluate tab.
+     *
+     * This is runtime state, not part of the persisted app state. It lives here
+     * so that it survives tab changes.
+     */
+    public readonly evaluateHistory: ObjectHistory;
 
     /**
      * Width of the properties panel of the things tab in px.
@@ -118,6 +128,10 @@ export class AppState {
 
         this.layoutOptions = layoutOptions;
         this.setLayoutOptions = setLayoutOptions;
+
+        // Evaluate history
+
+        this.evaluateHistory = createEvaluateHistory();
 
         // Properties panel width
 

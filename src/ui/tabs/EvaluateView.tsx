@@ -7,8 +7,6 @@ import type {LazyObjectIterator} from "@/connect";
 import {useAppState} from "@/context";
 import {Phrase} from "@/i18n/phrases";
 import {defaultObject, ObjectType, type EverythingObject} from "@/model";
-import {nodeToObject, NodeType} from "@/model/nodes";
-import {ObjectHistory} from "@/ui/objects/history";
 import {LayoutMode} from "@/ui/objects/layout";
 import ObjectView from "@/ui/objects/ObjectView";
 import {
@@ -24,25 +22,6 @@ import WidthMeasurer from "@/ui/reuse/WidthMeasurer";
  * The number of values to request from a lazy evaluation result per page.
  */
 const LAZY_PAGE_SIZE = 100;
-
-/**
- * An initial expression that makes it obvious what evaluating does: `1 + 1`.
- */
-const createInitialObject = (): EverythingObject =>
-    nodeToObject({
-        type: NodeType.Plus,
-        first: nodeToObject({
-            type: NodeType.Literal,
-            object: {type: ObjectType.Integer, value: 1n},
-            rest: [],
-        }),
-        second: nodeToObject({
-            type: NodeType.Literal,
-            object: {type: ObjectType.Integer, value: 1n},
-            rest: [],
-        }),
-        rest: [],
-    });
 
 type Evaluation =
     | {readonly kind: "object"; readonly object: EverythingObject}
@@ -74,7 +53,7 @@ const errorMessage = (error: unknown): string =>
 export default () => {
     const appState = useAppState();
 
-    const history = new ObjectHistory([createInitialObject()]);
+    const history = appState.evaluateHistory;
 
     /**
      * The result of the last evaluation, kept until the object is edited again.
