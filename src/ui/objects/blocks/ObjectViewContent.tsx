@@ -191,6 +191,18 @@ export default (props: {
                     />
                 )}
             </Match>
+            <Match
+                when={variant(props.block, NodeType.QueryAtomsWithConstructor)}
+            >
+                {queryAtomsWithConstructorNode => (
+                    <UnaryOperationView
+                        block={queryAtomsWithConstructorNode()}
+                        path={props.path}
+                        wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                        setObject={props.setObject}
+                    />
+                )}
+            </Match>
             <Match when={variant(props.block, NodeType.ValuesOf)}>
                 {valuesOfNode => (
                     <UnaryOperationView

@@ -6,12 +6,14 @@ import {
     nodeToObject,
     NodeType,
     type NotNode,
+    type QueryAtomsWithConstructorNode,
     type QueryAtomsWithPropertyNode,
     type QueryConstructionsNode,
     type UnwrapNode,
     type ValuesOfNode,
 } from "@/model/nodes";
 
+import AtomsWithConstructorIcon from "../icons/AtomsWithConstructorIcon";
 import AtomsWithPropertyIcon from "../icons/AtomsWithPropertyIcon";
 import NotIcon from "../icons/NotIcon";
 import QueryConstructionsIcon from "../icons/QueryConstructionsIcon";
@@ -20,6 +22,7 @@ import ValuesOfIcon from "../icons/ValuesOfIcon";
 import {
     calculateLayoutModeOfBlock,
     calculateNotNodeOperandWidthBudgetInPixels,
+    calculateQueryAtomsWithConstructorNodeOperandWidthBudgetInPixels,
     calculateQueryAtomsWithPropertyNodeOperandWidthBudgetInPixels,
     calculateQueryConstructionsNodeOperandWidthBudgetInPixels,
     calculateUnwrapNodeOperandWidthBudgetInPixels,
@@ -30,6 +33,7 @@ import {useObjectSelection, type ObjectSelectionPath} from "./selection";
 
 export type UnaryOperationBlock =
     | NotNode
+    | QueryAtomsWithConstructorNode
     | QueryAtomsWithPropertyNode
     | QueryConstructionsNode
     | ValuesOfNode
@@ -37,6 +41,7 @@ export type UnaryOperationBlock =
 
 const BlockIcon = {
     [NodeType.Not]: NotIcon,
+    [NodeType.QueryAtomsWithConstructor]: AtomsWithConstructorIcon,
     [NodeType.QueryAtomsWithProperty]: AtomsWithPropertyIcon,
     [NodeType.QueryConstructions]: QueryConstructionsIcon,
     [NodeType.ValuesOf]: ValuesOfIcon,
@@ -47,6 +52,8 @@ const operandOf = (block: UnaryOperationBlock): EverythingObject => {
     switch (block.type) {
         case NodeType.Not:
             return block.operand;
+        case NodeType.QueryAtomsWithConstructor:
+            return block.constructor;
         case NodeType.QueryAtomsWithProperty:
             return block.property;
         case NodeType.QueryConstructions:
@@ -65,6 +72,8 @@ const withOperand = (
     switch (block.type) {
         case NodeType.Not:
             return nodeToObject({...block, operand});
+        case NodeType.QueryAtomsWithConstructor:
+            return nodeToObject({...block, constructor: operand});
         case NodeType.QueryAtomsWithProperty:
             return nodeToObject({...block, property: operand});
         case NodeType.QueryConstructions:
@@ -105,6 +114,11 @@ export default (props: {
                 );
             case NodeType.QueryAtomsWithProperty:
                 return calculateQueryAtomsWithPropertyNodeOperandWidthBudgetInPixels(
+                    props.wholeWidthBudgetInPixels,
+                    layoutOptions,
+                );
+            case NodeType.QueryAtomsWithConstructor:
+                return calculateQueryAtomsWithConstructorNodeOperandWidthBudgetInPixels(
                     props.wholeWidthBudgetInPixels,
                     layoutOptions,
                 );

@@ -1,5 +1,6 @@
 export const blockIconWidthInPixels = {
     atom: 24,
+    atomsWithConstructor: 48,
     atomsWithProperty: 48,
     construction: 24,
     dot: 24,

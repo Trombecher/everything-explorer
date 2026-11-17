@@ -18,6 +18,9 @@ export namespace NodeType {
     export const QueryAtomsWithProperty = Symbol(
         "NodeType.QueryAtomsWithProperty",
     );
+    export const QueryAtomsWithConstructor = Symbol(
+        "NodeType.QueryAtomsWithConstructor",
+    );
     export const ValuesOf = Symbol("NodeType.ValuesOf");
     export const Unwrap = Symbol("NodeType.Unwrap");
     export const QueryConstructionValues = Symbol(
@@ -132,6 +135,12 @@ export type QueryAtomsWithPropertyNode = {
     readonly rest: readonly EverythingObject[];
 };
 
+export type QueryAtomsWithConstructorNode = {
+    readonly type: typeof NodeType.QueryAtomsWithConstructor;
+    readonly constructor: EverythingObject;
+    readonly rest: readonly EverythingObject[];
+};
+
 export type ValuesOfNode = {
     readonly type: typeof NodeType.ValuesOf;
     readonly inner: EverythingObject;
@@ -194,6 +203,7 @@ export type Node =
     | FilterNode
     | MapNode
     | QueryAtomsWithPropertyNode
+    | QueryAtomsWithConstructorNode
     | ValuesOfNode
     | UnwrapNode
     | QueryConstructionValuesNode

@@ -206,6 +206,17 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                 ],
                 options,
             );
+        case NodeType.QueryAtomsWithConstructor:
+            return rowLayoutWidth(
+                [
+                    blockIconWidthInPixels.atomsWithConstructor,
+                    calculateRowLayoutWidthOfBlock(
+                        objectToBlock(block.constructor),
+                        options,
+                    ),
+                ],
+                options,
+            );
         case NodeType.ValuesOf:
             return rowLayoutWidth(
                 [
