@@ -1023,7 +1023,6 @@ dependencies = [
  "num-bigint",
  "num_enum",
  "thiserror 2.0.21",
- "tracing",
 ]
 
 [[package]]
