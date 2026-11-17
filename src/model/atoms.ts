@@ -178,6 +178,11 @@ export namespace Atom {
         value: 2166943953075944059533195652762751502n,
     } as const satisfies Atom;
 
+    export const NodeQueryConstructions = {
+        type: ObjectType.Atom,
+        value: 2169938683744888441848469861984944275n,
+    } as const satisfies Atom;
+
     export const NodeMultiplyFirst = {
         type: ObjectType.Atom,
         value: 2150955291898078111384483788783842606n,

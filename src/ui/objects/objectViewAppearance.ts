@@ -46,6 +46,8 @@ export const objectViewColorHue = (object: EverythingObject): number => {
                 return 310;
             case NodeType.QueryConstructionValues:
                 return 240;
+            case NodeType.QueryConstructions:
+                return 270;
             case NodeType.If:
                 return 260;
             case NodeType.Call:

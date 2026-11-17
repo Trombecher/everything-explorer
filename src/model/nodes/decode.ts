@@ -286,6 +286,19 @@ const objectToNodeWithoutCache = (
         }
     }
 
+    some = singleSetAtomValue(object, Atom.NodeQueryConstructions.value);
+    if (some) {
+        if (finalNode) return NotANode;
+
+        finalNode = {
+            type: NodeType.QueryConstructions,
+            constructor: some,
+            rest: withoutAtomConstructors(object.elements, [
+                Atom.NodeQueryConstructions.value,
+            ]),
+        };
+    }
+
     some = singleSetAtomValue(object, Atom.NodeIfCondition.value);
     if (some) {
         const thenObject = singleSetAtomValue(object, Atom.NodeIfThen.value);

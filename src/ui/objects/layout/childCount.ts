@@ -17,6 +17,7 @@ export const childCountOfBlock = (block: Block): number => {
         case NodeType.Literal:
         case NodeType.Not:
         case NodeType.QueryAtomsWithProperty:
+        case NodeType.QueryConstructions:
         case NodeType.ValuesOf:
         case NodeType.Unwrap:
             return 1;

@@ -23,6 +23,7 @@ const isHandledKey = (key: string): boolean =>
     || key === "i"
     || key === "!"
     || key === "q"
+    || key === "k"
     || key === "v"
     || key === "U"
     || key === "Q"
@@ -192,6 +193,12 @@ export const handleKeyDown = (props: {
                     props.setObject(node.property);
                     break;
                 }
+                case NodeType.QueryConstructions: {
+                    // Retain constructor.
+
+                    props.setObject(node.constructor);
+                    break;
+                }
                 case NodeType.ValuesOf: {
                     // Retain inner object.
 
@@ -335,6 +342,18 @@ export const handleKeyDown = (props: {
             nodeToObject({
                 type: NodeType.QueryAtomsWithProperty,
                 property: props.object,
+                rest: [],
+            }),
+        );
+
+        props.objectSelection.selectChild(0);
+    } else if (props.event.key === "k") {
+        if (!props.setObject) return;
+
+        props.setObject(
+            nodeToObject({
+                type: NodeType.QueryConstructions,
+                constructor: props.object,
                 rest: [],
             }),
         );

@@ -9,6 +9,7 @@ export const blockIconWidthInPixels = {
     map: 48,
     plus: 24,
     queryConstructionValues: 48,
+    queryConstructions: 48,
     quote: 24,
     union: 24,
     unwrap: 24,
