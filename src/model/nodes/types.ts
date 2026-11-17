@@ -18,6 +18,7 @@ export namespace NodeType {
     export const QueryAtomsWithProperty = Symbol(
         "NodeType.QueryAtomsWithProperty",
     );
+    export const ValuesOf = Symbol("NodeType.ValuesOf");
     export const If = Symbol("NodeType.If");
     export const Call = Symbol("NodeType.Call");
     export const Parameter = Symbol("NodeType.Parameter");
@@ -126,6 +127,12 @@ export type QueryAtomsWithPropertyNode = {
     readonly rest: readonly EverythingObject[];
 };
 
+export type ValuesOfNode = {
+    readonly type: typeof NodeType.ValuesOf;
+    readonly inner: EverythingObject;
+    readonly rest: readonly EverythingObject[];
+};
+
 export type IfNode = {
     readonly type: typeof NodeType.If;
     readonly condition: EverythingObject;
@@ -163,6 +170,7 @@ export type Node =
     | FilterNode
     | MapNode
     | QueryAtomsWithPropertyNode
+    | ValuesOfNode
     | IfNode
     | CallNode
     | ParameterNode;

@@ -7,37 +7,56 @@ import {
     NodeType,
     type NotNode,
     type QueryAtomsWithPropertyNode,
+    type ValuesOfNode,
 } from "@/model/nodes";
 
 import AtomsWithPropertyIcon from "../icons/AtomsWithPropertyIcon";
 import NotIcon from "../icons/NotIcon";
+import ValuesOfIcon from "../icons/ValuesOfIcon";
 import {
     calculateLayoutModeOfBlock,
     calculateNotNodeOperandWidthBudgetInPixels,
     calculateQueryAtomsWithPropertyNodeOperandWidthBudgetInPixels,
+    calculateValuesOfNodeOperandWidthBudgetInPixels,
 } from "./layout";
 import ObjectView from "./ObjectView";
 import {useObjectSelection, type ObjectSelectionPath} from "./selection";
 
-export type UnaryOperationBlock = NotNode | QueryAtomsWithPropertyNode;
+export type UnaryOperationBlock =
+    | NotNode
+    | QueryAtomsWithPropertyNode
+    | ValuesOfNode;
 
 const BlockIcon = {
     [NodeType.Not]: NotIcon,
     [NodeType.QueryAtomsWithProperty]: AtomsWithPropertyIcon,
+    [NodeType.ValuesOf]: ValuesOfIcon,
 };
 
-const operandOf = (block: UnaryOperationBlock): EverythingObject =>
-    block.type === NodeType.Not ? block.operand : block.property;
+const operandOf = (block: UnaryOperationBlock): EverythingObject => {
+    switch (block.type) {
+        case NodeType.Not:
+            return block.operand;
+        case NodeType.QueryAtomsWithProperty:
+            return block.property;
+        case NodeType.ValuesOf:
+            return block.inner;
+    }
+};
 
 const withOperand = (
     block: UnaryOperationBlock,
     operand: EverythingObject,
-): EverythingObject =>
-    nodeToObject(
-        block.type === NodeType.Not
-            ? {...block, operand}
-            : {...block, property: operand},
-    );
+): EverythingObject => {
+    switch (block.type) {
+        case NodeType.Not:
+            return nodeToObject({...block, operand});
+        case NodeType.QueryAtomsWithProperty:
+            return nodeToObject({...block, property: operand});
+        case NodeType.ValuesOf:
+            return nodeToObject({...block, inner: operand});
+    }
+};
 
 export default (props: {
     block: UnaryOperationBlock;
@@ -57,16 +76,27 @@ export default (props: {
             appState.layoutOptions(),
         );
 
-    const operandWidthBudgetInPixels = () =>
-        props.block.type === NodeType.Not
-            ? calculateNotNodeOperandWidthBudgetInPixels(
-                  props.wholeWidthBudgetInPixels,
-                  appState.layoutOptions(),
-              )
-            : calculateQueryAtomsWithPropertyNodeOperandWidthBudgetInPixels(
-                  props.wholeWidthBudgetInPixels,
-                  appState.layoutOptions(),
-              );
+    const operandWidthBudgetInPixels = () => {
+        const layoutOptions = appState.layoutOptions();
+
+        switch (props.block.type) {
+            case NodeType.Not:
+                return calculateNotNodeOperandWidthBudgetInPixels(
+                    props.wholeWidthBudgetInPixels,
+                    layoutOptions,
+                );
+            case NodeType.QueryAtomsWithProperty:
+                return calculateQueryAtomsWithPropertyNodeOperandWidthBudgetInPixels(
+                    props.wholeWidthBudgetInPixels,
+                    layoutOptions,
+                );
+            case NodeType.ValuesOf:
+                return calculateValuesOfNodeOperandWidthBudgetInPixels(
+                    props.wholeWidthBudgetInPixels,
+                    layoutOptions,
+                );
+        }
+    };
 
     return (
         <>

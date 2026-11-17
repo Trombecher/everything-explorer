@@ -134,6 +134,14 @@ export const nodeToObject = (node: Node): EverythingObject => {
                     ...node.rest,
                 ],
             };
+        case NodeType.ValuesOf:
+            return {
+                type: ObjectType.Set,
+                elements: [
+                    construction(Atom.NodeValuesOf, node.inner),
+                    ...node.rest,
+                ],
+            };
         case NodeType.If:
             return {
                 type: ObjectType.Set,
