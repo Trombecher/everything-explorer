@@ -59,7 +59,7 @@ export default (props: {compact?: boolean}) => {
                     }
                 }}
             >
-                <UnplugIcon class="shrink-0" />
+                <UnplugIcon class="ml-0.5 shrink-0" />
                 <Show when={!props.compact}>
                     <span class="overflow-hidden py-1 pr-2 text-ellipsis whitespace-nowrap">
                         {appState.translate(
