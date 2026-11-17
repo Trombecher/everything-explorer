@@ -17,6 +17,6 @@ export const defaultBlockLayoutOptions = {
     blockPaddingLeftInPixels: 4,
     blockPaddingRightInPixels: 4,
     integerInputPaddingX: 8,
-    itemGapInPixels: 8,
+    itemGapInPixels: 4,
     setElementIndentInPixels: 16,
 } as const satisfies BlockLayoutOptions;
