@@ -35,6 +35,11 @@ export const english = {
     [Phrase.Evaluate]: () => "Evaluate",
     [Phrase.Result]: () => "Result",
     [Phrase.EvaluateFailed]: () => "The object could not be evaluated.",
+    [Phrase.LoadMore]: () => "Load more",
+    [Phrase.LazyResultHint]: () =>
+        "This result is loaded in pages from the knowledge server.",
+    [Phrase.AllResultsLoaded]: () => "All results loaded.",
+    [Phrase.LoadMoreFailed]: () => "The next results could not be loaded.",
     [Phrase.CopyId]: () => "Copy ID",
     [Phrase.English]: () => "English",
     [Phrase.German]: () => "German",

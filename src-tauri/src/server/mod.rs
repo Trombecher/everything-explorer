@@ -1,5 +1,6 @@
 mod cors;
 mod evaluate;
+mod iterators;
 mod routes_v1;
 mod wire;
 
@@ -10,8 +11,12 @@ use axum::{
     routing::{get, post},
 };
 use cors::cors_layer;
-use everything::knowledge::{Knowledge, Statement};
+use everything::{
+    compute::LazySetIterator,
+    knowledge::{Knowledge, Statement},
+};
 use everything_db::{PersistantKnowledge, StatementChange};
+use iterators::{LazyIteratorPage, LazyIterators};
 use tauri::async_runtime::JoinHandle;
 use tokio::sync::{Mutex, oneshot};
 
@@ -31,12 +36,14 @@ fn bind_address() -> String {
 
 pub(crate) struct WebServerState {
     pub persistant_knowledge: Mutex<PersistantKnowledge>,
+    lazy_iterators: Mutex<LazyIterators>,
 }
 
 impl WebServerState {
     pub fn new(knowledge: PersistantKnowledge) -> Self {
         Self {
             persistant_knowledge: Mutex::new(knowledge),
+            lazy_iterators: Mutex::new(LazyIterators::default()),
         }
     }
 }
@@ -44,6 +51,29 @@ impl WebServerState {
 impl WebServerState {
     pub async fn knowledge(&self) -> Knowledge {
         self.persistant_knowledge.lock().await.knowledge().clone()
+    }
+
+    /// Stores a lazy set iterator and returns its token.
+    pub async fn insert_lazy_iterator(&self, iterator: LazySetIterator) -> u64 {
+        self.lazy_iterators.lock().await.insert(iterator)
+    }
+
+    /// Returns the next page of the lazy set iterator with the given token.
+    pub async fn next_lazy_iterator_page(
+        &self,
+        token: u64,
+        skip: usize,
+        limit: usize,
+    ) -> Option<LazyIteratorPage> {
+        self.lazy_iterators
+            .lock()
+            .await
+            .next_page(token, skip, limit)
+    }
+
+    /// Deletes the lazy set iterator with the given token.
+    pub async fn delete_lazy_iterator(&self, token: u64) -> bool {
+        self.lazy_iterators.lock().await.delete(token)
     }
 
     pub async fn path(&self) -> PathBuf {
@@ -93,6 +123,8 @@ impl PrivateKnowledgeServer {
             )
             .route("/api/v1/knownAtoms", get(routes_v1::known_atoms))
             .route("/api/v1/evaluate", post(routes_v1::evaluate_object))
+            .route("/api/v1/iteratorValues", post(routes_v1::iterator_values))
+            .route("/api/v1/deleteIterator", post(routes_v1::delete_iterator))
             .route("/api/v1/valuesOf", post(routes_v1::values_of_object))
             .route(
                 "/api/v1/constructionValues",

@@ -4,7 +4,8 @@ import {ObjectType, type EverythingObject, type Statement} from "@/model";
 import type {Atom} from "@/model/atoms";
 
 import {
-    jsonObjectSchema,
+    jsonEvaluateResponseSchema,
+    jsonIteratorPageSchema,
     jsonObjectToObject,
     jsonObjectsSchema,
     objectToJsonObject,
@@ -12,6 +13,84 @@ import {
 } from "./wire";
 
 const knownAtomsEndpointResponse = z.array(z.string());
+
+/**
+ * The result of evaluating an object.
+ *
+ * A lazy set is represented by a server-side iterator. Use
+ * {@link LazyObjectIterator.next} to fetch its values page by page.
+ */
+export type EvaluationResult =
+    | {readonly kind: "object"; readonly object: EverythingObject}
+    | {readonly kind: "iterator"; readonly iterator: LazyObjectIterator};
+
+export type LazyObjectIteratorPage = {
+    readonly objects: EverythingObject[];
+    readonly exhausted: boolean;
+};
+
+/**
+ * A lazy set iterator that lives on the knowledge server.
+ *
+ * The iterator captures the knowledge it was created from, so changing the
+ * knowledge base does not affect an ongoing iteration. It is deleted on the
+ * server when it is exhausted or when {@link delete} is called.
+ */
+export class LazyObjectIterator {
+    public constructor(
+        private readonly url: string,
+        private readonly token: number,
+    ) {}
+
+    /**
+     * Fetches up to `limit` values, discarding `skip` values first.
+     *
+     * When the returned page reports `exhausted`, the iterator has been deleted
+     * on the server and the token must not be used again.
+     */
+    public async next(
+        limit: number,
+        skip = 0,
+    ): Promise<LazyObjectIteratorPage> {
+        const response = await fetch(`${this.url}/api/v1/iteratorValues`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({token: this.token, skip, limit}),
+        });
+
+        if (!response.ok) {
+            throw new Error(
+                `failed to fetch iterator values (${response.status}): ${await response.text()}`,
+            );
+        }
+
+        const page = jsonIteratorPageSchema.parse(await response.json());
+
+        return {
+            objects: page.objects.map(jsonObjectToObject),
+            exhausted: page.exhausted,
+        };
+    }
+
+    /**
+     * Deletes the iterator on the server.
+     *
+     * This is idempotent: deleting an already deleted iterator succeeds.
+     */
+    public async delete(): Promise<void> {
+        const response = await fetch(`${this.url}/api/v1/deleteIterator`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({token: this.token}),
+        });
+
+        if (!response.ok) {
+            throw new Error(
+                `failed to delete iterator (${response.status}): ${await response.text()}`,
+            );
+        }
+    }
+}
 
 export class ConnectionClient {
     public readonly url: string;
@@ -86,11 +165,14 @@ export class ConnectionClient {
     }
 
     /**
-     * Evaluates the given object in the knowledge base and returns the result.
+     * Evaluates the given object in the knowledge base.
+     *
+     * If the result is a lazy set, the server returns a token instead of
+     * materializing the set. The returned iterator can then be paged through.
      */
     public async evaluateObject(
         object: EverythingObject,
-    ): Promise<EverythingObject> {
+    ): Promise<EvaluationResult> {
         const response = await fetch(`${this.url}/api/v1/evaluate`, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
@@ -103,9 +185,20 @@ export class ConnectionClient {
             );
         }
 
-        return jsonObjectToObject(
-            jsonObjectSchema.parse(await response.json()),
-        );
+        const result = jsonEvaluateResponseSchema.parse(await response.json());
+
+        switch (result.kind) {
+            case "object":
+                return {
+                    kind: "object",
+                    object: jsonObjectToObject(result.object),
+                };
+            case "iterator":
+                return {
+                    kind: "iterator",
+                    iterator: new LazyObjectIterator(this.url, result.token),
+                };
+        }
     }
 
     /**

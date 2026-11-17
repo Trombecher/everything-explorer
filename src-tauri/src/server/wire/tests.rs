@@ -21,6 +21,38 @@ fn atoms_are_decimal_strings() {
 }
 
 #[test]
+fn evaluate_responses_are_tagged() {
+    let object = serde_json::to_value(JsonEvaluateResponse::Object {
+        object: JsonObject::from(Object::Atom(Atom(1))),
+    })
+    .expect("the response serializes");
+
+    assert_eq!(object["kind"], "object");
+    assert_eq!(object["object"]["type"], "atom");
+
+    let iterator = serde_json::to_value(JsonEvaluateResponse::Iterator { token: 7 })
+        .expect("the response serializes");
+
+    assert_eq!(iterator["kind"], "iterator");
+    assert_eq!(iterator["token"], 7);
+}
+
+#[test]
+fn iterator_requests_default_to_skipping_nothing() {
+    let request: JsonIteratorRequest =
+        serde_json::from_str(r#"{"token": 1, "limit": 10}"#).expect("the request deserializes");
+
+    assert_eq!(
+        request,
+        JsonIteratorRequest {
+            token: 1,
+            skip: 0,
+            limit: 10,
+        }
+    );
+}
+
+#[test]
 fn atoms_round_trip() {
     assert_round_trips(Object::Atom(Atom::ZERO));
     assert_round_trips(Object::Atom(Atom(1)));

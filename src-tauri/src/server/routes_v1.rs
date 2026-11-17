@@ -5,7 +5,11 @@ use everything::{knowledge::Statement, model::Object};
 
 use crate::server::{
     WebServerState,
-    wire::{JsonConstructionValuesRequest, JsonObject, JsonStatement},
+    evaluate::Evaluation,
+    wire::{
+        JsonConstructionValuesRequest, JsonEvaluateResponse, JsonIteratorPage, JsonIteratorRequest,
+        JsonIteratorToken, JsonObject, JsonStatement,
+    },
 };
 
 pub async fn serving_knowledge_base_path(
@@ -54,17 +58,60 @@ pub async fn construction_values_of_object(
 /// Evaluates the given object in the knowledge base and returns the result.
 ///
 /// Objects that are not nodes evaluate to [`everything::model::Atom::UNDEFINED`].
+/// If the result is a lazily computed set, the server stores an iterator for it
+/// and returns a token instead of materializing the whole set.
 pub async fn evaluate_object(
     State(state): State<Arc<WebServerState>>,
     Json(json): Json<JsonObject>,
-) -> Result<Json<JsonObject>, (StatusCode, String)> {
+) -> Result<Json<JsonEvaluateResponse>, (StatusCode, String)> {
     let object =
         Object::try_from(json).map_err(|error| (StatusCode::BAD_REQUEST, error.to_string()))?;
     let knowledge = state.knowledge().await;
 
-    Ok(Json(
-        crate::server::evaluate::evaluate(&object, &knowledge).into(),
-    ))
+    let response = match crate::server::evaluate::evaluate_lazy(&object, &knowledge) {
+        Evaluation::Object(object) => JsonEvaluateResponse::Object {
+            object: object.into(),
+        },
+        Evaluation::Iterator(iterator) => JsonEvaluateResponse::Iterator {
+            token: state.insert_lazy_iterator(iterator).await,
+        },
+    };
+
+    Ok(Json(response))
+}
+
+/// Returns the next page of a lazy set iterator.
+pub async fn iterator_values(
+    State(state): State<Arc<WebServerState>>,
+    Json(request): Json<JsonIteratorRequest>,
+) -> Result<Json<JsonIteratorPage>, (StatusCode, String)> {
+    let page = state
+        .next_lazy_iterator_page(request.token, request.skip, request.limit)
+        .await
+        .ok_or_else(|| {
+            (
+                StatusCode::NOT_FOUND,
+                "unknown lazy iterator token".to_owned(),
+            )
+        })?;
+
+    Ok(Json(JsonIteratorPage {
+        objects: page.objects.into_iter().map(From::from).collect(),
+        exhausted: page.exhausted,
+    }))
+}
+
+/// Deletes a lazy set iterator.
+///
+/// Deleting an unknown iterator is not an error, so that clients can
+/// unconditionally clean up iterators.
+pub async fn delete_iterator(
+    State(state): State<Arc<WebServerState>>,
+    Json(request): Json<JsonIteratorToken>,
+) -> StatusCode {
+    state.delete_lazy_iterator(request.token).await;
+
+    StatusCode::NO_CONTENT
 }
 
 pub async fn known_atoms(State(state): State<Arc<WebServerState>>) -> Json<Vec<String>> {

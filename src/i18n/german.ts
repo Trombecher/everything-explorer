@@ -36,6 +36,12 @@ export const german = {
     [Phrase.Result]: () => "Ergebnis",
     [Phrase.EvaluateFailed]: () =>
         "Das Objekt konnte nicht ausgewertet werden.",
+    [Phrase.LoadMore]: () => "Mehr laden",
+    [Phrase.LazyResultHint]: () =>
+        "Dieses Ergebnis wird seitenweise vom Wissensserver geladen.",
+    [Phrase.AllResultsLoaded]: () => "Alle Ergebnisse geladen.",
+    [Phrase.LoadMoreFailed]: () =>
+        "Die nächsten Ergebnisse konnten nicht geladen werden.",
     [Phrase.CopyId]: () => "ID kopieren",
     [Phrase.English]: () => "Englisch",
     [Phrase.German]: () => "Deutsch",

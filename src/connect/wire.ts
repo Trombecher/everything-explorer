@@ -48,6 +48,40 @@ export const jsonObjectSchema: z.ZodType<JsonObject> = z.lazy(() =>
 export const jsonObjectsSchema = z.array(jsonObjectSchema);
 
 /**
+ * The JSON representation of an evaluation response, mirroring
+ * `JsonEvaluateResponse` in the Rust server's wire module.
+ *
+ * Lazy set results are represented by a token that addresses a server-side
+ * iterator instead of by a materialized set.
+ */
+export type JsonEvaluateResponse =
+    | {readonly kind: "object"; readonly object: JsonObject}
+    | {readonly kind: "iterator"; readonly token: number};
+
+export const jsonEvaluateResponseSchema: z.ZodType<JsonEvaluateResponse> =
+    z.discriminatedUnion("kind", [
+        z.object({kind: z.literal("object"), object: jsonObjectSchema}),
+        z.object({
+            kind: z.literal("iterator"),
+            token: z.number().int().nonnegative(),
+        }),
+    ]);
+
+/**
+ * The JSON representation of a page of a lazy set iterator, mirroring
+ * `JsonIteratorPage` in the Rust server's wire module.
+ */
+export type JsonIteratorPage = {
+    readonly objects: readonly JsonObject[];
+    readonly exhausted: boolean;
+};
+
+export const jsonIteratorPageSchema: z.ZodType<JsonIteratorPage> = z.object({
+    objects: z.array(jsonObjectSchema),
+    exhausted: z.boolean(),
+});
+
+/**
  * The JSON representation of a statement, mirroring `JsonStatement` in the Rust
  * server's wire module.
  */

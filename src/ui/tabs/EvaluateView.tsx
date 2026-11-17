@@ -1,7 +1,9 @@
+import ChevronDownIcon from "lucide-solid/icons/chevron-down";
 import FlaskConicalIcon from "lucide-solid/icons/flask-conical";
 import PlayIcon from "lucide-solid/icons/play";
-import {createSignal, Show} from "solid-js";
+import {createSignal, onCleanup, Show} from "solid-js";
 
+import type {LazyObjectIterator} from "@/connect";
 import {useAppState} from "@/context";
 import {Phrase} from "@/i18n/phrases";
 import {defaultObject, ObjectType, type EverythingObject} from "@/model";
@@ -17,6 +19,11 @@ import {
 import {handleHistoryKeyDown} from "@/ui/objects/undoRedoKeys";
 import Button from "@/ui/reuse/Button";
 import WidthMeasurer from "@/ui/reuse/WidthMeasurer";
+
+/**
+ * The number of values to request from a lazy evaluation result per page.
+ */
+const LAZY_PAGE_SIZE = 100;
 
 /**
  * An initial expression that makes it obvious what evaluating does: `1 + 1`.
@@ -39,6 +46,7 @@ const createInitialObject = (): EverythingObject =>
 
 type Evaluation =
     | {readonly kind: "object"; readonly object: EverythingObject}
+    | {readonly kind: "lazy"}
     | {readonly kind: "error"; readonly error: string};
 
 const initialSelectionPathInfo: ObjectSelectionPathInfo = {
@@ -50,6 +58,18 @@ const isFailure = (
     evaluation: Evaluation,
 ): evaluation is {readonly kind: "error"; readonly error: string} =>
     evaluation.kind === "error";
+
+const isObject = (
+    evaluation: Evaluation,
+): evaluation is {readonly kind: "object"; readonly object: EverythingObject} =>
+    evaluation.kind === "object";
+
+const isLazy = (
+    evaluation: Evaluation,
+): evaluation is {readonly kind: "lazy"} => evaluation.kind === "lazy";
+
+const errorMessage = (error: unknown): string =>
+    error instanceof Error ? error.message : String(error);
 
 export default () => {
     const appState = useAppState();
@@ -65,28 +85,97 @@ export default () => {
 
     const [evaluating, setEvaluating] = createSignal(false);
 
+    const [lazyIterator, setLazyIterator] = createSignal<
+        LazyObjectIterator | undefined
+    >();
+    const [lazyObjects, setLazyObjects] = createSignal<
+        readonly EverythingObject[]
+    >([]);
+    const [lazyExhausted, setLazyExhausted] = createSignal(false);
+    const [lazyLoading, setLazyLoading] = createSignal(false);
+    const [lazyError, setLazyError] = createSignal<string | undefined>();
+
+    /**
+     * Drops the current lazy result and deletes its server-side iterator.
+     */
+    const clearLazyResult = () => {
+        const iterator = lazyIterator();
+
+        setLazyIterator(undefined);
+        setLazyObjects([]);
+        setLazyExhausted(false);
+        setLazyLoading(false);
+        setLazyError(undefined);
+
+        if (iterator) {
+            iterator
+                .delete()
+                .catch(error =>
+                    console.error("failed to delete lazy iterator", error),
+                );
+        }
+    };
+
+    /**
+     * Requests the next page of the current lazy result.
+     */
+    const loadMore = async () => {
+        const iterator = lazyIterator();
+        if (!iterator || lazyLoading() || lazyExhausted()) return;
+
+        setLazyLoading(true);
+        setLazyError(undefined);
+
+        try {
+            const page = await iterator.next(LAZY_PAGE_SIZE);
+
+            // The result may have been replaced while the request was in flight.
+            if (lazyIterator() !== iterator) return;
+
+            setLazyObjects(objects => [...objects, ...page.objects]);
+            setLazyExhausted(page.exhausted);
+        } catch (error) {
+            if (lazyIterator() === iterator) {
+                console.error("failed to load more lazy results", error);
+                setLazyError(errorMessage(error));
+            }
+        } finally {
+            if (lazyIterator() === iterator) setLazyLoading(false);
+        }
+    };
+
     const evaluate = async () => {
         const connectionClient = appState.connectionClient();
         if (!connectionClient || evaluating()) return;
 
         setEvaluating(true);
+        clearLazyResult();
+        setEvaluation(undefined);
 
         try {
-            const object = await connectionClient.evaluateObject(
+            const result = await connectionClient.evaluateObject(
                 history.object(0),
             );
-            setEvaluation({kind: "object", object});
+
+            if (result.kind === "object") {
+                setEvaluation({kind: "object", object: result.object});
+            } else {
+                setLazyIterator(result.iterator);
+                setEvaluation({kind: "lazy"});
+
+                // Load the first page immediately so the result is not empty.
+                await loadMore();
+            }
         } catch (error) {
             console.error("failed to evaluate object", error);
 
-            setEvaluation({
-                kind: "error",
-                error: error instanceof Error ? error.message : String(error),
-            });
+            setEvaluation({kind: "error", error: errorMessage(error)});
         } finally {
             setEvaluating(false);
         }
     };
+
+    onCleanup(clearLazyResult);
 
     const [resultSelectionPathInfo, setResultSelectionPathInfo] = createSignal(
         initialSelectionPathInfo,
@@ -121,6 +210,7 @@ export default () => {
                                 siblingCount={1}
                                 object={history.object(0)}
                                 setObject={newObject => {
+                                    clearLazyResult();
                                     setEvaluation(undefined);
 
                                     history.pushObject(
@@ -174,7 +264,7 @@ export default () => {
                                 )}
                             </Show>
                             <Show
-                                when={isFailure(evaluation) ? null : evaluation}
+                                when={isObject(evaluation) ? evaluation : null}
                             >
                                 {success => (
                                     <WidthMeasurer class="min-w-0">
@@ -199,6 +289,97 @@ export default () => {
                                             </ObjectSelectionContext.Provider>
                                         )}
                                     </WidthMeasurer>
+                                )}
+                            </Show>
+                            <Show when={isLazy(evaluation) ? evaluation : null}>
+                                {_lazy => (
+                                    <div class="flex flex-col gap-2">
+                                        <div class="text-sm text-neutral-500">
+                                            {appState.translate(
+                                                Phrase.LazyResultHint,
+                                                undefined,
+                                            )}
+                                        </div>
+                                        <WidthMeasurer class="min-w-0">
+                                            {widthBudgetInPixels => (
+                                                <ObjectSelectionContext.Provider
+                                                    value={resultSelection}
+                                                >
+                                                    <ObjectView
+                                                        indentLeft={false}
+                                                        siblingCount={1}
+                                                        object={{
+                                                            type: ObjectType.Set,
+                                                            elements:
+                                                                lazyObjects(),
+                                                        }}
+                                                        setObject={undefined}
+                                                        path={[0]}
+                                                        widthBudgetInPixels={widthBudgetInPixels()}
+                                                        replaceParentWithThis={
+                                                            undefined
+                                                        }
+                                                        parentObjectLayoutMode={
+                                                            LayoutMode.Row
+                                                        }
+                                                    />
+                                                </ObjectSelectionContext.Provider>
+                                            )}
+                                        </WidthMeasurer>
+                                        <div class="flex flex-wrap items-center gap-2">
+                                            <Show when={!lazyExhausted()}>
+                                                <Button
+                                                    class="flex items-center gap-1"
+                                                    disabled={
+                                                        lazyLoading()
+                                                        || !appState.isConnected()
+                                                    }
+                                                    onClick={() =>
+                                                        void loadMore()
+                                                    }
+                                                >
+                                                    <ChevronDownIcon />
+                                                    <span class="pr-1">
+                                                        {appState.translate(
+                                                            Phrase.LoadMore,
+                                                            undefined,
+                                                        )}
+                                                    </span>
+                                                </Button>
+                                            </Show>
+                                            <Show when={lazyLoading()}>
+                                                <span class="text-sm text-neutral-500">
+                                                    {appState.translate(
+                                                        Phrase.Loading,
+                                                        undefined,
+                                                    )}
+                                                </span>
+                                            </Show>
+                                            <Show when={lazyExhausted()}>
+                                                <span class="text-sm text-neutral-500">
+                                                    {appState.translate(
+                                                        Phrase.AllResultsLoaded,
+                                                        undefined,
+                                                    )}
+                                                </span>
+                                            </Show>
+                                        </div>
+                                        <Show when={lazyError()}>
+                                            {error => (
+                                                <div class="text-red-600">
+                                                    <div>
+                                                        {appState.translate(
+                                                            Phrase.LoadMoreFailed,
+                                                            undefined,
+                                                        )}
+                                                    </div>
+                                                    <div class="mt-1 font-mono text-xs whitespace-pre-wrap text-neutral-600">
+                                                        {error()}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </Show>
+                                    </div>
                                 )}
                             </Show>
                         </div>
