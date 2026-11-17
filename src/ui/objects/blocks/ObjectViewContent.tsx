@@ -181,6 +181,16 @@ export default (props: {
                     />
                 )}
             </Match>
+            <Match when={variant(props.block, NodeType.QueryAtomsWithProperty)}>
+                {queryAtomsWithPropertyNode => (
+                    <UnaryOperationView
+                        block={queryAtomsWithPropertyNode()}
+                        path={props.path}
+                        wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                        setObject={props.setObject}
+                    />
+                )}
+            </Match>
             <Match when={variant(props.block, NodeType.If)}>
                 {ifNode => (
                     <IfOperationView

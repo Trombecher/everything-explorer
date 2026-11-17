@@ -15,6 +15,9 @@ export namespace NodeType {
     export const Union = Symbol("NodeType.Union");
     export const Filter = Symbol("NodeType.Filter");
     export const Map = Symbol("NodeType.Map");
+    export const QueryAtomsWithProperty = Symbol(
+        "NodeType.QueryAtomsWithProperty",
+    );
     export const If = Symbol("NodeType.If");
     export const Call = Symbol("NodeType.Call");
     export const Parameter = Symbol("NodeType.Parameter");
@@ -117,6 +120,12 @@ export type MapNode = {
     readonly rest: readonly EverythingObject[];
 };
 
+export type QueryAtomsWithPropertyNode = {
+    readonly type: typeof NodeType.QueryAtomsWithProperty;
+    readonly property: EverythingObject;
+    readonly rest: readonly EverythingObject[];
+};
+
 export type IfNode = {
     readonly type: typeof NodeType.If;
     readonly condition: EverythingObject;
@@ -153,6 +162,7 @@ export type Node =
     | UnionNode
     | FilterNode
     | MapNode
+    | QueryAtomsWithPropertyNode
     | IfNode
     | CallNode
     | ParameterNode;

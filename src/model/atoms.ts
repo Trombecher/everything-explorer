@@ -153,6 +153,11 @@ export namespace Atom {
         value: 2166943953076260545247311619503999088n,
     } as const satisfies Atom;
 
+    export const NodeAtomsWithProperty = {
+        type: ObjectType.Atom,
+        value: 2166943953075978973796333008418190812n,
+    } as const satisfies Atom;
+
     export const NodeMultiplyFirst = {
         type: ObjectType.Atom,
         value: 2150955291898078111384483788783842606n,

@@ -1,17 +1,46 @@
+import {Dynamic} from "solid-js/web";
+
 import {useAppState} from "@/context";
 import type {EverythingObject} from "@/model";
-import {nodeToObject, type NotNode} from "@/model/nodes";
+import {
+    nodeToObject,
+    NodeType,
+    type NotNode,
+    type QueryAtomsWithPropertyNode,
+} from "@/model/nodes";
 
+import AtomsWithPropertyIcon from "../icons/AtomsWithPropertyIcon";
 import NotIcon from "../icons/NotIcon";
 import {
     calculateLayoutModeOfBlock,
     calculateNotNodeOperandWidthBudgetInPixels,
+    calculateQueryAtomsWithPropertyNodeOperandWidthBudgetInPixels,
 } from "./layout";
 import ObjectView from "./ObjectView";
 import {useObjectSelection, type ObjectSelectionPath} from "./selection";
 
+export type UnaryOperationBlock = NotNode | QueryAtomsWithPropertyNode;
+
+const BlockIcon = {
+    [NodeType.Not]: NotIcon,
+    [NodeType.QueryAtomsWithProperty]: AtomsWithPropertyIcon,
+};
+
+const operandOf = (block: UnaryOperationBlock): EverythingObject =>
+    block.type === NodeType.Not ? block.operand : block.property;
+
+const withOperand = (
+    block: UnaryOperationBlock,
+    operand: EverythingObject,
+): EverythingObject =>
+    nodeToObject(
+        block.type === NodeType.Not
+            ? {...block, operand}
+            : {...block, property: operand},
+    );
+
 export default (props: {
-    block: NotNode;
+    block: UnaryOperationBlock;
     path: ObjectSelectionPath;
     wholeWidthBudgetInPixels: number;
     setObject?: ((newObject: EverythingObject | undefined) => void) | undefined;
@@ -19,7 +48,7 @@ export default (props: {
     const objectSelection = useObjectSelection();
     const appState = useAppState();
 
-    const operand = () => props.block.operand;
+    const operand = () => operandOf(props.block);
 
     const layoutMode = () =>
         calculateLayoutModeOfBlock(
@@ -28,9 +57,20 @@ export default (props: {
             appState.layoutOptions(),
         );
 
+    const operandWidthBudgetInPixels = () =>
+        props.block.type === NodeType.Not
+            ? calculateNotNodeOperandWidthBudgetInPixels(
+                  props.wholeWidthBudgetInPixels,
+                  appState.layoutOptions(),
+              )
+            : calculateQueryAtomsWithPropertyNodeOperandWidthBudgetInPixels(
+                  props.wholeWidthBudgetInPixels,
+                  appState.layoutOptions(),
+              );
+
     return (
         <>
-            <NotIcon />
+            <Dynamic component={BlockIcon[props.block.type]} />
             <ObjectView
                 indentLeft={false}
                 parentObjectLayoutMode={layoutMode()}
@@ -49,26 +89,20 @@ export default (props: {
                     props.setObject
                     && (newOperand => {
                         if (newOperand === undefined) {
-                            // A not node without an operand is meaningless,
+                            // A unary node without an operand is meaningless,
                             // so remove the whole node.
                             objectSelection.selectParent();
 
                             props.setObject?.(undefined);
                         } else {
                             props.setObject?.(
-                                nodeToObject({
-                                    ...props.block,
-                                    operand: newOperand,
-                                }),
+                                withOperand(props.block, newOperand),
                             );
                         }
                     })
                 }
                 path={[...props.path, 0]}
-                widthBudgetInPixels={calculateNotNodeOperandWidthBudgetInPixels(
-                    props.wholeWidthBudgetInPixels,
-                    appState.layoutOptions(),
-                )}
+                widthBudgetInPixels={operandWidthBudgetInPixels()}
             />
         </>
     );

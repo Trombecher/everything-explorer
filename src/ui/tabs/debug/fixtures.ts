@@ -122,6 +122,11 @@ export const createInitialObject2 = (): EverythingObject => ({
             rest: [],
         }),
         nodeToObject({
+            type: NodeType.QueryAtomsWithProperty,
+            property: {type: ObjectType.Atom, value: 1n},
+            rest: [],
+        }),
+        nodeToObject({
             type: NodeType.If,
             condition: {type: ObjectType.Integer, value: 1n},
             thenBranch: {type: ObjectType.Integer, value: 42n},
