@@ -40,9 +40,6 @@ general issues, ideas, or drafts.
 
 6. Search bar searching atoms by name.
 
-7. Make the object name(s) in the property panel's heading stand out from the
-   "Properties of". Maybe work with color, italics, or font weight.
-
 8. Currently, all buttons have `p-1`. This ensures that if a button is using an
    icon that is put left or right in the button, it is equally distant from
    bottom and top and left or right. The side-effect of this is that button text

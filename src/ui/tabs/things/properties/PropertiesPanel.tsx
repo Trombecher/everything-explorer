@@ -73,9 +73,10 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
             <div class="flex items-center gap-2 p-2">
                 <TablePropertiesIcon />
                 <h2 class="text-xl font-semibold text-black">
-                    {appState.translate(Phrase.PropertiesOf, {
-                        forName: name() ?? String(props.selectedAtom.value),
-                    })}
+                    {appState.translate(Phrase.PropertiesOf, undefined)}{" "}
+                    <span class="font-bold text-blue-700 italic dark:text-blue-200">
+                        {name() ?? String(props.selectedAtom.value)}
+                    </span>
                 </h2>
             </div>
             <KobalteButton

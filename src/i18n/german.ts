@@ -65,7 +65,7 @@ export const german = {
     [Phrase.LoadingProperties]: () => "Eigenschaften werden geladen...",
     [Phrase.ResizePropertiesPanel]: () =>
         "Größe des Eigenschaftenbereichs ändern",
-    [Phrase.PropertiesOf]: ({forName}) => `Eigenschaften von ${forName}`,
+    [Phrase.PropertiesOf]: () => "Eigenschaften von",
     [Phrase.AddProperty]: () => "Eigenschaft hinzufügen",
     [Phrase.RemoveProperty]: () => "Eigenschaft entfernen",
     [Phrase.Reload]: () => "Neu laden",

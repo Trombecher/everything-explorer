@@ -35,7 +35,7 @@ export type ThingsTranslationArguments = {
     [AddThing]: undefined;
     [LoadingProperties]: undefined;
     [ResizePropertiesPanel]: undefined;
-    [PropertiesOf]: {forName: string};
+    [PropertiesOf]: undefined;
     [AddProperty]: undefined;
     [RemoveProperty]: undefined;
     [New]: undefined;
