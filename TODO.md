@@ -40,7 +40,7 @@ general issues, ideas, or drafts.
 
 6. Search bar searching atoms by name.
 
-8. Currently, all buttons have `p-1`. This ensures that if a button is using an
+7. Currently, all buttons have `p-1`. This ensures that if a button is using an
    icon that is put left or right in the button, it is equally distant from
    bottom and top and left or right. The side-effect of this is that button text
    may have to be wrapped in a `px-1`, to make some space in x because the
@@ -49,31 +49,31 @@ general issues, ideas, or drafts.
    `<CopyIcon/>` is too large in the frame. Maybe one solution would be to just
    fork the copy icon and make the squares smaller.
 
-9. Unify delete buttons. Currently different delete buttons used in e.g.
+8. Unify delete buttons. Currently different delete buttons used in e.g.
    connections (trash can) and property removal in the property panel (x icon
    that is red on hover).
 
-11. The trash can icon (remove connection) overflows the connection box in the
-    connections view, when connected (`<dot> connected` is added to that flex).
-    Also, the padding is off, "local" has less padding to the box border than
-    the title and the monospace path. That path should not be monospace. Also
-    the connection deletion button should ask (for local connections) whether to
-    delete also the knowledge base file, or just the connection. Also when
-    connected, the border is too bright of blue and the background does not
-    change to a blueish background.
+9. The trash can icon (remove connection) overflows the connection box in the
+   connections view, when connected (`<dot> connected` is added to that flex).
+   Also, the padding is off, "local" has less padding to the box border than the
+   title and the monospace path. That path should not be monospace. Also the
+   connection deletion button should ask (for local connections) whether to
+   delete also the knowledge base file, or just the connection. Also when
+   connected, the border is too bright of blue and the background does not
+   change to a blueish background.
 
-12. Unify pop-up backgrounds? app background or panel background? Linked to (3.)
+10. Unify pop-up backgrounds? app background or panel background? Linked to (3.)
     and (4.).
 
-13. Decide what to put on the home screen. Release notes? Shortcut buttons for
+11. Decide what to put on the home screen. Release notes? Shortcut buttons for
     recently accessed things?
 
-14. Tooltip or message in the properties panel for atoms that do not have any
+12. Tooltip or message in the properties panel for atoms that do not have any
     properties (just selected via a new random ULID) in the things tab, that
     once you close this panel the atom may not be identifiable and the id will
     be lost. (?)
 
-15. The atom properties are not reactive. This leads to objects not appearing in
+13. The atom properties are not reactive. This leads to objects not appearing in
     the view (when they should, sometimes). Make them reactive with websocket
     (worth?, subscribe / unsubscribe on unmount). Should we just refetch or do
     optimistic updates in the UI? The remote server is mostly trusted and
@@ -81,70 +81,66 @@ general issues, ideas, or drafts.
     requests. Add a button to refetch or automatic? Reactive via websockets
     would be really nice (then only for server->client updates? or whole apis?).
 
-16. Double click on atoms to open their properties in the things view.
+14. Double click on atoms to open their properties in the things view.
 
-17. Decide whether to store tab information in the persisted app settings.
+15. Decide whether to store tab information in the persisted app settings.
 
-18. "Project documentation" (name?) directory where agents and humans can store
+16. "Project documentation" (name?) directory where agents and humans can store
     overviews of modules or procedures, like adding new nodes to the system
     (such that the agents do not have to discover this by themselves), or
     reviewer agent skills, or stuff like that. Skills?
 
-19. Show app settings file path (with open button) in app settings page.
+17. Show app settings file path (with open button) in app settings page.
 
-20. Show more app info (either on homescreen or app settings), like commit hash,
+18. Show more app info (either on homescreen or app settings), like commit hash,
     repo URL, project lead, when published and where the web is pulled from
     (just the URL).
 
-21. Legal text info with all MIT licenses used in the project from libraries.
+19. Legal text info with all MIT licenses used in the project from libraries.
     (Is this required?). Maybe show in app settings?
 
-22. fix scroll when multiple panels need scroll: independently.
+20. fix scroll when multiple panels need scroll: independently.
 
-23. Incorporate the "cloud" maskot (icon) of the app, maybe in the loading
+21. Incorporate the "cloud" maskot (icon) of the app, maybe in the loading
     screen or in the app title.
 
-24. Is the empty text allowed as an object? I think yes, because the objects in
+22. Is the empty text allowed as an object? I think yes, because the objects in
     the frontend are not designed to be stored in canonical form.
 
-25. Better UI in Evalute tab for lazy results (paging, skipping results, etc.).
+23. Better UI in Evalute tab for lazy results (paging, skipping results, etc.).
 
-26. Auto-quote found objects that are not nodes where nodes are expected with
+24. Auto-quote found objects that are not nodes where nodes are expected with
     literal nodes. Configurable, always on, or only on key / button action?
 
-27. Better headless testing without tauri for agents, by extracting the
+25. Better headless testing without tauri for agents, by extracting the
     knowledge server to a separate crate which can run the knowledge server
     headlessly.
 
-28. Add more colors to the debug view.
+26. Add more colors to the debug view.
 
-29. Redo the colors of the object views. Should they all have the same luminance
-    (currently constructed via oklch) and chroma? Should we even color them
-    differently, or based on depth?
-
-30. Better UI for the if-node, maybe with arrows that adapt to the layout? (then
+27. Better UI for the if-node, maybe with arrows that adapt to the layout? (then
     we would need to measure height which I'd like to avoid).
 
-31. Add more query nodes in the backend, and then in the frontend.
+28. Add more query nodes in the backend, and then in the frontend.
 
-32. Some nodes are still unimplemented in the frontend but in the backend.
+29. Some nodes are still unimplemented in the frontend but in the backend.
 
-33. Agent DSL? How do we copy / paste objects? Encode into clipboard and then
+30. Agent DSL? How do we copy / paste objects? Encode into clipboard and then
     parse? or just virtual clipboard?
 
-34. Better UI for parameter nodes and self-nodes.
+31. Better UI for parameter nodes and self-nodes.
 
-35. Some specializations in the object view are literaly "not implemented".
+32. Some specializations in the object view are literaly "not implemented".
     Implement them. Among these, the character view.
 
-36. Add frontend tests for data validation and transformation, not yet for
+33. Add frontend tests for data validation and transformation, not yet for
     environments and code that need jsdom or browser stuff.
 
-37. Better app background.
+34. Better app background.
 
-38. SolidJS 2.0 when?
+35. SolidJS 2.0 when?
 
-39. What is the better TypeScript abstraction layer? For DX or Agent
+36. What is the better TypeScript abstraction layer? For DX or Agent
     Experience?: classes or objects returned by hooks. Both guard/abstract state
     and expose only valid transformations. Maybe we should unify or commit to
     one style?

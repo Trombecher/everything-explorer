@@ -1,81 +1,121 @@
-import {ObjectType, type EverythingObject} from "@/model";
-import {objectToNode, NodeType, NotANode} from "@/model/nodes";
+import {ObjectType} from "@/model";
+import {NodeType} from "@/model/nodes";
 
 import type {Block} from "./blocks";
 
-export const objectViewColorHue = (object: EverythingObject): number => {
-    const node = objectToNode(object);
+/**
+ * The semantic color category an object view is tinted with. This is a UI
+ * concept only, not part of the wire format.
+ */
+export namespace ObjectViewColorCategory {
+    export const Functional = Symbol();
+    export const Computation = Symbol();
+    export const Boolean = Symbol();
+    export const Set = Symbol();
+    export const Literal = Symbol();
+    export const Query = Symbol();
+    export const Control = Symbol();
+    export const Constructions = Symbol();
+    export const Atom = Symbol();
+    export const Values = Symbol();
+}
 
-    if (node !== NotANode) {
-        switch (node.type) {
-            case NodeType.Function:
-                return 54;
-            case NodeType.FunctionSelf:
-                return 280;
-            case NodeType.Parameter:
-                return 280;
-            case NodeType.Literal:
-                return 23;
-            case NodeType.Plus:
-                return 100;
-            case NodeType.Times:
-                return 340;
-            case NodeType.Equal:
-                return 280;
-            case NodeType.Less:
-                return 290;
-            case NodeType.Contains:
-                return 175;
-            case NodeType.And:
-                return 130;
-            case NodeType.Or:
-                return 10;
-            case NodeType.Not:
-                return 70;
-            case NodeType.Union:
-                return 230;
-            case NodeType.Filter:
-                return 205;
-            case NodeType.Map:
-                return 195;
-            case NodeType.QueryAtomsWithProperty:
-                return 160;
-            case NodeType.QueryAtomsWithConstructor:
-                return 150;
-            case NodeType.ValuesOf:
-                return 140;
-            case NodeType.HasValue:
-                return 115;
-            case NodeType.Unwrap:
-                return 310;
-            case NodeType.QueryConstructionValues:
-                return 240;
-            case NodeType.QueryConstructions:
-                return 270;
-            case NodeType.If:
-                return 260;
-            case NodeType.Call:
-                return 320;
-        }
-    }
+export type ObjectViewColorCategory =
+    | typeof ObjectViewColorCategory.Functional
+    | typeof ObjectViewColorCategory.Computation
+    | typeof ObjectViewColorCategory.Boolean
+    | typeof ObjectViewColorCategory.Set
+    | typeof ObjectViewColorCategory.Literal
+    | typeof ObjectViewColorCategory.Query
+    | typeof ObjectViewColorCategory.Control
+    | typeof ObjectViewColorCategory.Constructions
+    | typeof ObjectViewColorCategory.Atom
+    | typeof ObjectViewColorCategory.Values;
 
-    switch (object.type) {
-        case ObjectType.Atom:
-            return 190;
-        case ObjectType.Byte:
-            return 200;
-        case ObjectType.Integer:
-            return 300;
-        case ObjectType.Construction:
-            return 80;
-        case ObjectType.Character:
-            return 160;
+/**
+ * The background class per category. The class names are spelled out literally
+ * so that the Tailwind source scanner picks them up.
+ */
+const colorCategoryClasses: Record<ObjectViewColorCategory, string> = {
+    [ObjectViewColorCategory.Functional]: "bg-obj-functional",
+    [ObjectViewColorCategory.Computation]: "bg-obj-computation",
+    [ObjectViewColorCategory.Boolean]: "bg-obj-boolean",
+    [ObjectViewColorCategory.Set]: "bg-obj-set",
+    [ObjectViewColorCategory.Literal]: "bg-obj-literal",
+    [ObjectViewColorCategory.Query]: "bg-obj-query",
+    [ObjectViewColorCategory.Control]: "bg-obj-control",
+    [ObjectViewColorCategory.Constructions]: "bg-obj-constructions",
+    [ObjectViewColorCategory.Atom]: "bg-obj-atom",
+    [ObjectViewColorCategory.Values]: "bg-obj-values",
+};
+
+/**
+ * The semantic color category of a block type, covering both node types and
+ * object types. A new block type must be categorized here, otherwise the
+ * missing return statement fails type checking.
+ */
+export const objectViewColorCategory = (
+    blockType: Block["type"],
+): ObjectViewColorCategory => {
+    switch (blockType) {
+        case NodeType.Function:
+        case NodeType.FunctionSelf:
+        case NodeType.Call:
+        case NodeType.Parameter:
+            return ObjectViewColorCategory.Functional;
+
+        case NodeType.Plus:
+        case NodeType.Times:
+        case NodeType.Less:
+        case NodeType.Equal:
+            return ObjectViewColorCategory.Computation;
+
+        case NodeType.Not:
+        case NodeType.And:
+        case NodeType.Or:
+            return ObjectViewColorCategory.Boolean;
+
+        case NodeType.Contains:
+        case NodeType.Unwrap:
+        case NodeType.Union:
+        case NodeType.Filter:
+        case NodeType.Map:
         case ObjectType.Set:
-            return 220;
+            return ObjectViewColorCategory.Set;
+
+        case NodeType.Literal:
+            return ObjectViewColorCategory.Literal;
+
+        case NodeType.ValuesOf:
+        case NodeType.HasValue:
+        case NodeType.QueryAtomsWithProperty:
+        case NodeType.QueryAtomsWithConstructor:
+        case NodeType.QueryConstructionValues:
+        case NodeType.QueryConstructions:
+            return ObjectViewColorCategory.Query;
+
+        case NodeType.If:
+            return ObjectViewColorCategory.Control;
+
+        case ObjectType.Construction:
+            return ObjectViewColorCategory.Constructions;
+
+        case ObjectType.Atom:
+            return ObjectViewColorCategory.Atom;
+
         case ObjectType.Text:
-            return 250;
+        case ObjectType.Integer:
+        case ObjectType.Byte:
+        case ObjectType.Character:
+            return ObjectViewColorCategory.Values;
     }
 };
+
+/**
+ * The background class for an object view, derived from its color category.
+ */
+export const objectViewBackgroundClass = (blockType: Block["type"]): string =>
+    colorCategoryClasses[objectViewColorCategory(blockType)];
 
 export const blockInColumnModeIsItemsCenter = (blockType: Block["type"]) => {
     switch (blockType) {

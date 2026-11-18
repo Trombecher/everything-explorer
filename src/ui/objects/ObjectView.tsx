@@ -10,7 +10,7 @@ import {handleKeyDown} from "./editing/keyboardShortcuts";
 import {calculateLayoutModeOfBlock, LayoutMode} from "./layout";
 import {
     blockInColumnModeIsItemsCenter,
-    objectViewColorHue,
+    objectViewBackgroundClass,
 } from "./objectViewAppearance";
 import type {ObjectSelectionPath} from "./selection";
 import {useObjectSelection} from "./selection";
@@ -98,9 +98,8 @@ export const ObjectView = (props: {
                 "border-width": `${blockOptions().blockBorderWidthInPixels}px`,
                 gap: `${blockOptions().itemGapInPixels}px`,
                 padding: `4px ${blockOptions().blockPaddingRightInPixels}px 4px ${blockOptions().blockPaddingLeftInPixels}px`,
-                "background-color": `light-dark(oklch(0.92 0.07 ${objectViewColorHue(props.object)}), oklch(0.3 0.07 ${objectViewColorHue(props.object)}))`,
             }}
-            class={`flex rounded-xl border-solid border-neutral-400 bg-neutral-100 text-neutral-800 select-none data-selected:border-blue-500 data-selected:bg-blue-500! data-selected:text-always-white ${layoutMode() === LayoutMode.Column ? `flex-col ${blockInColumnModeIsItemsCenter(block().type) ? "items-center" : "items-start"}` : "items-center"}`}
+            class={`flex rounded-xl border-solid border-neutral-400 text-neutral-800 select-none data-selected:border-blue-500 data-selected:bg-blue-500! data-selected:text-always-white ${objectViewBackgroundClass(block().type)} ${layoutMode() === LayoutMode.Column ? `flex-col ${blockInColumnModeIsItemsCenter(block().type) ? "items-center" : "items-start"}` : "items-center"}`}
         >
             <ObjectViewContent
                 block={block()}
