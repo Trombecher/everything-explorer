@@ -146,6 +146,8 @@ general issues, ideas, or drafts.
 36. Add frontend tests for data validation and transformation, not yet for
     environments and code that need jsdom or browser stuff.
 
+37. Better app background.
+
 ## Secondary
 
 100. When editing objects, add a sidebar displaying the behaviour of the
@@ -202,3 +204,7 @@ general issues, ideas, or drafts.
 ### Tertiary
 
 10001. More views / plugins, like todo cards maybe. Or a calender. Or gallery.
+
+10002. How do we incorporate (local) AI? MCP? I'd like for the user of
+       Everything Explorer to write a prompt and the AI answers based on the
+       stuff it queried the knowledge base with.
