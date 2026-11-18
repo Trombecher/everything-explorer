@@ -148,6 +148,13 @@ general issues, ideas, or drafts.
 
 37. Better app background.
 
+38. SolidJS 2.0 when?
+
+39. What is the better TypeScript abstraction layer? For DX or Agent
+    Experience?: classes or objects returned by hooks. Both guard/abstract state
+    and expose only valid transformations. Maybe we should unify or commit to
+    one style?
+
 ## Secondary
 
 100. When editing objects, add a sidebar displaying the behaviour of the
@@ -201,7 +208,7 @@ general issues, ideas, or drafts.
 
 115. Knowledge validation (currently unimplemented in the backend).
 
-### Tertiary
+## Tertiary
 
 10001. More views / plugins, like todo cards maybe. Or a calender. Or gallery.
 
