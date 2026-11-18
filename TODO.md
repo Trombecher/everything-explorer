@@ -56,9 +56,6 @@ general issues, ideas, or drafts.
    connections (trash can) and property removal in the property panel (x icon
    that is red on hover).
 
-10. The sidebar collapse button is too white because it inherits the color from
-    the app title heading. It should be the same color as the tab icons.
-
 11. The trash can icon (remove connection) overflows the connection box in the
     connections view, when connected (`<dot> connected` is added to that flex).
     Also, the padding is off, "local" has less padding to the box border than

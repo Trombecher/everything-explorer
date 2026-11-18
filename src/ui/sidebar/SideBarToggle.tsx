@@ -11,7 +11,7 @@ export default () => {
     return (
         <button
             type="button"
-            class="flex shrink-0 cursor-pointer items-center justify-center rounded-2xl p-2 hover:bg-neutral-200 active:scale-97"
+            class="flex shrink-0 cursor-pointer items-center justify-center rounded-2xl p-2 text-neutral-800 hover:bg-neutral-200 active:scale-97"
             title={appState.translate(Phrase.ToggleSidebar, undefined)}
             aria-label={appState.translate(Phrase.ToggleSidebar, undefined)}
             aria-expanded={!appState.sidebarCollapsed()}
