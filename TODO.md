@@ -152,12 +152,6 @@ other items stay valid.
   and expose only valid transformations. Maybe we should unify or commit to one
   style?
 
-- (40) Re-think hotkeys for query nodes. Currently, it is jungle of "k", "K",
-  "q", and "Q". maybe use only q to spawn a default one and then use 1-9 to
-  select a different (Variant) query node? Also possible via tab. This has to
-  scale, more query nodes will be added in the future, but I think it will not
-  total to more than 9. Otherwise, we just rethink this again in the future.
-
 ## Secondary
 
 - (100) When editing objects, add a sidebar displaying the behaviour of the

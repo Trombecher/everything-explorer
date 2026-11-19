@@ -4,6 +4,14 @@ import {nodeToObject, NodeType, NotANode, objectToNode} from "@/model/nodes";
 import {objectToBlock} from "../blocks";
 import {childCountOfBlock, LayoutMode} from "../layout";
 import type {ObjectSelection} from "../selection";
+import {
+    isQueryNode,
+    queryNodeVariants,
+    retypeQueryNode,
+} from "./queryNodeVariants";
+
+const isQueryVariantKey = (key: string): boolean =>
+    key.length === 1 && key >= "1" && key <= "9";
 
 const isHandledKey = (key: string): boolean =>
     key === "ArrowUp"
@@ -23,12 +31,10 @@ const isHandledKey = (key: string): boolean =>
     || key === "i"
     || key === "!"
     || key === "q"
-    || key === "k"
-    || key === "K"
+    || isQueryVariantKey(key)
     || key === "h"
     || key === "v"
     || key === "U"
-    || key === "Q"
     || key === "F"
     || key === " "
     || key === "*"
@@ -361,30 +367,18 @@ export const handleKeyDown = (props: {
         );
 
         props.objectSelection.selectChild(0);
-    } else if (props.event.key === "k") {
+    } else if (isQueryVariantKey(props.event.key)) {
         if (!props.setObject) return;
 
-        props.setObject(
-            nodeToObject({
-                type: NodeType.QueryConstructions,
-                constructor: props.object,
-                rest: [],
-            }),
-        );
+        const node = objectToNode(props.object);
 
-        props.objectSelection.selectChild(0);
-    } else if (props.event.key === "K") {
-        if (!props.setObject) return;
+        if (node === NotANode || !isQueryNode(node)) return;
 
-        props.setObject(
-            nodeToObject({
-                type: NodeType.QueryAtomsWithConstructor,
-                constructor: props.object,
-                rest: [],
-            }),
-        );
+        const variant = queryNodeVariants[Number(props.event.key) - 1];
 
-        props.objectSelection.selectChild(0);
+        if (variant === undefined || variant === node.type) return;
+
+        props.setObject(nodeToObject(retypeQueryNode(node, variant)));
     } else if (props.event.key === "v") {
         if (!props.setObject) return;
 
@@ -417,19 +411,6 @@ export const handleKeyDown = (props: {
         );
 
         props.objectSelection.selectChild(0);
-    } else if (props.event.key === "Q") {
-        if (!props.setObject) return;
-
-        props.setObject(
-            nodeToObject({
-                type: NodeType.QueryConstructionValues,
-                set: props.object,
-                propertyConstructor: defaultObject,
-                rest: [],
-            }),
-        );
-
-        props.objectSelection.selectChild(1);
     } else if (props.event.key === "i") {
         if (!props.setObject) return;
 
