@@ -66,6 +66,7 @@ export const german = {
     [Phrase.ResizePropertiesPanel]: () =>
         "Größe des Eigenschaftenbereichs ändern",
     [Phrase.PropertiesOf]: () => "Eigenschaften von",
+    [Phrase.CloseProperties]: () => "Eigenschaften schließen",
     [Phrase.AddProperty]: () => "Eigenschaft hinzufügen",
     [Phrase.RemoveProperty]: () => "Eigenschaft entfernen",
     [Phrase.Reload]: () => "Neu laden",

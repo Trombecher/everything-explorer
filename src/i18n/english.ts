@@ -63,6 +63,7 @@ export const english = {
     [Phrase.LoadingProperties]: () => "Loading properties...",
     [Phrase.ResizePropertiesPanel]: () => "Resize properties panel",
     [Phrase.PropertiesOf]: () => "Properties of",
+    [Phrase.CloseProperties]: () => "Close properties",
     [Phrase.AddProperty]: () => "Add property",
     [Phrase.RemoveProperty]: () => "Remove property",
     [Phrase.Reload]: () => "Reload",

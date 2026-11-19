@@ -7,6 +7,7 @@ const AddThing = Symbol();
 const LoadingProperties = Symbol();
 const ResizePropertiesPanel = Symbol();
 const PropertiesOf = Symbol();
+const CloseProperties = Symbol();
 const AddProperty = Symbol();
 const RemoveProperty = Symbol();
 const New = Symbol();
@@ -21,6 +22,7 @@ export const thingsPhrases = {
     LoadingProperties,
     ResizePropertiesPanel,
     PropertiesOf,
+    CloseProperties,
     AddProperty,
     RemoveProperty,
     New,
@@ -36,6 +38,7 @@ export type ThingsTranslationArguments = {
     [LoadingProperties]: undefined;
     [ResizePropertiesPanel]: undefined;
     [PropertiesOf]: undefined;
+    [CloseProperties]: undefined;
     [AddProperty]: undefined;
     [RemoveProperty]: undefined;
     [New]: undefined;
