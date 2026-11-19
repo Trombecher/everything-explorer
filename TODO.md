@@ -29,15 +29,6 @@ other items stay valid.
 
 - (6) Search bar searching atoms by name.
 
-- (8) Currently, all buttons have `p-1`. This ensures that if a button is using
-  an icon that is put left or right in the button, it is equally distant from
-  bottom and top and left or right. The side-effect of this is that button text
-  may have to be wrapped in a `px-1`, to make some space in x because the
-  leading also contains some space. For icons like `<PlusIcon/>` this works
-  great because it is symmetrical and has enough space to the borders. But the
-  `<CopyIcon/>` is too large in the frame. Maybe one solution would be to just
-  fork the copy icon and make the squares smaller.
-
 - (9) Unify delete buttons. Currently different delete buttons used in e.g.
   connections (trash can) and property removal in the property panel (x icon
   that is red on hover).
