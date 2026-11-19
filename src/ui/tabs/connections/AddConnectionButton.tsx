@@ -18,7 +18,7 @@ export default () => {
     return (
         <>
             <DropdownMenu>
-                <DropdownMenu.Trigger class="flex rounded-xl bg-blue-500 py-1 pr-1 pl-3 font-medium text-white transition select-none data-expanded:bg-blue-600 dark:text-black">
+                <DropdownMenu.Trigger class="flex rounded-xl bg-primary py-1 pr-1 pl-3 font-medium text-on-primary transition select-none data-expanded:bg-primary-hover">
                     <span>
                         {appState.translate(Phrase.AddKnowledgeBase, undefined)}
                     </span>
@@ -27,7 +27,7 @@ export default () => {
                     </DropdownMenu.Icon>
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Portal>
-                    <DropdownMenu.Content class="mt-2 rounded-3xl border border-neutral-200 bg-white p-2 shadow-lg select-none dark:bg-neutral-100">
+                    <DropdownMenu.Content class="mt-2 rounded-3xl border border-line-subtle bg-surface-raised p-2 shadow-lg select-none">
                         {[
                             {
                                 name: appState.translate(
@@ -73,7 +73,7 @@ export default () => {
                         ].map(({name, handler}) => (
                             <DropdownMenu.Item
                                 onClick={handler}
-                                class="flex gap-1 rounded-xl py-1 pr-3 pl-1 hover:bg-blue-500 hover:text-white active:scale-97 dark:hover:text-black"
+                                class="flex gap-1 rounded-xl py-1 pr-3 pl-1 hover:bg-primary hover:text-on-primary active:scale-97"
                             >
                                 <PlusIcon /> {name}
                             </DropdownMenu.Item>

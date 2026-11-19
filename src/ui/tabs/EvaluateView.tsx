@@ -168,13 +168,13 @@ export default () => {
     return (
         <div class="flex min-w-0 grow py-2">
             <div
-                class="mx-auto flex w-full max-w-3xl min-w-0 grow flex-col gap-3 self-start rounded-4xl border border-neutral-200 bg-white p-4 dark:bg-neutral-100"
+                class="mx-auto flex w-full max-w-3xl min-w-0 grow flex-col gap-3 self-start rounded-4xl border border-line-subtle bg-surface-panel p-4"
                 tabIndex={0}
                 onKeyDown={event => handleHistoryKeyDown(event, history)}
             >
                 <div class="flex items-center gap-2">
                     <FlaskConicalIcon class="shrink-0" />
-                    <h2 class="text-xl font-semibold text-black">
+                    <h2 class="text-xl font-semibold text-fg-strong">
                         {appState.translate(Phrase.Evaluate, undefined)}
                     </h2>
                 </div>
@@ -221,22 +221,22 @@ export default () => {
 
                 <Show when={evaluation()} keyed>
                     {evaluation => (
-                        <div class="flex flex-col gap-2 border-t border-neutral-200 pt-3">
-                            <h3 class="font-semibold text-black">
+                        <div class="flex flex-col gap-2 border-t border-line-subtle pt-3">
+                            <h3 class="font-semibold text-fg-strong">
                                 {appState.translate(Phrase.Result, undefined)}
                             </h3>
                             <Show
                                 when={isFailure(evaluation) ? evaluation : null}
                             >
                                 {failure => (
-                                    <div class="text-red-600">
+                                    <div class="text-danger-fg">
                                         <div>
                                             {appState.translate(
                                                 Phrase.EvaluateFailed,
                                                 undefined,
                                             )}
                                         </div>
-                                        <div class="mt-1 font-mono text-xs whitespace-pre-wrap text-neutral-600">
+                                        <div class="mt-1 font-mono text-xs whitespace-pre-wrap text-fg-muted">
                                             {failure().error}
                                         </div>
                                     </div>
@@ -273,7 +273,7 @@ export default () => {
                             <Show when={isLazy(evaluation) ? evaluation : null}>
                                 {_lazy => (
                                     <div class="flex flex-col gap-2">
-                                        <div class="text-sm text-neutral-500">
+                                        <div class="text-sm text-fg-muted">
                                             {appState.translate(
                                                 Phrase.LazyResultHint,
                                                 undefined,
@@ -327,7 +327,7 @@ export default () => {
                                                 </Button>
                                             </Show>
                                             <Show when={lazyLoading()}>
-                                                <span class="text-sm text-neutral-500">
+                                                <span class="text-sm text-fg-muted">
                                                     {appState.translate(
                                                         Phrase.Loading,
                                                         undefined,
@@ -335,7 +335,7 @@ export default () => {
                                                 </span>
                                             </Show>
                                             <Show when={lazyExhausted()}>
-                                                <span class="text-sm text-neutral-500">
+                                                <span class="text-sm text-fg-muted">
                                                     {appState.translate(
                                                         Phrase.AllResultsLoaded,
                                                         undefined,
@@ -345,14 +345,14 @@ export default () => {
                                         </div>
                                         <Show when={lazyError()}>
                                             {error => (
-                                                <div class="text-red-600">
+                                                <div class="text-danger-fg">
                                                     <div>
                                                         {appState.translate(
                                                             Phrase.LoadMoreFailed,
                                                             undefined,
                                                         )}
                                                     </div>
-                                                    <div class="mt-1 font-mono text-xs whitespace-pre-wrap text-neutral-600">
+                                                    <div class="mt-1 font-mono text-xs whitespace-pre-wrap text-fg-muted">
                                                         {error()}
                                                     </div>
                                                 </div>

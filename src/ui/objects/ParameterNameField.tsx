@@ -47,7 +47,7 @@ export default (props: {
                     }
                 }}
                 onBlur={commit}
-                class="block w-full rounded-full border border-neutral-300 bg-neutral-100 px-2 py-0.5 text-center text-neutral-800 placeholder:text-neutral-500 focus:outline-2 focus:outline-blue-500"
+                class="block w-full rounded-full border border-line-strong bg-surface-sunken px-2 py-0.5 text-center text-fg placeholder:text-fg-subtle focus:outline-2 focus:outline-primary"
             />
         </TextField>
     );

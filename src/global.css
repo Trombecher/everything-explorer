@@ -42,6 +42,51 @@
     --color-neutral-800: oklch(27.4% 0.006 40.59);
     --color-neutral-900: oklch(21% 0.006 40.59);
 
+    /* Semantic colors. UI code should use these instead of the raw palette so
+       that switching modes never requires a `dark:` variant. The values are
+       chosen independently per mode; they are deliberately not a mechanical
+       lightness inversion (see `html[data-theme="dark"]` below). */
+
+    /* Surfaces, from the page background up to floating layers. */
+    --color-surface-app: oklch(0.97 0.0066 40.59);
+    --color-surface-panel: oklch(1 0 none);
+    --color-surface-raised: oklch(1 0 none);
+    --color-surface-sunken: oklch(0.97 0.0066 40.59);
+    --color-surface-hover: oklch(0.94 0.0066 40.59);
+    --color-surface-active: oklch(0.9 0.0066 40.59);
+    --color-surface-control: oklch(0.92 0.0066 40.59);
+    --color-surface-control-hover: oklch(0.88 0.0066 40.59);
+    --color-surface-control-active: oklch(0.84 0.0066 40.59);
+
+    /* Separators, input borders and outlines. */
+    --color-line-subtle: oklch(0.92 0.0066 40.59);
+    --color-line-strong: oklch(0.871 0.006 40.59);
+    --color-line-emphasis: oklch(0.705 0.015 40.59);
+
+    /* Text. */
+    --color-fg: oklch(0.274 0.006 40.59);
+    --color-fg-strong: oklch(0.21 0.006 40.59);
+    --color-fg-muted: oklch(0.442 0.017 40.59);
+    --color-fg-subtle: oklch(0.705 0.015 40.59);
+
+    /* Actions. `on-*` is the text color on a solid fill; `*-fg` is the text
+       color of accent-colored text on a neutral surface. */
+    --color-primary: oklch(0.623 0.214 259.815);
+    --color-primary-hover: oklch(0.546 0.245 262.881);
+    --color-primary-active: oklch(0.488 0.243 264.376);
+    --color-primary-fg: oklch(0.546 0.245 262.881);
+    --color-primary-subtle: oklch(0.94 0.04 255);
+    --color-on-primary: oklch(1 0 none);
+
+    --color-danger: oklch(0.704 0.191 22.216);
+    --color-danger-hover: oklch(0.637 0.237 25.331);
+    --color-danger-active: oklch(0.577 0.245 27.325);
+    --color-danger-fg: oklch(0.577 0.245 27.325);
+    --color-danger-subtle: oklch(0.96 0.03 25);
+    --color-on-danger: oklch(0.21 0.006 40.59);
+
+    --color-scrim: oklch(0 0 0 / 40%);
+
     --color-always-white: white;
     --color-always-black: black;
 
@@ -60,8 +105,6 @@
 }
 
 html[data-theme="dark"] {
-    --color-white: oklch(15% 0 none);
-
     --color-neutral-100: oklch(20% 0 none);
     --color-neutral-200: oklch(26% 0 none);
     --color-neutral-300: oklch(37.1% 0 none);
@@ -72,7 +115,43 @@ html[data-theme="dark"] {
     --color-neutral-800: oklch(92.2% 0 none);
     --color-neutral-900: oklch(97% 0 none);
 
-    --color-black: white;
+    /* Semantic colors. Elevation still increases with lightness, and hover
+       still moves away from the surface, so these are intentionally not a
+       pure lightness inversion of the light-mode values. */
+    --color-surface-app: oklch(0.15 0 none);
+    --color-surface-panel: oklch(0.2 0 none);
+    --color-surface-raised: oklch(0.24 0 none);
+    --color-surface-sunken: oklch(0.15 0 none);
+    --color-surface-hover: oklch(0.25 0 none);
+    --color-surface-active: oklch(0.3 0 none);
+    --color-surface-control: oklch(0.26 0 none);
+    --color-surface-control-hover: oklch(0.3 0 none);
+    --color-surface-control-active: oklch(0.34 0 none);
+
+    --color-line-subtle: oklch(0.26 0 none);
+    --color-line-strong: oklch(0.371 0 none);
+    --color-line-emphasis: oklch(0.439 0 none);
+
+    --color-fg: oklch(0.922 0 none);
+    --color-fg-strong: oklch(0.97 0 none);
+    --color-fg-muted: oklch(0.708 0 none);
+    --color-fg-subtle: oklch(0.48 0 none);
+
+    --color-primary: oklch(0.623 0.214 259.815);
+    --color-primary-hover: oklch(0.546 0.245 262.881);
+    --color-primary-active: oklch(0.488 0.243 264.376);
+    --color-primary-fg: oklch(0.809 0.105 251.813);
+    --color-primary-subtle: oklch(0.3 0.06 255);
+    --color-on-primary: oklch(0.98 0 none);
+
+    --color-danger: oklch(0.637 0.237 25.331);
+    --color-danger-hover: oklch(0.704 0.191 22.216);
+    --color-danger-active: oklch(0.808 0.114 19.571);
+    --color-danger-fg: oklch(0.808 0.114 19.571);
+    --color-danger-subtle: oklch(0.3 0.07 25);
+    --color-on-danger: oklch(0.21 0 none);
+
+    --color-scrim: oklch(0 0 0 / 40%);
 
     --color-obj-functional: oklch(0.35 0.1 290);
     --color-obj-computation: oklch(0.35 0.1 355);
@@ -91,6 +170,6 @@ html[data-theme="dark"] {
 @layer base {
     * {
         corner-shape: superellipse(1.6);
-        @apply outline-offset-2 outline-blue-500 focus-visible:outline-2;
+        @apply outline-primary outline-offset-2 focus-visible:outline-2;
     }
 }

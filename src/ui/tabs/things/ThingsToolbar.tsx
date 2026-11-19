@@ -26,12 +26,12 @@ export default (props: {
 
     return (
         <div class="@container">
-            <div class="flex flex-wrap items-center gap-2 px-2 text-black">
+            <div class="flex flex-wrap items-center gap-2 px-2 text-fg-strong">
                 <LayoutGridIcon class="shrink-0" />
                 <h2 class="shrink-0 text-xl font-semibold">
                     {appState.translate(Phrase.Things, undefined)}
                 </h2>
-                <label class="mx-2 flex grow items-center rounded-2xl border border-neutral-200 bg-neutral-100 pl-2 focus-within:outline-2 @max-md:hidden dark:bg-white">
+                <label class="mx-2 flex grow items-center rounded-2xl border border-line-subtle bg-surface-sunken pl-2 focus-within:outline-2 @max-md:hidden">
                     <SearchIcon />
                     <input
                         type="search"
@@ -52,7 +52,7 @@ export default (props: {
                     }
                     aria-label={searchToggleLabel()}
                     title={searchToggleLabel()}
-                    class="ml-auto flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-2xl text-neutral-600 hover:bg-neutral-100 @min-md:hidden"
+                    class="ml-auto flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-2xl text-fg-muted hover:bg-surface-hover @min-md:hidden"
                 >
                     <Show
                         when={props.isSearchExpanded}
@@ -74,7 +74,7 @@ export default (props: {
                 </Button>
             </div>
             <Show when={props.isSearchExpanded}>
-                <label class="mt-2 flex w-full items-center rounded-2xl border border-neutral-200 bg-neutral-100 pl-2 focus-within:outline-2 @min-md:hidden dark:bg-white">
+                <label class="mt-2 flex w-full items-center rounded-2xl border border-line-subtle bg-surface-sunken pl-2 focus-within:outline-2 @min-md:hidden">
                     <SearchIcon />
                     <input
                         type="search"

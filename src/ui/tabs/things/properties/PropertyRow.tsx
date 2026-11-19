@@ -32,7 +32,7 @@ export default (props: {
                 />
             </div>
             <KobalteButton
-                class="shrink-0 self-center rounded-2xl p-2 text-neutral-500 hover:bg-red-500/10 hover:text-red-500"
+                class="shrink-0 self-center rounded-2xl p-2 text-fg-muted hover:bg-danger-subtle hover:text-danger-fg"
                 title={appState.translate(Phrase.RemoveProperty, undefined)}
                 aria-label={appState.translate(
                     Phrase.RemoveProperty,

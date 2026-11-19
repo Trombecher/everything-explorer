@@ -99,7 +99,7 @@ export const ObjectView = (props: {
                 gap: `${blockOptions().itemGapInPixels}px`,
                 padding: `4px ${blockOptions().blockPaddingRightInPixels}px 4px ${blockOptions().blockPaddingLeftInPixels}px`,
             }}
-            class={`flex rounded-xl border-solid border-neutral-400 text-neutral-800 select-none data-selected:border-blue-500 data-selected:bg-blue-500! data-selected:text-always-white ${objectViewBackgroundClass(block().type)} ${layoutMode() === LayoutMode.Column ? `flex-col ${blockInColumnModeIsItemsCenter(block().type) ? "items-center" : "items-start"}` : "items-center"}`}
+            class={`flex rounded-xl border-solid border-line-emphasis text-fg select-none data-selected:border-primary data-selected:bg-primary! data-selected:text-on-primary ${objectViewBackgroundClass(block().type)} ${layoutMode() === LayoutMode.Column ? `flex-col ${blockInColumnModeIsItemsCenter(block().type) ? "items-center" : "items-start"}` : "items-center"}`}
         >
             <ObjectViewContent
                 block={block()}

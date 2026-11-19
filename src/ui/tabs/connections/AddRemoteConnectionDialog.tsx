@@ -76,22 +76,22 @@ export default (props: {
     return (
         <Dialog open={props.open} onOpenChange={props.onOpenChange}>
             <Dialog.Portal>
-                <Dialog.Overlay class="fixed inset-0 z-50 bg-always-black/40" />
+                <Dialog.Overlay class="fixed inset-0 z-50 bg-scrim" />
                 <Dialog.Content
                     onOpenAutoFocus={event => {
                         event.preventDefault();
                         urlInput?.focus();
                         urlInput?.select();
                     }}
-                    class="fixed top-1/2 left-1/2 z-50 flex max-h-[90vh] w-[min(90vw,32rem)] -translate-x-1/2 -translate-y-1/2 flex-col gap-3 overflow-y-auto rounded-4xl border border-neutral-200 bg-white p-4 shadow-xl dark:bg-neutral-100"
+                    class="fixed top-1/2 left-1/2 z-50 flex max-h-[90vh] w-[min(90vw,32rem)] -translate-x-1/2 -translate-y-1/2 flex-col gap-3 overflow-y-auto rounded-4xl border border-line-subtle bg-surface-raised p-4 shadow-xl"
                 >
-                    <Dialog.Title class="text-2xl font-semibold text-black">
+                    <Dialog.Title class="text-2xl font-semibold text-fg-strong">
                         {appState.translate(
                             Phrase.AddRemoteConnection,
                             undefined,
                         )}
                     </Dialog.Title>
-                    <Dialog.Description class="text-base text-neutral-600">
+                    <Dialog.Description class="text-base text-fg-muted">
                         {appState.translate(
                             Phrase.RemoteConnectionDescription,
                             undefined,
@@ -107,7 +107,7 @@ export default (props: {
                                 : undefined
                         }
                     >
-                        <TextField.Label class="mb-1 block text-base font-medium text-neutral-700">
+                        <TextField.Label class="mb-1 block text-base font-medium text-fg">
                             {appState.translate(Phrase.Url, undefined)}
                         </TextField.Label>
                         <TextField.Input
@@ -122,12 +122,12 @@ export default (props: {
                                 event.preventDefault();
                                 confirm();
                             }}
-                            class="block w-full rounded-2xl border border-neutral-200 bg-neutral-100 px-3 py-2 font-mono text-base text-black data-invalid:outline-2 data-invalid:outline-red-500"
+                            class="block w-full rounded-2xl border border-line-subtle bg-surface-sunken px-3 py-2 font-mono text-base text-fg data-invalid:outline-2 data-invalid:outline-danger"
                         />
                     </TextField>
 
                     <Show when={urlText().trim() !== "" && url() === undefined}>
-                        <p class="text-base text-red-500">
+                        <p class="text-base text-danger-fg">
                             {appState.translate(
                                 Phrase.InvalidRemoteUrl,
                                 undefined,
@@ -136,7 +136,7 @@ export default (props: {
                     </Show>
 
                     <Show when={urlAlreadyExists()}>
-                        <p class="text-base text-red-500">
+                        <p class="text-base text-danger-fg">
                             {appState.translate(
                                 Phrase.RemoteConnectionAlreadyExists,
                                 undefined,
@@ -149,7 +149,7 @@ export default (props: {
                         onChange={setNameText}
                         class="mt-1"
                     >
-                        <TextField.Label class="mb-1 block text-base font-medium text-neutral-700">
+                        <TextField.Label class="mb-1 block text-base font-medium text-fg">
                             {appState.translate(Phrase.Name, undefined)}
                         </TextField.Label>
                         <TextField.Input
@@ -160,13 +160,13 @@ export default (props: {
                                 event.preventDefault();
                                 confirm();
                             }}
-                            class="block w-full rounded-2xl border border-neutral-200 bg-neutral-100 px-3 py-2 text-base text-black"
+                            class="block w-full rounded-2xl border border-line-subtle bg-surface-sunken px-3 py-2 text-base text-fg"
                         />
                     </TextField>
 
                     <div class="mt-1 flex items-center gap-2">
                         <div class="grow" />
-                        <Dialog.CloseButton class="cursor-pointer rounded-2xl bg-neutral-200 px-2 py-1 font-medium text-neutral-700 hover:bg-neutral-300 active:scale-97">
+                        <Dialog.CloseButton class="cursor-pointer rounded-2xl bg-surface-control px-2 py-1 font-medium text-fg hover:bg-surface-control-hover active:scale-97">
                             {appState.translate(Phrase.Cancel, undefined)}
                         </Dialog.CloseButton>
                         <Button

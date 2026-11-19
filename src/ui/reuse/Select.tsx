@@ -27,7 +27,7 @@ export default <T, I extends string>(props: {
             itemComponent={itemProps => (
                 <Select.Item
                     item={itemProps.item}
-                    class="group flex rounded-xl px-2 py-1 select-none hover:bg-neutral-100"
+                    class="group flex rounded-xl px-2 py-1 select-none hover:bg-surface-active"
                 >
                     <Select.ItemLabel>
                         {props.stringifyValue(
@@ -44,7 +44,7 @@ export default <T, I extends string>(props: {
                 <Select.Label />
                 <Select.Description>{props.description}</Select.Description>
             </div>
-            <Select.Trigger class="flex min-w-48 rounded-full border border-neutral-200 bg-neutral-100 p-1 text-left data-expanded:bg-neutral-200 dark:bg-white">
+            <Select.Trigger class="flex min-w-48 rounded-full border border-line-subtle bg-surface-sunken p-1 text-left data-expanded:bg-surface-active">
                 <Select.Value<I> class="pl-2">
                     {selected => (
                         <>
@@ -60,8 +60,8 @@ export default <T, I extends string>(props: {
             </Select.Trigger>
 
             <Select.Portal>
-                <Select.Content class="rounded-3xl border border-neutral-200 bg-white p-2 shadow-lg select-none">
-                    <h3 class="px-2 py-1 text-sm font-medium text-neutral-600">
+                <Select.Content class="rounded-3xl border border-line-subtle bg-surface-raised p-2 shadow-lg select-none">
+                    <h3 class="px-2 py-1 text-sm font-medium text-fg-muted">
                         {props.description}
                     </h3>
                     <Select.Listbox />

@@ -10,8 +10,8 @@ export default () => {
     const appState = useAppState();
 
     return (
-        <div class="mx-auto my-2 max-w-3xl grow rounded-4xl border border-neutral-200 bg-white p-4 dark:bg-neutral-100">
-            <h2 class="mb-4 text-2xl font-semibold tracking-tight text-black">
+        <div class="mx-auto my-2 max-w-3xl grow rounded-4xl border border-line-subtle bg-surface-panel p-4">
+            <h2 class="mb-4 text-2xl font-semibold tracking-tight text-fg-strong">
                 {appState.translate(Phrase.Connections, undefined)}
             </h2>
 
@@ -22,7 +22,7 @@ export default () => {
             <Show
                 when={appState.state.connections.length > 0}
                 fallback={
-                    <div class="rounded-3xl border border-dashed border-neutral-300 p-6 text-center text-sm text-neutral-500">
+                    <div class="rounded-3xl border border-dashed border-line-strong p-6 text-center text-sm text-fg-muted">
                         {appState.translate(Phrase.NoConnectionsYet, undefined)}
                     </div>
                 }

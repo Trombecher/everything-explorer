@@ -78,7 +78,7 @@ export default () => {
 
     return (
         <div class="flex grow gap-2 py-2" ref={el => setContainer(el)}>
-            <div class="min-w-0 grow rounded-4xl border border-neutral-200 bg-white p-2 dark:bg-neutral-100">
+            <div class="min-w-0 grow rounded-4xl border border-line-subtle bg-surface-panel p-2">
                 <ThingsToolbar
                     searchValue={searchValue()}
                     onSearchValueChange={setSearchValue}

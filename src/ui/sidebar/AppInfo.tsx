@@ -14,7 +14,7 @@ export default (props: {compact?: boolean}) => {
     const appState = useAppState();
 
     return (
-        <div class="rounded-4xl border border-neutral-200 bg-white p-2 dark:bg-neutral-100">
+        <div class="rounded-4xl border border-line-subtle bg-surface-panel p-2">
             <Show
                 when={!props.compact}
                 fallback={
@@ -25,7 +25,7 @@ export default (props: {compact?: boolean}) => {
             >
                 <div class="mb-3 flex items-start justify-between gap-2">
                     <div class="pt-2 pl-2">
-                        <h1 class="text-lg font-bold text-black">
+                        <h1 class="text-lg font-bold text-fg-strong">
                             Everything
                             <br />
                             Explorer

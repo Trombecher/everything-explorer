@@ -25,23 +25,6 @@ other items stay valid.
 - (2) For some nodes, backspace and delete hotkeys do not work correctly. It is
   to determine which blocks do not work beforehand.
 
-- (3) Fix some colors in light mode, e.g. the tab button hover background color
-  is one stage too dark. This may be more difficult than it seems, since both in
-  light and in dark mode, the app background is darker than the panel background
-  color. I don't like "exceptions" with the tailwind `dark:` syntax. Ideally all
-  colors should be inverted automatically. But then to implement that behaviour,
-  the inversion is not monotone, i.e. `bg-<palette>-100` is darker than
-  `bg-white`. Is this a trade-off we are willing to make? How does it expand to
-  areas where this would produce unexpected side-effects? What are those areas?
-  Linked to (4.)
-
-- (4) Add a semantic layer of colors
-
-    - (a) maybe one for surface colors,
-    - (b) one for primary, and
-    - (c) one for danger (?).
-    - (d) Also add always-white and stuff.
-
 - (5) Atom object view ability to search for atoms by their names.
 
 - (6) Search bar searching atoms by name.
@@ -68,8 +51,9 @@ other items stay valid.
   connected, the border is too bright of blue and the background does not change
   to a blueish background.
 
-- (12) Unify pop-up backgrounds? app background or panel background? Linked to
-  (3.) and (4.).
+- (12) Review pop-up backgrounds. They now all use `surface-raised`; decide
+  visually whether dialogs and menus should be raised from the panel or share
+  the app background.
 
 - (13) Decide what to put on the home screen. Release notes? Shortcut buttons
   for recently accessed things?

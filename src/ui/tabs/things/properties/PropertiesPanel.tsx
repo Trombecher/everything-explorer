@@ -42,7 +42,7 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
 
     return (
         <div
-            class="relative flex size-full flex-col gap-2 rounded-4xl border border-neutral-200 bg-white p-2 dark:bg-neutral-100"
+            class="relative flex size-full flex-col gap-2 rounded-4xl border border-line-subtle bg-surface-panel p-2"
             tabIndex={0}
             onKeyDown={event => {
                 handleHistoryKeyDown(event, history);
@@ -72,15 +72,15 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
         >
             <div class="flex items-center gap-2 p-2">
                 <TablePropertiesIcon />
-                <h2 class="text-xl font-semibold text-black">
+                <h2 class="text-xl font-semibold text-fg-strong">
                     {appState.translate(Phrase.PropertiesOf, undefined)}{" "}
-                    <span class="font-bold text-blue-700 italic dark:text-blue-200">
+                    <span class="font-bold text-primary-fg italic">
                         {name() ?? String(props.selectedAtom.value)}
                     </span>
                 </h2>
             </div>
             <KobalteButton
-                class="absolute top-2 right-2 rounded-2xl p-2 hover:bg-neutral-200"
+                class="absolute top-2 right-2 rounded-2xl p-2 hover:bg-surface-hover"
                 onClick={() => {
                     props.close();
                 }}

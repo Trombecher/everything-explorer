@@ -14,11 +14,11 @@ export type ButtonSeverity =
 
 const severityClasses: Record<ButtonSeverity, string> = {
     [ButtonSeverity.Primary]:
-        "bg-blue-500 text-white hover:bg-blue-600 active:bg-blue-700 dark:text-black",
+        "bg-primary text-on-primary hover:bg-primary-hover active:bg-primary-active",
     [ButtonSeverity.Secondary]:
-        "bg-neutral-200 text-neutral-700 hover:bg-neutral-300 active:bg-neutral-400",
+        "bg-surface-control text-fg hover:bg-surface-control-hover active:bg-surface-control-active",
     [ButtonSeverity.Danger]:
-        "bg-red-400 text-black hover:bg-red-500 active:bg-red-600 dark:text-white",
+        "bg-danger text-on-danger hover:bg-danger-hover active:bg-danger-active",
 };
 
 export default (

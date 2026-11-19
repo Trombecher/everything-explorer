@@ -23,7 +23,7 @@ export default (props: {tab: Tab; icon: JSXElement; compact?: boolean}) => {
 
     return (
         <Button
-            class={`flex w-full gap-2 rounded-3xl p-2 text-left transition-transform duration-75 ease-in-out active:scale-97 ${props.tab === Tab.InstanceProperties ? "mt-auto" : ""} ${props.compact ? "justify-center" : ""} ${appState.state.currentTab === props.tab ? "bg-blue-400/20 font-medium text-blue-500" : "hover:bg-neutral-200"}`}
+            class={`flex w-full gap-2 rounded-3xl p-2 text-left transition-transform duration-75 ease-in-out active:scale-97 ${props.tab === Tab.InstanceProperties ? "mt-auto" : ""} ${props.compact ? "justify-center" : ""} ${appState.state.currentTab === props.tab ? "bg-primary-subtle text-primary-fg font-medium" : "hover:bg-surface-hover"}`}
             title={props.compact ? label() : undefined}
             aria-label={label()}
             onPointerDown={() => {

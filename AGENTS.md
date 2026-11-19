@@ -87,11 +87,18 @@ Frequently reused components from Kobalte UI that we style ourselves live in
 
 ### Colors
 
-On dark mode, all colors are automatically swapped to the inverts. The default
-colors are in white mode, so design the components as they look in light mode
-and dark mode works automatically. For some corner cases (like buttons that are
-always blue and the text is always white), you have to add `dark:` variants just
-to keep the color.
+UI code uses the semantic color tokens declared in `src/global.css` (`surface-*`,
+`line-*`, `fg-*`, `primary-*`, `danger-*`, `on-*`, `scrim`) instead of the raw
+`neutral`/`blue`/`red` palette. Every token has values for both modes, so
+components must not use `dark:` color variants. Use `on-primary`/`on-danger` for
+text on a solid accent fill, and `always-white`/`always-black` only when a color
+must not change with the mode.
+
+The raw palette (and `white`/`black`) is reserved for `global.css`, the debug
+swatch, and the object-view tints (`obj-*`). When adding a semantic color, define
+it in both the `@theme` block (light mode) and the `html[data-theme="dark"]`
+block. Do not derive dark values by mechanically inverting lightness: elevation,
+hover direction, accent contrast and shadows do not survive a pure inversion.
 
 ### Lucide Icons
 

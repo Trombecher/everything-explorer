@@ -30,8 +30,8 @@ export default (props: {
         <div
             class="flex aspect-square flex-col rounded-3xl border p-3 transition"
             classList={{
-                "border-blue-400 bg-neutral-200": isConnected(),
-                "border-neutral-200 hover:border-neutral-300": !isConnected(),
+                "border-primary bg-primary-subtle": isConnected(),
+                "border-line-subtle hover:border-line-strong": !isConnected(),
             }}
         >
             <div class="flex items-center gap-2">
@@ -40,7 +40,7 @@ export default (props: {
                         when={props.connection.type === ConnectionType.Local}
                     >
                         <MonitorPcIcon class="size-4 shrink-0" />
-                        <span class="text-xs font-medium text-neutral-600">
+                        <span class="text-xs font-medium text-fg-muted">
                             {appState.translate(Phrase.Local, undefined)}
                         </span>
                     </Match>
@@ -48,20 +48,20 @@ export default (props: {
                         when={props.connection.type === ConnectionType.Remote}
                     >
                         <GlobeIcon class="size-4 shrink-0" />
-                        <span class="text-xs font-medium text-neutral-600">
+                        <span class="text-xs font-medium text-fg-muted">
                             {appState.translate(Phrase.Remote, undefined)}
                         </span>
                     </Match>
                 </Switch>
                 <div class="ml-auto flex items-center gap-1">
                     <Show when={isConnected()}>
-                        <span class="flex items-center gap-1 text-xs font-medium whitespace-nowrap text-blue-500">
-                            <span class="size-1.5 rounded-full bg-blue-500" />
+                        <span class="flex items-center gap-1 text-xs font-medium whitespace-nowrap text-primary-fg">
+                            <span class="size-1.5 rounded-full bg-primary" />
                             {appState.translate(Phrase.Connected, undefined)}
                         </span>
                     </Show>
                     <KobalteButton
-                        class="shrink-0 rounded-xl p-1 text-neutral-400 hover:bg-neutral-200 hover:text-red-500"
+                        class="shrink-0 rounded-xl p-1 text-fg-subtle hover:bg-surface-hover hover:text-danger-fg"
                         title={appState.translate(
                             Phrase.DeleteConnection,
                             undefined,
@@ -89,7 +89,7 @@ export default (props: {
                 }
             >
                 <TextField.Input
-                    class="w-full rounded-lg bg-transparent px-1 py-0.5 text-sm font-semibold text-black outline-none placeholder:font-normal placeholder:text-neutral-400 hover:bg-neutral-200 focus:bg-neutral-200"
+                    class="w-full rounded-lg bg-transparent px-1 py-0.5 text-sm font-semibold text-fg outline-none placeholder:font-normal placeholder:text-fg-subtle hover:bg-surface-hover focus:bg-surface-hover"
                     placeholder={appState.translate(
                         Phrase.UnnamedConnection,
                         undefined,
@@ -98,7 +98,7 @@ export default (props: {
             </TextField>
 
             <p
-                class="mt-1 line-clamp-3 px-1 font-mono text-xs break-all text-neutral-500"
+                class="mt-1 line-clamp-3 px-1 font-mono text-xs break-all text-fg-muted"
                 title={connectionPath(props.connection)}
             >
                 {connectionPath(props.connection)}

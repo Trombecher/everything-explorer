@@ -13,7 +13,7 @@ export default (props: {compact?: boolean}) => {
     const appState = useAppState();
 
     return (
-        <div class="rounded-4xl border border-neutral-200 bg-white p-2 dark:bg-neutral-100">
+        <div class="rounded-4xl border border-line-subtle bg-surface-panel p-2">
             <Show when={!props.compact}>
                 <h2 class="m-2 font-semibold">
                     {appState.translate(Phrase.Connection, undefined)}
