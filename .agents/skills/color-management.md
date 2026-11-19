@@ -50,20 +50,20 @@ Light/dark values are intentionally omitted; read `src/global.css` for them.
 
 ### Surfaces
 
-| Token                    | Role                                     | Constraints and intent                                                                                           |
-| ------------------------ | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `surface-app`            | Page background                          | Lowest elevation. Do not use it for cards or panels.                                                             |
-| `surface-panel`          | Cards, side-bar panels, content panels   | Default elevated surface for containers that sit on the app background.                                          |
-| `surface-raised`         | Dialogs, menus, popovers                 | Floating layers. Use for portal content instead of `surface-panel`; it must read as above the panel in any mode. |
-| `surface-sunken`         | Inputs, search fields, wells             | Recessed controls on a panel. Do not use it for panels.                                                          |
-| `surface-hover`          | Hover on app/panel surfaces              | Hover only, never a resting background.                                                                          |
-| `surface-active`         | Pressed/expanded state, strong hover     | Stronger than hover. Also use for hover on value rows in raised menus.                                           |
-| `surface-control`        | Secondary buttons, neutral cards at rest | Pair with the control hover/active tokens for interaction states.                                                |
-| `surface-control-hover`  | Hover for controls and neutral cards     | Pair with `surface-control`.                                                                                     |
-| `surface-control-active` | Active/pressed controls and cards        | Pair with `surface-control`.                                                                                     |
+| Token                    | Role                                     | Constraints and intent                                                                    |
+| ------------------------ | ---------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `surface-app`            | Page background                          | Lowest elevation. Do not use it for cards or panels.                                      |
+| `surface-panel`          | Cards, panels, dialogs, menus, popovers  | Default elevated surface; also the fill for floating layers, paired with `shadow-raised`. |
+| `surface-sunken`         | Inputs, search fields, wells             | Recessed controls on a panel. Do not use it for panels.                                   |
+| `surface-hover`          | Hover on surfaces and menu rows          | Hover only, never a resting background.                                                   |
+| `surface-active`         | Pressed/expanded state, strong hover     | At least as strong as hover; the strongest neutral state.                                 |
+| `surface-control`        | Secondary buttons, neutral cards at rest | Pair with the control hover/active tokens for interaction states.                         |
+| `surface-control-hover`  | Hover for controls and neutral cards     | Pair with `surface-control`.                                                              |
+| `surface-control-active` | Active/pressed controls and cards        | Pair with `surface-control`.                                                              |
 
-The elevation order app < panel < raised must hold in both modes. Hover and
-active states move away from their base surface.
+The elevation order app < panel must hold in both modes. Floating layers do not
+add a third fill; they separate from the panel with a border and
+`shadow-raised`. Hover and active states move away from their base surface.
 
 ### Lines
 
@@ -112,7 +112,7 @@ Do not use `primary` as a subtle selection background, and do not use
 
 Shadows are tokenized through `shadow-raised`, which reads the per-mode
 `--elevation-raised` token. It is the only shadow for floating layers; pair it
-with `surface-raised`. Do not use raw `shadow-lg` / `shadow-xl` on popovers.
+with `surface-panel`. Do not use raw `shadow-lg` / `shadow-xl` on popovers.
 
 ### Object-view tints
 
@@ -145,10 +145,9 @@ with general surface tokens.
 
 ## Design rules
 
-- **Elevation:** panels are lighter than the app background. In dark mode the
-  raised fill is lighter too; in light mode panels and raised share the white
-  fill, so `shadow-raised` carries the difference. Floating layers therefore
-  always combine `surface-raised`, a border and `shadow-raised`.
+- **Elevation:** panels are lighter than the app background. Floating layers use
+  the same `surface-panel` fill; a border and `shadow-raised` carry their
+  elevation in both modes.
 - **Interaction:** hover/active states move away from the surface; light mode
   darkens, dark mode lightens.
 - **Consistency:** reuse existing role tokens and keep interaction deltas
@@ -162,7 +161,7 @@ with general surface tokens.
 - **Focus:** the base layer in `src/global.css` applies `outline-primary` to all
   elements. Do not hardcode per-component focus colors; use a semantic accent
   token if a component genuinely needs a different focus role.
-- **Shadows:** use `shadow-raised` for any floating layer (`surface-raised`). It
+- **Shadows:** use `shadow-raised` for any floating layer (`surface-panel`). It
   reads the per-mode `--elevation-raised` token. Do not use the raw `shadow-lg`
   / `shadow-xl` utilities for popovers, and do not add `dark:` variants; the
   token already has a value per mode.
@@ -177,10 +176,10 @@ the difference. The row background tells the user what activating the row will
 do, so it is not interchangeable decoration.
 
 - **Value rows** change a value in place: select options, filter choices,
-  setting options. Hover them with the neutral tint `bg-surface-active` (for
-  example `hover:bg-surface-active` or `data-highlighted:bg-surface-active`).
-  Show the current value through `data-selected` styling and a trailing check
-  icon, not through an accent fill on hover.
+  setting options. Hover them with the neutral tint `bg-surface-hover` (for
+  example `hover:bg-surface-hover` or `data-highlighted:bg-surface-hover`). Show
+  the current value through `data-selected` styling and a trailing check icon,
+  not through an accent fill on hover.
 - **Action rows** perform a command: they create something, navigate, or open
   another dialog or menu. They are buttons that happen to be laid out in a menu,
   so they use the button hover language: the filled `primary` background with
@@ -194,14 +193,14 @@ Rules:
   when the labels make the difference obvious.
 - Never use the filled `primary` hover for a row that merely changes a value; it
   reads as "this submits or performs something", which is false.
-- Never leave an action row on `surface-active`; that is the neutral
-  selection/expansion state, not a call to action.
+- Never leave an action row on `surface-hover`; that is the neutral hover state,
+  not a call to action.
 - Both kinds may add `active:scale-97` for the pressed state.
-- On raised backgrounds, `surface-hover` is too weak for either kind; use
-  `surface-active` or the accent fill.
+- Value rows use `surface-hover` on floating menus too; the token's dark value
+  is tuned to stay visible on `surface-panel`.
 
 Current examples: the `Select` list rows in `src/ui/reuse/Select.tsx` are value
-rows and use `hover:bg-surface-active`. The rows in
+rows and use `hover:bg-surface-hover`. The rows in
 `src/ui/tabs/connections/AddConnectionButton.tsx` are action rows (they pick
 files or open the remote-connection dialog) and use the primary hover.
 
@@ -218,13 +217,13 @@ files or open the remote-connection dialog) and use the primary hover.
 - Using `primary` as a subtle selection background instead of `primary-subtle`.
 - Using `fg-subtle` for body text.
 - Using `primary` on hover for a value row (select option, filter) → use
-  `surface-active`; the filled accent is for action rows only (see Menu rows).
-- Using `surface-active` on an action row that opens a dialog or creates
-  something → use the primary hover; it is a button.
+  `surface-hover`; the filled accent is for action rows only (see Menu rows).
+- Using the neutral `surface-hover` on an action row that opens a dialog or
+  creates something → use the primary hover; it is a button.
 - Using `shadow-lg` / `shadow-xl` on a popover → use `shadow-raised`; it is the
   per-mode floating-layer shadow.
-- Expecting the white light-mode `surface-raised` fill to separate a popover on
-  its own → keep the border and `shadow-raised`.
+- Expecting the light-mode `surface-panel` fill to separate a popover on its own
+  → keep the border and `shadow-raised`.
 - Deriving dark values by inverting the light lightness.
 - Forgetting to add the token to the debug swatch.
 
@@ -241,13 +240,13 @@ For visual checks, the dev server is usually available at
 `http://localhost:1420`. Test both themes (App Settings, or set
 `document.documentElement.dataset.theme = "dark"`). Look at:
 
-- app background vs panel vs raised popover separation,
+- app background vs panel vs floating-layer separation,
 - popover shadow depth against both the app and panel backgrounds,
 - tab and button hover/active states,
 - inputs and placeholders,
 - selected atoms/objects and selected menu rows,
 - primary and danger buttons, including text on the fill,
-- dialog scrim and raised content,
+- dialog scrim and floating content,
 - error text and delete-button hover.
 
 ### Formatting caveat
@@ -267,12 +266,12 @@ alone, run `nub x oxlint --fix <files>` or `nub run format`.
   `html[data-theme="dark"]` block.
 - Text on accent fills uses `on-primary` / `on-danger`, not literal white or
   black.
-- Menu rows match their kind: value rows hover with `surface-active`, action
-  rows hover with the primary/danger fill (see Menu rows).
-- Floating layers use `surface-raised`, a border and `shadow-raised`; no raw
+- Menu rows match their kind: value rows hover with `surface-hover`, action rows
+  hover with the primary/danger fill (see Menu rows).
+- Floating layers use `surface-panel`, a border and `shadow-raised`; no raw
   `shadow-*` utilities.
-- The elevation relationship holds: app < panel ≤ raised; in light mode the last
-  step is carried by `shadow-raised`, in dark mode by the fill as well.
+- The elevation relationship holds: panels are lighter than the app; floating
+  layers rely on a border and `shadow-raised`, not a separate fill.
 - Hover moves away from the surface in both modes.
 - Both light and dark mode were inspected, not just one.
 - `Swatch.tsx` reflects the current token set.

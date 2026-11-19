@@ -28,7 +28,6 @@ export default () => {
                 classes={[
                     "bg-surface-app",
                     "bg-surface-panel",
-                    "bg-surface-raised",
                     "bg-surface-sunken",
                     "bg-surface-hover",
                     "bg-surface-active",
@@ -69,10 +68,10 @@ export default () => {
             />
             <div class="mt-2 flex gap-2">
                 <div class="flex grow items-center justify-center rounded-3xl bg-surface-app p-8">
-                    <div class="size-20 rounded-2xl bg-surface-raised shadow-raised" />
+                    <div class="size-20 rounded-2xl bg-surface-panel shadow-raised" />
                 </div>
                 <div class="flex grow items-center justify-center rounded-3xl border border-line-subtle bg-surface-panel p-8">
-                    <div class="size-20 rounded-2xl bg-surface-raised shadow-raised" />
+                    <div class="size-20 rounded-2xl bg-surface-panel shadow-raised" />
                 </div>
             </div>
         </div>

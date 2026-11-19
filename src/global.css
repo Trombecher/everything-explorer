@@ -54,9 +54,8 @@
     /* Surfaces, from the page background up to floating layers. */
     --color-surface-app: oklch(0.97 0.0066 40.59);
     --color-surface-panel: oklch(1 0 none);
-    --color-surface-raised: oklch(1 0 none);
     --color-surface-sunken: oklch(0.97 0.0066 40.59);
-    --color-surface-hover: oklch(0.94 0.0066 40.59);
+    --color-surface-hover: oklch(0.95 0.0066 40.59);
     --color-surface-active: oklch(0.9 0.0066 40.59);
     --color-surface-control: oklch(0.92 0.0066 40.59);
     --color-surface-control-hover: oklch(0.88 0.0066 40.59);
@@ -94,10 +93,9 @@
     --color-always-white: white;
     --color-always-black: black;
 
-    /* Elevation. Floating layers are tokenized per mode: in light mode the
-       raised surface is as white as panels, so the shadow carries the layer;
-       in dark mode the fill contrast does more of the work and the shadow
-       stays deep. */
+    /* Elevation. Floating layers share the panel fill, so the shadow carries
+       the layer in both modes; it is tuned per mode to read on light and dark
+       panels alike. */
     --elevation-raised:
         0 1px 2px oklch(0.21 0.006 40.59 / 8%),
         0 2px 8px -2px oklch(0.21 0.006 40.59 / 10%),
@@ -133,9 +131,8 @@ html[data-theme="dark"] {
        pure lightness inversion of the light-mode values. */
     --color-surface-app: oklch(0.15 0 none);
     --color-surface-panel: oklch(0.2 0 none);
-    --color-surface-raised: oklch(0.24 0 none);
     --color-surface-sunken: oklch(0.15 0 none);
-    --color-surface-hover: oklch(0.25 0 none);
+    --color-surface-hover: oklch(0.26 0 none);
     --color-surface-active: oklch(0.3 0 none);
     --color-surface-control: oklch(0.26 0 none);
     --color-surface-control-hover: oklch(0.3 0 none);

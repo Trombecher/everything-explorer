@@ -27,7 +27,7 @@ export default <T, I extends string>(props: {
             itemComponent={itemProps => (
                 <Select.Item
                     item={itemProps.item}
-                    class="group flex rounded-xl px-2 py-1 select-none hover:bg-surface-active"
+                    class="group flex rounded-xl px-2 py-1 select-none hover:bg-surface-hover"
                 >
                     <Select.ItemLabel>
                         {props.stringifyValue(
@@ -60,7 +60,7 @@ export default <T, I extends string>(props: {
             </Select.Trigger>
 
             <Select.Portal>
-                <Select.Content class="rounded-3xl border border-line-subtle bg-surface-raised p-2 shadow-raised select-none">
+                <Select.Content class="rounded-3xl border border-line-subtle bg-surface-panel p-2 shadow-raised select-none">
                     <h3 class="px-2 py-1 text-sm font-medium text-fg-muted">
                         {props.description}
                     </h3>
