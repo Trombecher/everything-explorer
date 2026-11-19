@@ -67,6 +67,14 @@ export default () => {
                     "bg-line-subtle",
                 ]}
             />
+            <div class="mt-2 flex gap-2">
+                <div class="flex grow items-center justify-center rounded-3xl bg-surface-app p-8">
+                    <div class="size-20 rounded-2xl bg-surface-raised shadow-raised" />
+                </div>
+                <div class="flex grow items-center justify-center rounded-3xl border border-line-subtle bg-surface-panel p-8">
+                    <div class="size-20 rounded-2xl bg-surface-raised shadow-raised" />
+                </div>
+            </div>
         </div>
     );
 };

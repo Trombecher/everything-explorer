@@ -51,10 +51,6 @@ other items stay valid.
   connected, the border is too bright of blue and the background does not change
   to a blueish background.
 
-- (12) Review pop-up backgrounds. They now all use `surface-raised`; decide
-  visually whether dialogs and menus should be raised from the panel or share
-  the app background.
-
 - (13) Decide what to put on the home screen. Release notes? Shortcut buttons
   for recently accessed things?
 

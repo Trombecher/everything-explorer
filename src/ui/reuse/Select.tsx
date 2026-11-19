@@ -60,7 +60,7 @@ export default <T, I extends string>(props: {
             </Select.Trigger>
 
             <Select.Portal>
-                <Select.Content class="rounded-3xl border border-line-subtle bg-surface-raised p-2 shadow-lg select-none">
+                <Select.Content class="rounded-3xl border border-line-subtle bg-surface-raised p-2 shadow-raised select-none">
                     <h3 class="px-2 py-1 text-sm font-medium text-fg-muted">
                         {props.description}
                     </h3>

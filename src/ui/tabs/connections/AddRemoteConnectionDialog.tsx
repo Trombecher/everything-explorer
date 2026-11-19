@@ -83,7 +83,7 @@ export default (props: {
                         urlInput?.focus();
                         urlInput?.select();
                     }}
-                    class="fixed top-1/2 left-1/2 z-50 flex max-h-[90vh] w-[min(90vw,32rem)] -translate-x-1/2 -translate-y-1/2 flex-col gap-3 overflow-y-auto rounded-4xl border border-line-subtle bg-surface-raised p-4 shadow-xl"
+                    class="fixed top-1/2 left-1/2 z-50 flex max-h-[90vh] w-[min(90vw,32rem)] -translate-x-1/2 -translate-y-1/2 flex-col gap-3 overflow-y-auto rounded-4xl border border-line-subtle bg-surface-raised p-4 shadow-raised"
                 >
                     <Dialog.Title class="text-2xl font-semibold text-fg-strong">
                         {appState.translate(

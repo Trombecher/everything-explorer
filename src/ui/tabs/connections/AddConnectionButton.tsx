@@ -27,7 +27,7 @@ export default () => {
                     </DropdownMenu.Icon>
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Portal>
-                    <DropdownMenu.Content class="mt-2 rounded-3xl border border-line-subtle bg-surface-raised p-2 shadow-lg select-none">
+                    <DropdownMenu.Content class="mt-2 rounded-3xl border border-line-subtle bg-surface-raised p-2 shadow-raised select-none">
                         {[
                             {
                                 name: appState.translate(

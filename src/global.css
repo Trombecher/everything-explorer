@@ -29,6 +29,10 @@
     background-attachment: fixed;
 }
 
+@utility shadow-raised {
+    box-shadow: var(--elevation-raised);
+}
+
 @theme {
     --font-sans: "Inter", "Inter Variable", system-ui;
 
@@ -89,6 +93,15 @@
 
     --color-always-white: white;
     --color-always-black: black;
+
+    /* Elevation. Floating layers are tokenized per mode: in light mode the
+       raised surface is as white as panels, so the shadow carries the layer;
+       in dark mode the fill contrast does more of the work and the shadow
+       stays deep. */
+    --elevation-raised:
+        0 1px 2px oklch(0.21 0.006 40.59 / 8%),
+        0 2px 8px -2px oklch(0.21 0.006 40.59 / 10%),
+        0 12px 28px -8px oklch(0.21 0.006 40.59 / 18%);
 
     /* Object view background tints, one per color category. Uniform lightness and
        chroma per mode; only the hue encodes the category. */
@@ -152,6 +165,10 @@ html[data-theme="dark"] {
     --color-on-danger: oklch(0.21 0 none);
 
     --color-scrim: oklch(0 0 0 / 40%);
+
+    --elevation-raised:
+        0 1px 2px oklch(0 0 0 / 40%), 0 4px 10px -2px oklch(0 0 0 / 40%),
+        0 16px 32px -8px oklch(0 0 0 / 55%);
 
     --color-obj-functional: oklch(0.35 0.1 290);
     --color-obj-computation: oklch(0.35 0.1 355);

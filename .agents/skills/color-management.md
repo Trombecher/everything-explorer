@@ -110,6 +110,10 @@ Do not use `primary` as a subtle selection background, and do not use
 | `always-white` | Content that must never flip with mode | Only when mode invariance is required; not a general text or background color. |
 | `always-black` | Content that must never flip with mode | Only when mode invariance is required; not a general text or background color. |
 
+Shadows are tokenized through `shadow-raised`, which reads the per-mode
+`--elevation-raised` token. It is the only shadow for floating layers; pair it
+with `surface-raised`. Do not use raw `shadow-lg` / `shadow-xl` on popovers.
+
 ### Object-view tints
 
 `obj-functional`, `obj-computation`, `obj-boolean`, `obj-set`, `obj-literal`,
@@ -130,15 +134,21 @@ with general surface tokens.
    example `blue-...`); name it after its role.
 5. Use `*-fg` for accented text on neutral surfaces and `on-*` for text on a
    solid accent fill. Keep the two pairs distinct.
-6. Update `src/ui/tabs/debug/Swatch.tsx` so the new token is visible in the
+6. Shadows follow the same pattern: put the value in an `--elevation-*` custom
+   property in `@theme`, override it in dark mode, and expose it through a
+   semantic `shadow-*` utility in `src/global.css` (see `shadow-raised`). Name
+   the utility after the layer, not after the CSS effect.
+7. Update `src/ui/tabs/debug/Swatch.tsx` so the new token is visible in the
    Debug tab.
-7. Run `nub run check` and `nub run build`.
-8. Check both modes visually (see Verification).
+8. Run `nub run check` and `nub run build`.
+9. Check both modes visually (see Verification).
 
 ## Design rules
 
-- **Elevation:** panels are lighter than the app background, and raised layers
-  are above panels, in both modes.
+- **Elevation:** panels are lighter than the app background. In dark mode the
+  raised fill is lighter too; in light mode panels and raised share the white
+  fill, so `shadow-raised` carries the difference. Floating layers therefore
+  always combine `surface-raised`, a border and `shadow-raised`.
 - **Interaction:** hover/active states move away from the surface; light mode
   darkens, dark mode lightens.
 - **Consistency:** reuse existing role tokens and keep interaction deltas
@@ -152,9 +162,10 @@ with general surface tokens.
 - **Focus:** the base layer in `src/global.css` applies `outline-primary` to all
   elements. Do not hardcode per-component focus colors; use a semantic accent
   token if a component genuinely needs a different focus role.
-- **Shadows:** `shadow-*` is not tokenized yet. It remains Tailwind's
-  black-alpha shadow and is a known gap in dark mode. Use shadows sparingly on
-  dark surfaces.
+- **Shadows:** use `shadow-raised` for any floating layer (`surface-raised`). It
+  reads the per-mode `--elevation-raised` token. Do not use the raw `shadow-lg`
+  / `shadow-xl` utilities for popovers, and do not add `dark:` variants; the
+  token already has a value per mode.
 - **Gradients:** `bg-flare` and `bg-lush` are raw utilities in `src/global.css`.
   `bg-flare` is currently the only legitimate `dark:` utility because it sets a
   background image, not a color. `bg-lush` is currently unused.
@@ -210,6 +221,10 @@ files or open the remote-connection dialog) and use the primary hover.
   `surface-active`; the filled accent is for action rows only (see Menu rows).
 - Using `surface-active` on an action row that opens a dialog or creates
   something → use the primary hover; it is a button.
+- Using `shadow-lg` / `shadow-xl` on a popover → use `shadow-raised`; it is the
+  per-mode floating-layer shadow.
+- Expecting the white light-mode `surface-raised` fill to separate a popover on
+  its own → keep the border and `shadow-raised`.
 - Deriving dark values by inverting the light lightness.
 - Forgetting to add the token to the debug swatch.
 
@@ -227,6 +242,7 @@ For visual checks, the dev server is usually available at
 `document.documentElement.dataset.theme = "dark"`). Look at:
 
 - app background vs panel vs raised popover separation,
+- popover shadow depth against both the app and panel backgrounds,
 - tab and button hover/active states,
 - inputs and placeholders,
 - selected atoms/objects and selected menu rows,
@@ -253,7 +269,10 @@ alone, run `nub x oxlint --fix <files>` or `nub run format`.
   black.
 - Menu rows match their kind: value rows hover with `surface-active`, action
   rows hover with the primary/danger fill (see Menu rows).
-- The mode relationship is preserved: app < panel < raised; hover moves away
-  from the surface in both modes.
+- Floating layers use `surface-raised`, a border and `shadow-raised`; no raw
+  `shadow-*` utilities.
+- The elevation relationship holds: app < panel ≤ raised; in light mode the last
+  step is carried by `shadow-raised`, in dark mode by the fill as well.
+- Hover moves away from the surface in both modes.
 - Both light and dark mode were inspected, not just one.
 - `Swatch.tsx` reflects the current token set.
