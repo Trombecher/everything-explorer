@@ -57,7 +57,7 @@ Light/dark values are intentionally omitted; read `src/global.css` for them.
 | `surface-raised`         | Dialogs, menus, popovers                 | Floating layers. Use for portal content instead of `surface-panel`; it must read as above the panel in any mode. |
 | `surface-sunken`         | Inputs, search fields, wells             | Recessed controls on a panel. Do not use it for panels.                                                          |
 | `surface-hover`          | Hover on app/panel surfaces              | Hover only, never a resting background.                                                                          |
-| `surface-active`         | Pressed/expanded state, strong hover     | Stronger than hover. Also use for hover on raised menus, where `surface-hover` may not separate enough.          |
+| `surface-active`         | Pressed/expanded state, strong hover     | Stronger than hover. Also use for hover on value rows in raised menus.                                           |
 | `surface-control`        | Secondary buttons, neutral cards at rest | Pair with the control hover/active tokens for interaction states.                                                |
 | `surface-control-hover`  | Hover for controls and neutral cards     | Pair with `surface-control`.                                                                                     |
 | `surface-control-active` | Active/pressed controls and cards        | Pair with `surface-control`.                                                                                     |
@@ -159,6 +159,41 @@ with general surface tokens.
   `bg-flare` is currently the only legitimate `dark:` utility because it sets a
   background image, not a color. `bg-lush` is currently unused.
 
+## Menu rows
+
+Rows in floating menus come in two kinds, and the hover treatment must encode
+the difference. The row background tells the user what activating the row will
+do, so it is not interchangeable decoration.
+
+- **Value rows** change a value in place: select options, filter choices,
+  setting options. Hover them with the neutral tint `bg-surface-active` (for
+  example `hover:bg-surface-active` or `data-highlighted:bg-surface-active`).
+  Show the current value through `data-selected` styling and a trailing check
+  icon, not through an accent fill on hover.
+- **Action rows** perform a command: they create something, navigate, or open
+  another dialog or menu. They are buttons that happen to be laid out in a menu,
+  so they use the button hover language: the filled `primary` background with
+  `on-primary` text (the `hover:bg-primary` and `hover:text-on-primary`
+  utilities). A destructive action row uses the `danger` / `on-danger` pair
+  instead.
+
+Rules:
+
+- Decide per row, not per menu. Mixing the two kinds in one menu is allowed only
+  when the labels make the difference obvious.
+- Never use the filled `primary` hover for a row that merely changes a value; it
+  reads as "this submits or performs something", which is false.
+- Never leave an action row on `surface-active`; that is the neutral
+  selection/expansion state, not a call to action.
+- Both kinds may add `active:scale-97` for the pressed state.
+- On raised backgrounds, `surface-hover` is too weak for either kind; use
+  `surface-active` or the accent fill.
+
+Current examples: the `Select` list rows in `src/ui/reuse/Select.tsx` are value
+rows and use `hover:bg-surface-active`. The rows in
+`src/ui/tabs/connections/AddConnectionButton.tsx` are action rows (they pick
+files or open the remote-connection dialog) and use the primary hover.
+
 ## Common mistakes
 
 - `bg-white` / `dark:bg-neutral-100` for a panel → use `bg-surface-panel`.
@@ -171,6 +206,10 @@ with general surface tokens.
 - Adding a token only to `@theme` and forgetting the dark override.
 - Using `primary` as a subtle selection background instead of `primary-subtle`.
 - Using `fg-subtle` for body text.
+- Using `primary` on hover for a value row (select option, filter) → use
+  `surface-active`; the filled accent is for action rows only (see Menu rows).
+- Using `surface-active` on an action row that opens a dialog or creates
+  something → use the primary hover; it is a button.
 - Deriving dark values by inverting the light lightness.
 - Forgetting to add the token to the debug swatch.
 
@@ -212,6 +251,8 @@ alone, run `nub x oxlint --fix <files>` or `nub run format`.
   `html[data-theme="dark"]` block.
 - Text on accent fills uses `on-primary` / `on-danger`, not literal white or
   black.
+- Menu rows match their kind: value rows hover with `surface-active`, action
+  rows hover with the primary/danger fill (see Menu rows).
 - The mode relationship is preserved: app < panel < raised; hover moves away
   from the surface in both modes.
 - Both light and dark mode were inspected, not just one.
