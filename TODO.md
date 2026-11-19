@@ -29,10 +29,6 @@ other items stay valid.
 
 - (6) Search bar searching atoms by name.
 
-- (9) Unify delete buttons. Currently different delete buttons used in e.g.
-  connections (trash can) and property removal in the property panel (x icon
-  that is red on hover).
-
 - (11) The trash can icon (remove connection) overflows the connection box in
   the connections view, when connected (`<dot> connected` is added to that
   flex). Also, the padding is off, "local" has less padding to the box border
