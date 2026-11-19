@@ -1,14 +1,13 @@
-import {Button as KobalteButton} from "@kobalte/core/button";
 import {TextField} from "@kobalte/core/text-field";
 import GlobeIcon from "lucide-solid/icons/globe";
 import MonitorPcIcon from "lucide-solid/icons/monitor-pc";
-import TrashIcon from "lucide-solid/icons/trash";
 import {Match, Show, Switch} from "solid-js";
 
 import {useAppState} from "@/context";
 import {Phrase} from "@/i18n/phrases";
 import {type Connection, ConnectionType} from "@/state/app";
 import Button, {ButtonSeverity} from "@/ui/reuse/Button";
+import DeleteButton from "@/ui/reuse/DeleteButton";
 import type {DeepReadonly} from "@/util";
 
 const connectionPath = (connection: DeepReadonly<Connection>) =>
@@ -60,24 +59,14 @@ export default (props: {
                             {appState.translate(Phrase.Connected, undefined)}
                         </span>
                     </Show>
-                    <KobalteButton
-                        class="shrink-0 rounded-xl p-1 text-fg-subtle hover:bg-surface-hover hover:text-danger-fg"
-                        title={appState.translate(
-                            Phrase.DeleteConnection,
-                            undefined,
-                        )}
-                        aria-label={appState.translate(
-                            Phrase.DeleteConnection,
-                            undefined,
-                        )}
+                    <DeleteButton
+                        label={Phrase.DeleteConnection}
                         onClick={() => {
                             void appState.removeConnection(
                                 props.connectionIndex,
                             );
                         }}
-                    >
-                        <TrashIcon class="size-4" />
-                    </KobalteButton>
+                    />
                 </div>
             </div>
 

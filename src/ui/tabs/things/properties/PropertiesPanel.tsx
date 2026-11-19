@@ -81,7 +81,10 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
             </div>
             <KobalteButton
                 class="absolute top-2 right-2 rounded-2xl p-2 hover:bg-surface-hover"
-                aria-label={appState.translate(Phrase.CloseProperties, undefined)}
+                aria-label={appState.translate(
+                    Phrase.CloseProperties,
+                    undefined,
+                )}
                 title={appState.translate(Phrase.CloseProperties, undefined)}
                 onClick={() => {
                     props.close();

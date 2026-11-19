@@ -1,11 +1,8 @@
-import {Button as KobalteButton} from "@kobalte/core/button";
-import XIcon from "lucide-solid/icons/x";
-
-import {useAppState} from "@/context";
 import {Phrase} from "@/i18n/phrases";
 import type {EverythingObject} from "@/model";
 import {LayoutMode} from "@/ui/objects/layout";
 import ObjectView from "@/ui/objects/ObjectView";
+import DeleteButton from "@/ui/reuse/DeleteButton";
 
 export default (props: {
     object: EverythingObject;
@@ -15,8 +12,6 @@ export default (props: {
     setObject: (newObject: EverythingObject | undefined) => void;
     remove: () => void;
 }) => {
-    const appState = useAppState();
-
     return (
         <div class="flex items-stretch gap-2">
             <div class="grid min-w-0 flex-1">
@@ -31,17 +26,11 @@ export default (props: {
                     parentObjectLayoutMode={LayoutMode.Column}
                 />
             </div>
-            <KobalteButton
-                class="shrink-0 self-center rounded-2xl p-2 text-fg-muted hover:bg-danger-subtle hover:text-danger-fg"
-                title={appState.translate(Phrase.RemoveProperty, undefined)}
-                aria-label={appState.translate(
-                    Phrase.RemoveProperty,
-                    undefined,
-                )}
+            <DeleteButton
+                label={Phrase.RemoveProperty}
+                class="self-center"
                 onClick={() => props.remove()}
-            >
-                <XIcon />
-            </KobalteButton>
+            />
         </div>
     );
 };
