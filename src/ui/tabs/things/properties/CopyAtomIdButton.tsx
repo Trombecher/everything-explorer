@@ -1,10 +1,10 @@
 import CheckIcon from "lucide-solid/icons/check";
-import CopyIcon from "lucide-solid/icons/copy";
 import {createSignal, onCleanup, Show} from "solid-js";
 
 import {useAppState} from "@/context";
 import {Phrase} from "@/i18n/phrases";
 import type {Atom} from "@/model/atoms";
+import CopyIcon from "@/ui/icons/CopyIcon";
 import Button, {ButtonSeverity} from "@/ui/reuse/Button";
 
 export default (props: {atom: Atom}) => {
@@ -40,7 +40,7 @@ export default (props: {atom: Atom}) => {
 
     return (
         <Button
-            class="flex"
+            class="flex items-center gap-1"
             title={copyIdLabel()}
             aria-label={copyIdLabel()}
             onClick={copyId}
@@ -49,7 +49,7 @@ export default (props: {atom: Atom}) => {
             <Show when={copied()} fallback={<CopyIcon />}>
                 <CheckIcon />
             </Show>
-            <span class="px-1">{copyIdLabel()}</span>
+            <span class="pr-1">{copyIdLabel()}</span>
         </Button>
     );
 };
