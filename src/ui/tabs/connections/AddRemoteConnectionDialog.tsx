@@ -170,12 +170,12 @@ export default (props: {
                             {appState.translate(Phrase.Cancel, undefined)}
                         </Dialog.CloseButton>
                         <Button
-                            class="flex"
+                            class="flex items-center gap-0.5"
                             disabled={!canSubmit()}
                             onClick={confirm}
                         >
                             <PlusIcon />
-                            <span class="px-1">
+                            <span class="pr-1">
                                 {appState.translate(Phrase.Add, undefined)}
                             </span>
                         </Button>

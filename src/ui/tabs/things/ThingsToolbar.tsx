@@ -65,7 +65,7 @@ export default (props: {
                     onClick={props.onAddThing}
                     disabled={props.addThingDisabled}
                     aria-label={appState.translate(Phrase.AddThing, undefined)}
-                    class="flex gap-1"
+                    class="flex gap-0.5"
                 >
                     <PlusIcon />
                     <span class="pr-1 @max-xs:hidden">

@@ -90,7 +90,7 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
 
             <div class="flex flex-wrap items-center gap-2 px-2">
                 <Button
-                    class="flex w-fit gap-1"
+                    class="flex w-fit gap-0.5"
                     disabled={values() === undefined}
                     onClick={addProperty}
                 >

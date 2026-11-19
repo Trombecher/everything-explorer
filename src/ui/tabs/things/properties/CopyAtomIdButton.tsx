@@ -40,7 +40,7 @@ export default (props: {atom: Atom}) => {
 
     return (
         <Button
-            class="flex items-center gap-1"
+            class="flex items-center gap-0.5"
             title={copyIdLabel()}
             aria-label={copyIdLabel()}
             onClick={copyId}

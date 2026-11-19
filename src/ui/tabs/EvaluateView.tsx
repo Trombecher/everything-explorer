@@ -208,7 +208,7 @@ export default () => {
 
                 <div class="flex items-center gap-2">
                     <Button
-                        class="flex items-center gap-1"
+                        class="flex items-center gap-0.5"
                         disabled={evaluating() || !appState.isConnected()}
                         onClick={() => void evaluate()}
                     >
@@ -308,7 +308,7 @@ export default () => {
                                         <div class="flex flex-wrap items-center gap-2">
                                             <Show when={!lazyExhausted()}>
                                                 <Button
-                                                    class="flex items-center gap-1"
+                                                    class="flex items-center gap-0.5"
                                                     disabled={
                                                         lazyLoading()
                                                         || !appState.isConnected()
