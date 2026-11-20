@@ -89,9 +89,6 @@ other items stay valid.
 
 - (34) Better UI for parameter nodes and self-nodes.
 
-- (35) Some specializations in the object view are literaly "not implemented".
-  Implement them. Among these, the character view.
-
 - (36) Add frontend tests for data validation and transformation, not yet for
   environments and code that need jsdom or browser stuff.
 
