@@ -3,7 +3,7 @@ import GlobeIcon from "lucide-solid/icons/globe";
 import MonitorPcIcon from "lucide-solid/icons/monitor-pc";
 import {Match, Show, Switch} from "solid-js";
 
-import {useAppState} from "@/context";
+import {useConnections, usePreferences} from "@/context";
 import {Phrase} from "@/i18n/phrases";
 import {type Connection, ConnectionType} from "@/state/app";
 import Button, {ButtonSeverity} from "@/ui/reuse/Button";
@@ -19,11 +19,12 @@ export default (props: {
     connection: DeepReadonly<Connection>;
     connectionIndex: number;
 }) => {
-    const appState = useAppState();
+    const connections = useConnections();
+    const preferences = usePreferences();
 
     const isConnected = () =>
-        appState.isConnected()
-        && appState.state.lastUsedConnectionIndex === props.connectionIndex;
+        connections.isConnected()
+        && connections.lastUsedConnectionIndex() === props.connectionIndex;
 
     return (
         <div
@@ -40,7 +41,7 @@ export default (props: {
                     >
                         <MonitorPcIcon class="size-4 shrink-0" />
                         <span class="text-xs font-medium text-fg-muted">
-                            {appState.translate(Phrase.Local, undefined)}
+                            {preferences.translate(Phrase.Local, undefined)}
                         </span>
                     </Match>
                     <Match
@@ -48,7 +49,7 @@ export default (props: {
                     >
                         <GlobeIcon class="size-4 shrink-0" />
                         <span class="text-xs font-medium text-fg-muted">
-                            {appState.translate(Phrase.Remote, undefined)}
+                            {preferences.translate(Phrase.Remote, undefined)}
                         </span>
                     </Match>
                 </Switch>
@@ -56,13 +57,13 @@ export default (props: {
                     <Show when={isConnected()}>
                         <span class="flex items-center gap-1 text-xs font-medium whitespace-nowrap text-primary-fg">
                             <span class="size-1.5 rounded-full bg-primary" />
-                            {appState.translate(Phrase.Connected, undefined)}
+                            {preferences.translate(Phrase.Connected, undefined)}
                         </span>
                     </Show>
                     <DeleteButton
                         label={Phrase.DeleteConnection}
                         onClick={() => {
-                            void appState.removeConnection(
+                            void connections.removeConnection(
                                 props.connectionIndex,
                             );
                         }}
@@ -74,12 +75,15 @@ export default (props: {
                 class="mt-2 min-w-0"
                 value={props.connection.name}
                 onChange={newName =>
-                    appState.setConnectionName(props.connectionIndex, newName)
+                    connections.setConnectionName(
+                        props.connectionIndex,
+                        newName,
+                    )
                 }
             >
                 <TextField.Input
                     class="w-full rounded-lg bg-transparent px-1 py-0.5 text-sm font-semibold text-fg outline-none placeholder:font-normal placeholder:text-fg-subtle hover:bg-surface-hover focus:bg-surface-hover"
-                    placeholder={appState.translate(
+                    placeholder={preferences.translate(
                         Phrase.UnnamedConnection,
                         undefined,
                     )}
@@ -101,12 +105,12 @@ export default (props: {
                         : ButtonSeverity.Primary
                 }
                 onClick={async () => {
-                    if (isConnected()) await appState.disconnect();
-                    else await appState.connect(props.connectionIndex);
+                    if (isConnected()) await connections.disconnect();
+                    else await connections.connect(props.connectionIndex);
                 }}
             >
                 <span class="px-1">
-                    {appState.translate(
+                    {preferences.translate(
                         isConnected() ? Phrase.Disconnect : Phrase.Connect,
                         undefined,
                     )}

@@ -4,7 +4,7 @@ import PlayIcon from "lucide-solid/icons/play";
 import {createSignal, onCleanup, Show} from "solid-js";
 
 import type {LazyObjectIterator} from "@/connect";
-import {useAppState} from "@/context";
+import {useAppState, useConnections, usePreferences} from "@/context";
 import {Phrase} from "@/i18n/phrases";
 import {defaultObject, ObjectType, type EverythingObject} from "@/model";
 import {LayoutMode} from "@/ui/objects/layout";
@@ -52,6 +52,8 @@ const errorMessage = (error: unknown): string =>
 
 export default () => {
     const appState = useAppState();
+    const connections = useConnections();
+    const preferences = usePreferences();
 
     const history = appState.evaluateHistory;
 
@@ -124,7 +126,7 @@ export default () => {
     };
 
     const evaluate = async () => {
-        const connectionClient = appState.connectionClient();
+        const connectionClient = connections.connectionClient();
         if (!connectionClient || evaluating()) return;
 
         setEvaluating(true);
@@ -175,7 +177,7 @@ export default () => {
                 <div class="flex items-center gap-2">
                     <FlaskConicalIcon class="shrink-0" />
                     <h2 class="text-xl font-semibold text-fg-strong">
-                        {appState.translate(Phrase.Evaluate, undefined)}
+                        {preferences.translate(Phrase.Evaluate, undefined)}
                     </h2>
                 </div>
 
@@ -209,12 +211,12 @@ export default () => {
                 <div class="flex items-center gap-2">
                     <Button
                         class="flex items-center gap-0.5"
-                        disabled={evaluating() || !appState.isConnected()}
+                        disabled={evaluating() || !connections.isConnected()}
                         onClick={() => void evaluate()}
                     >
                         <PlayIcon />
                         <span class="pr-1">
-                            {appState.translate(Phrase.Evaluate, undefined)}
+                            {preferences.translate(Phrase.Evaluate, undefined)}
                         </span>
                     </Button>
                 </div>
@@ -223,7 +225,10 @@ export default () => {
                     {evaluation => (
                         <div class="flex flex-col gap-2 border-t border-line-subtle pt-3">
                             <h3 class="font-semibold text-fg-strong">
-                                {appState.translate(Phrase.Result, undefined)}
+                                {preferences.translate(
+                                    Phrase.Result,
+                                    undefined,
+                                )}
                             </h3>
                             <Show
                                 when={isFailure(evaluation) ? evaluation : null}
@@ -231,7 +236,7 @@ export default () => {
                                 {failure => (
                                     <div class="text-danger-fg">
                                         <div>
-                                            {appState.translate(
+                                            {preferences.translate(
                                                 Phrase.EvaluateFailed,
                                                 undefined,
                                             )}
@@ -274,7 +279,7 @@ export default () => {
                                 {_lazy => (
                                     <div class="flex flex-col gap-2">
                                         <div class="text-sm text-fg-muted">
-                                            {appState.translate(
+                                            {preferences.translate(
                                                 Phrase.LazyResultHint,
                                                 undefined,
                                             )}
@@ -311,7 +316,7 @@ export default () => {
                                                     class="flex items-center gap-0.5"
                                                     disabled={
                                                         lazyLoading()
-                                                        || !appState.isConnected()
+                                                        || !connections.isConnected()
                                                     }
                                                     onClick={() =>
                                                         void loadMore()
@@ -319,7 +324,7 @@ export default () => {
                                                 >
                                                     <ChevronDownIcon />
                                                     <span class="pr-1">
-                                                        {appState.translate(
+                                                        {preferences.translate(
                                                             Phrase.LoadMore,
                                                             undefined,
                                                         )}
@@ -328,7 +333,7 @@ export default () => {
                                             </Show>
                                             <Show when={lazyLoading()}>
                                                 <span class="text-sm text-fg-muted">
-                                                    {appState.translate(
+                                                    {preferences.translate(
                                                         Phrase.Loading,
                                                         undefined,
                                                     )}
@@ -336,7 +341,7 @@ export default () => {
                                             </Show>
                                             <Show when={lazyExhausted()}>
                                                 <span class="text-sm text-fg-muted">
-                                                    {appState.translate(
+                                                    {preferences.translate(
                                                         Phrase.AllResultsLoaded,
                                                         undefined,
                                                     )}
@@ -347,7 +352,7 @@ export default () => {
                                             {error => (
                                                 <div class="text-danger-fg">
                                                     <div>
-                                                        {appState.translate(
+                                                        {preferences.translate(
                                                             Phrase.LoadMoreFailed,
                                                             undefined,
                                                         )}

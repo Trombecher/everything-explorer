@@ -1,9 +1,9 @@
 import {Show} from "solid-js";
 
-import {useAppState} from "@/context";
+import {usePreferences} from "@/context";
 import {Language, translate} from "@/i18n";
 import {Phrase} from "@/i18n/phrases";
-import type {AppState, LanguageSetting} from "@/state/app";
+import type {LanguageSetting, PreferencesState} from "@/state/app";
 import {System} from "@/state/common";
 import Select from "@/ui/reuse/Select";
 
@@ -28,21 +28,21 @@ const languageSettingFromStringId = {
 } as const satisfies Record<LanguageSettingStringId, LanguageSetting>;
 
 const languageSettingDisplayString = (
-    appState: AppState,
+    preferences: PreferencesState,
     languageSetting: LanguageSetting,
 ) => {
-    const nativeLanguageTranslation = appState.translate(
+    const nativeLanguageTranslation = preferences.translate(
         languageSettingToPhrase[languageSetting],
         undefined,
     );
 
-    if (appState.language() === Language.English)
+    if (preferences.language() === Language.English)
         return nativeLanguageTranslation;
 
     if (languageSetting === System) {
-        const browserLanguage = appState.browserLanguage();
+        const browserLanguage = preferences.browserLanguage();
 
-        return `${nativeLanguageTranslation} (${browserLanguage === undefined ? appState.translate(Phrase.UnknownFallbackToEnglish, undefined) : `${translate(languageSettingToPhrase[browserLanguage], Language.English, undefined)} - ${appState.translate(Phrase.Detected, undefined)}`})`;
+        return `${nativeLanguageTranslation} (${browserLanguage === undefined ? preferences.translate(Phrase.UnknownFallbackToEnglish, undefined) : `${translate(languageSettingToPhrase[browserLanguage], Language.English, undefined)} - ${preferences.translate(Phrase.Detected, undefined)}`})`;
     } else {
         const englishLanguageTranslation = translate(
             languageSettingToPhrase[languageSetting],
@@ -55,25 +55,25 @@ const languageSettingDisplayString = (
 };
 
 export default () => {
-    const appState = useAppState();
+    const preferences = usePreferences();
 
     return (
         <Select<LanguageSetting, LanguageSettingStringId>
             class="contents"
             options={[System, Language.English, Language.German]}
-            value={appState.state.languageSetting}
+            value={preferences.languageSetting()}
             idFromValue={value => languageSettingToStringId[value]}
             idToValue={id => languageSettingFromStringId[id]}
             onChange={value => {
-                appState.setLanguageSetting(value);
+                preferences.setLanguageSetting(value);
             }}
             stringifyValue={value =>
-                languageSettingDisplayString(appState, value)
+                languageSettingDisplayString(preferences, value)
             }
             description={
                 <>
-                    {appState.translate(Phrase.Language, undefined)}
-                    <Show when={appState.language() !== Language.English}>
+                    {preferences.translate(Phrase.Language, undefined)}
+                    <Show when={preferences.language() !== Language.English}>
                         {" ("}
                         {translate(
                             Phrase.Language,

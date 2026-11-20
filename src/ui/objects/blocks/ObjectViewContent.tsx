@@ -1,6 +1,6 @@
 import {Match, Switch} from "solid-js";
 
-import {useAppState} from "@/context";
+import {usePreferences} from "@/context";
 import {Phrase} from "@/i18n/phrases";
 import {ObjectType, type EverythingObject} from "@/model";
 import {NodeType} from "@/model/nodes";
@@ -29,7 +29,7 @@ export default (props: {
     widthBudgetInPixels: number;
     layoutMode: LayoutMode;
 }) => {
-    const appState = useAppState();
+    const preferences = usePreferences();
 
     return (
         <Switch>
@@ -312,7 +312,7 @@ export default (props: {
             </Match>
 
             <Match when={true}>
-                {appState.translate(Phrase.NotImplemented, undefined)}
+                {preferences.translate(Phrase.NotImplemented, undefined)}
             </Match>
         </Switch>
     );

@@ -1,26 +1,28 @@
 import {createEffect, createMemo, createSignal, For, on, Show} from "solid-js";
 
-import {useAppState} from "@/context";
+import {useAppState, useConnections, usePreferences} from "@/context";
 import {Phrase} from "@/i18n/phrases";
 import {generateAtomId, type Atom} from "@/model/atoms";
 import ResizeSeparator from "@/ui/reuse/ResizeSeparator";
 
 import AtomCard from "./AtomCard";
 import {parseAtomId} from "./atomSearch";
-import PropertiesPanel from "./properties/PropertiesPanel";
+import {createAtomList} from "./createAtomList";
 import {
     MIN_PROPERTIES_PANEL_WIDTH,
-    usePropertiesPanelResize,
-} from "./propertiesPanelResize";
+    createPropertiesPanelResize,
+} from "./createPropertiesPanelResize";
+import PropertiesPanel from "./properties/PropertiesPanel";
 import ThingsToolbar from "./ThingsToolbar";
-import {useAtomList} from "./useAtomList";
 
 export default () => {
     const appState = useAppState();
+    const connections = useConnections();
+    const preferences = usePreferences();
 
     const {setContainer, maximumPropertiesPanelWidth} =
-        usePropertiesPanelResize();
-    const {atoms, displayedAtoms, isNew} = useAtomList();
+        createPropertiesPanelResize();
+    const {atoms, displayedAtoms, isNew} = createAtomList();
 
     /**
      * The search field is the single source of truth for the selected atom: an
@@ -85,13 +87,18 @@ export default () => {
                     isSearchExpanded={isSearchExpanded()}
                     onSearchExpandedChange={setIsSearchExpanded}
                     onAddThing={generateAndSearchNewAtom}
-                    addThingDisabled={appState.connectionClient() === undefined}
+                    addThingDisabled={
+                        connections.connectionClient() === undefined
+                    }
                 />
 
                 <div class="mt-4 flex flex-wrap gap-2">
                     <Show
                         when={!atoms.loading}
-                        fallback={appState.translate(Phrase.Loading, undefined)}
+                        fallback={preferences.translate(
+                            Phrase.Loading,
+                            undefined,
+                        )}
                     >
                         <For each={displayedAtoms()}>
                             {atom => (
@@ -114,7 +121,7 @@ export default () => {
                          * `gap-2` between the panels instead of adding to it.
                          */}
                         <ResizeSeparator
-                            label={appState.translate(
+                            label={preferences.translate(
                                 Phrase.ResizePropertiesPanel,
                                 undefined,
                             )}

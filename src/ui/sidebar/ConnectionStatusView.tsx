@@ -2,7 +2,7 @@ import CableIcon from "lucide-solid/icons/cable";
 import UnplugIcon from "lucide-solid/icons/unplug";
 import {Show} from "solid-js";
 
-import {useAppState} from "@/context";
+import {useConnections, usePreferences} from "@/context";
 import {Phrase} from "@/i18n/phrases";
 import {Tab} from "@/state/common";
 
@@ -10,26 +10,27 @@ import Button, {ButtonSeverity} from "../reuse/Button";
 import TabButton from "./TabButton";
 
 export default (props: {compact?: boolean}) => {
-    const appState = useAppState();
+    const connections = useConnections();
+    const preferences = usePreferences();
 
     return (
         <div class="rounded-4xl border border-line-subtle bg-surface-panel p-2">
             <Show when={!props.compact}>
                 <h2 class="m-2 font-semibold">
-                    {appState.translate(Phrase.Connection, undefined)}
+                    {preferences.translate(Phrase.Connection, undefined)}
                 </h2>
             </Show>
             <Button
                 class={`flex items-center justify-center gap-2 text-sm ${props.compact ? "mx-auto px-1.5! py-1.5!" : "w-full"}`}
                 severity={
-                    appState.isConnected()
+                    connections.isConnected()
                         ? ButtonSeverity.Danger
                         : ButtonSeverity.Primary
                 }
                 title={
                     props.compact
-                        ? appState.translate(
-                              appState.isConnected()
+                        ? preferences.translate(
+                              connections.isConnected()
                                   ? Phrase.Disconnect
                                   : Phrase.Connect,
                               undefined,
@@ -38,8 +39,8 @@ export default (props: {compact?: boolean}) => {
                 }
                 aria-label={
                     props.compact
-                        ? appState.translate(
-                              appState.isConnected()
+                        ? preferences.translate(
+                              connections.isConnected()
                                   ? Phrase.Disconnect
                                   : Phrase.Connect,
                               undefined,
@@ -47,28 +48,32 @@ export default (props: {compact?: boolean}) => {
                         : undefined
                 }
                 onClick={() => {
-                    if (appState.isConnected()) {
-                        appState.disconnect();
-                    } else if (
-                        appState.state.connections.length > 0
-                        && appState.state.lastUsedConnectionIndex !== undefined
-                    ) {
-                        appState.connect(
-                            appState.state.lastUsedConnectionIndex,
-                        );
+                    if (connections.isConnected()) {
+                        connections.disconnect();
+                    } else {
+                        const connectionIndex =
+                            connections.lastUsedConnectionIndex();
+
+                        if (
+                            connectionIndex !== undefined
+                            && connections.list().length > 0
+                        ) {
+                            connections.connect(connectionIndex);
+                        }
                     }
                 }}
             >
                 <UnplugIcon class="ml-0.5 shrink-0" />
                 <Show when={!props.compact}>
                     <span class="overflow-hidden py-1 pr-2 text-ellipsis whitespace-nowrap">
-                        {appState.translate(
-                            appState.isConnected()
+                        {preferences.translate(
+                            connections.isConnected()
                                 ? Phrase.DisconnectFrom
                                 : Phrase.ConnectTo,
                             {
                                 forName:
-                                    appState.lastUsedConnection()?.name ?? "",
+                                    connections.lastUsedConnection()?.name
+                                    ?? "",
                             },
                         )}
                     </span>

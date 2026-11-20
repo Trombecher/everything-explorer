@@ -2,7 +2,7 @@ import {Button} from "@kobalte/core/button";
 import TrashIcon from "lucide-solid/icons/trash";
 import {splitProps} from "solid-js";
 
-import {useAppState} from "@/context";
+import {usePreferences} from "@/context";
 import type {Phrase} from "@/i18n/phrases";
 
 /**
@@ -11,10 +11,10 @@ import type {Phrase} from "@/i18n/phrases";
  * collapsing search) keep the X icon and must not use this.
  */
 export default (props: Parameters<typeof Button>[0] & {label: Phrase}) => {
-    const appState = useAppState();
+    const preferences = usePreferences();
     const [local, others] = splitProps(props, ["label", "class"]);
 
-    const label = () => appState.translate(local.label, undefined);
+    const label = () => preferences.translate(local.label, undefined);
 
     return (
         <Button

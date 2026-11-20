@@ -1,20 +1,8 @@
 import type {Accessor, Setter} from "solid-js";
-import {
-    batch,
-    createEffect,
-    createSignal,
-    on,
-    onCleanup,
-    onMount,
-} from "solid-js";
-import {type SetStoreFunction, createStore} from "solid-js/store";
+import {createEffect, createSignal, on} from "solid-js";
+import {type SetStoreFunction, createStore, produce} from "solid-js/store";
 
-import * as backend from "@/backend/api";
-import {ConnectionClient} from "@/connect";
-import {Language, translate} from "@/i18n";
-import type {Phrase} from "@/i18n/phrases";
-import {System, Tab} from "@/state/common";
-import type {ThemeSetting} from "@/state/theme";
+import {Tab} from "@/state/common";
 import type {ObjectHistory} from "@/ui/objects/history";
 import {
     defaultBlockLayoutOptions,
@@ -23,22 +11,43 @@ import {
 import type {DeepReadonly} from "@/util";
 
 import {enforceInvariants} from "./connections";
+import {type ConnectionState, createConnectionState} from "./connectionState";
 import {createEvaluateHistory} from "./evaluate";
-import {type BrowserLanguage, detectBrowserLanguage} from "./language";
+import type {AppStateStore} from "./internal";
+import {type NavigationState, createNavigationState} from "./navigationState";
 import {
-    ConnectionType,
-    defaultAppStateData,
-    type Connection,
-    type InternalAppState,
-    type LanguageSetting,
-} from "./types";
+    type PreferencesState,
+    createPreferencesState,
+} from "./preferencesState";
+import {defaultAppStateData, type InternalAppState} from "./types";
 
+/**
+ * The application state.
+ *
+ * The persisted part lives in a single store, such that every change to a
+ * persisted field can be written to disk by one persistence effect. Feature
+ * modules are composed here and expose narrower, guarded surfaces. They never
+ * receive the raw store setter; all mutations go through a commit function that
+ * enforces the state invariants.
+ */
 export class AppState {
     public readonly state: DeepReadonly<InternalAppState>;
     private readonly setState: SetStoreFunction<InternalAppState>;
 
-    public readonly connectionClient: Accessor<undefined | ConnectionClient>;
-    private readonly setConnectionClient: Setter<undefined | ConnectionClient>;
+    /**
+     * Connections to knowledge bases and the client of the active connection.
+     */
+    public readonly connections: ConnectionState;
+
+    /**
+     * Language and theme preferences.
+     */
+    public readonly preferences: PreferencesState;
+
+    /**
+     * The current tab and sidebar state.
+     */
+    public readonly navigation: NavigationState;
 
     /**
      * Layout options of all object views.
@@ -74,16 +83,6 @@ export class AppState {
     public readonly selectedAtomId: Accessor<bigint | undefined>;
     public readonly setSelectedAtomId: Setter<bigint | undefined>;
 
-    /**
-     * Whether the sidebar is collapsed to a slim icon rail.
-     *
-     * This is runtime state, not part of the persisted app state.
-     */
-    public readonly sidebarCollapsed: Accessor<boolean>;
-    public readonly setSidebarCollapsed: Setter<boolean>;
-
-    public readonly browserLanguage: () => BrowserLanguage;
-
     constructor(initial: InternalAppState) {
         enforceInvariants(initial);
 
@@ -92,35 +91,37 @@ export class AppState {
         this.state = state;
         this.setState = setState;
 
-        // language handling
-        const [browserLanguage, setBrowserLanguage] =
-            createSignal<BrowserLanguage>(detectBrowserLanguage());
-
-        this.browserLanguage = browserLanguage;
-
-        const updateBrowserLanguage = () => {
-            setBrowserLanguage(detectBrowserLanguage());
+        const commit = (mutate: (draft: InternalAppState) => void) => {
+            setState(
+                produce(draft => {
+                    mutate(draft);
+                    enforceInvariants(draft);
+                }),
+            );
         };
 
-        onMount(() => {
-            window.addEventListener("languagechange", updateBrowserLanguage);
+        const store: AppStateStore = {state, commit};
+
+        const navigation = createNavigationState(store);
+        this.navigation = navigation;
+
+        this.preferences = createPreferencesState(store);
+
+        this.connections = createConnectionState(store, {
+            onDisconnected: () => {
+                const currentTab = navigation.currentTab();
+
+                if (
+                    currentTab === Tab.InstanceProperties
+                    || currentTab === Tab.Things
+                    || currentTab === Tab.Evaluate
+                ) {
+                    navigation.setCurrentTab(Tab.Home);
+                }
+            },
         });
-
-        onCleanup(() => {
-            window.removeEventListener("languagechange", updateBrowserLanguage);
-        });
-
-        // Connection client
-
-        const [connectionClient, setConnectionClient] = createSignal<
-            undefined | ConnectionClient
-        >(undefined);
-
-        this.connectionClient = connectionClient;
-        this.setConnectionClient = setConnectionClient;
 
         // Layout options
-
         const [layoutOptions, setLayoutOptions] = createSignal<LayoutOptions>({
             atomNames: new Map(),
             block: defaultBlockLayoutOptions,
@@ -130,11 +131,9 @@ export class AppState {
         this.setLayoutOptions = setLayoutOptions;
 
         // Evaluate history
-
         this.evaluateHistory = createEvaluateHistory();
 
         // Properties panel width
-
         const [propertiesPanelWidth, setPropertiesPanelWidth] =
             createSignal(600);
 
@@ -142,7 +141,6 @@ export class AppState {
         this.setPropertiesPanelWidth = setPropertiesPanelWidth;
 
         // Selected atom id
-
         const [selectedAtomId, setSelectedAtomId] = createSignal<
             bigint | undefined
         >(undefined);
@@ -150,18 +148,12 @@ export class AppState {
         this.selectedAtomId = selectedAtomId;
         this.setSelectedAtomId = setSelectedAtomId;
 
-        // Sidebar collapsed
-        const [sidebarCollapsed, setSidebarCollapsed] = createSignal(false);
-
-        this.sidebarCollapsed = sidebarCollapsed;
-        this.setSidebarCollapsed = setSidebarCollapsed;
-
         // Atom names belong to a specific knowledge base, so drop them when
         // reconnecting. The selected atom belongs to the knowledge base as
         // well, so drop it too.
         createEffect(
             on(
-                connectionClient,
+                this.connections.connectionClient,
                 () => {
                     setLayoutOptions(previous =>
                         previous.atomNames.size === 0
@@ -176,236 +168,7 @@ export class AppState {
         );
     }
 
-    public async disconnect() {
-        if (backend.isApp()) await backend.stopServer();
-        this.setConnectionClient(undefined);
-        if (
-            this.state.currentTab === Tab.InstanceProperties
-            || this.state.currentTab === Tab.Things
-            || this.state.currentTab === Tab.Evaluate
-        )
-            this.setCurrentTab(Tab.Home);
-    }
-
-    public isConnected() {
-        return Boolean(this.connectionClient());
-    }
-
-    /**
-     * Reconnects to the
-     */
-    public async tryReconnectToLocalServer() {
-        if (!backend.isApp()) {
-            console.warn("`tryReconnect` called when not in app");
-            return;
-        }
-
-        const serverRunningOnPort = await backend.serverIsRunningOnPort();
-
-        if (serverRunningOnPort === null) {
-            // No need to reconnect because the server is not running.
-            return;
-        }
-
-        const connectionClient = new ConnectionClient(
-            `http://localhost:${serverRunningOnPort}`,
-        );
-
-        const servingPath = await connectionClient.servingPath();
-
-        const connectionIndex =
-            this.localConnectionIndexFromPath(servingPath)
-            ?? this.addConnection({
-                type: ConnectionType.Local,
-                filePath: servingPath,
-                name: "",
-            });
-
-        // The app is connected to this connection, so it is the last used one.
-        this.setState("lastUsedConnectionIndex", connectionIndex);
-
-        this.setConnectionClient(connectionClient);
-    }
-
-    public localConnectionIndexFromPath(filePath: string): number | undefined {
-        const index = this.state.connections.findIndex(
-            connection =>
-                connection.type === ConnectionType.Local
-                && connection.filePath === filePath,
-        );
-
-        return index === -1 ? undefined : index;
-    }
-
-    public async connect(connectionIndex: number) {
-        const connection = this.connection(connectionIndex);
-
-        if (connection.type === ConnectionType.Local) {
-            if (!backend.isApp()) {
-                console.warn(
-                    "tried to connect to local without a backend, ignoring...",
-                );
-                return;
-            }
-
-            // Spin up the server.
-            const port = await backend.servePath(connection.filePath);
-
-            this.setConnectionClient(
-                new ConnectionClient(`http://localhost:${port}`),
-            );
-        } else {
-            // Remote connection -> just connect directly.
-
-            this.setConnectionClient(new ConnectionClient(connection.url));
-        }
-
-        this.setState("lastUsedConnectionIndex", connectionIndex);
-    }
-
     public reset() {
         this.setState(defaultAppStateData());
-    }
-
-    public languageIsNotAvailable(): boolean {
-        return (
-            this.state.languageSetting === System
-            && this.browserLanguage() === undefined
-        );
-    }
-
-    /**
-     * The chosen language for the app.
-     */
-    public language(): Language {
-        const languageSetting = this.state.languageSetting;
-
-        if (languageSetting === System) {
-            const browserLanguage = this.browserLanguage();
-
-            // Fallback, browser is set to language
-            // we do not have translations for.
-            return browserLanguage ?? Language.English;
-        }
-
-        return languageSetting;
-    }
-
-    public setLanguageSetting(newLanguage: LanguageSetting) {
-        this.setState("languageSetting", newLanguage);
-    }
-
-    public translate<P extends Phrase>(
-        phrase: P,
-        options: Phrase.TranslationArguments[P],
-    ): string {
-        return translate(phrase, this.language(), options);
-    }
-
-    public setCurrentTab(tab: Tab) {
-        this.setState("currentTab", tab);
-    }
-
-    public setThemeSetting(newTheme: ThemeSetting) {
-        this.setState("themeSetting", newTheme);
-    }
-
-    public toggleSidebarCollapsed() {
-        this.setSidebarCollapsed(collapsed => !collapsed);
-    }
-
-    /**
-     * Adds a connection at the beginning of the connection list.
-     *
-     * @returns The index of the added connection.
-     */
-    public addConnection(connection: Connection): number {
-        batch(() => {
-            this.setState("connections", connections => [
-                connection,
-                ...connections,
-            ]);
-
-            // The new connection is prepended, so all indices shift by one.
-            const lastUsedConnectionIndex = this.state.lastUsedConnectionIndex;
-            if (lastUsedConnectionIndex !== undefined) {
-                this.setState(
-                    "lastUsedConnectionIndex",
-                    lastUsedConnectionIndex + 1,
-                );
-            }
-        });
-
-        return 0;
-    }
-
-    /**
-     * Removes the connection with the given index.
-     *
-     * If the app is currently connected to that connection, it is disconnected
-     * first.
-     */
-    public async removeConnection(connectionIndex: number) {
-        this.connection(connectionIndex);
-
-        if (
-            this.state.lastUsedConnectionIndex === connectionIndex
-            && this.isConnected()
-        ) {
-            await this.disconnect();
-        }
-
-        // Update both the connection list and the last used index in one batch,
-        // such that there is never a moment in which the index is out of range.
-        batch(() => {
-            this.setState("connections", connections =>
-                connections.filter((_, index) => index !== connectionIndex),
-            );
-
-            const lastUsedConnectionIndex = this.state.lastUsedConnectionIndex;
-
-            if (lastUsedConnectionIndex === connectionIndex) {
-                this.setState("lastUsedConnectionIndex", undefined);
-            } else if (
-                lastUsedConnectionIndex !== undefined
-                && lastUsedConnectionIndex > connectionIndex
-            ) {
-                this.setState(
-                    "lastUsedConnectionIndex",
-                    lastUsedConnectionIndex - 1,
-                );
-            }
-        });
-    }
-
-    public connection(connectionIndex: number) {
-        const connection = this.state.connections[connectionIndex];
-        if (connection === undefined)
-            throw new Error(`invalid connection index ${connectionIndex}`);
-
-        return connection;
-    }
-
-    public lastUsedConnection(): Connection | undefined {
-        if (this.state.lastUsedConnectionIndex === undefined) return;
-
-        return this.connection(this.state.lastUsedConnectionIndex);
-    }
-
-    private modifyConnection(
-        connectionIndex: number,
-        transform: (connection: Connection) => Connection,
-    ) {
-        this.connection(connectionIndex);
-
-        this.setState("connections", connections =>
-            connections.map((c, i) =>
-                i === connectionIndex ? transform(c) : c,
-            ),
-        );
-    }
-
-    public setConnectionName(connectionIndex: number, newName: string) {
-        this.modifyConnection(connectionIndex, c => ({...c, name: newName}));
     }
 }

@@ -1,4 +1,4 @@
-import {useAppState} from "@/context";
+import {usePreferences} from "@/context";
 import {Phrase} from "@/i18n/phrases";
 import {System} from "@/state/common";
 import {Theme, type ThemeSetting} from "@/state/theme";
@@ -25,19 +25,19 @@ const themeSettingFromStringId = {
 } as const satisfies Record<ThemeSettingStringId, ThemeSetting>;
 
 export default () => {
-    const appState = useAppState();
+    const preferences = usePreferences();
 
     return (
         <Select<ThemeSetting, ThemeSettingStringId>
             class="contents"
-            description={<>{appState.translate(Phrase.Theme, undefined)}</>}
-            value={appState.state.themeSetting}
+            description={<>{preferences.translate(Phrase.Theme, undefined)}</>}
+            value={preferences.themeSetting()}
             onChange={newTheme => {
-                appState.setThemeSetting(newTheme);
+                preferences.setThemeSetting(newTheme);
             }}
             options={[System, Theme.Light, Theme.Dark]}
             stringifyValue={value =>
-                appState.translate(themeToPhrase[value], undefined)
+                preferences.translate(themeToPhrase[value], undefined)
             }
             idFromValue={value => themeSettingToStringId[value]}
             idToValue={id => themeSettingFromStringId[id]}

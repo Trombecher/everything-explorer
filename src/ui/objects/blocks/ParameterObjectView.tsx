@@ -1,6 +1,6 @@
 import {Show} from "solid-js";
 
-import {useAppState} from "@/context";
+import {usePreferences} from "@/context";
 import {Phrase} from "@/i18n/phrases";
 import type {EverythingObject} from "@/model";
 import {nodeToObject, type ParameterNode} from "@/model/nodes";
@@ -13,7 +13,7 @@ export default (props: {
     node: ParameterNode;
     setObject: ((newObject: EverythingObject | undefined) => void) | undefined;
 }) => {
-    const appState = useAppState();
+    const preferences = usePreferences();
     const outerEnclosingFunctions = useEnclosingFunctions();
 
     const enclosingFunctions = outerEnclosingFunctions;
@@ -32,14 +32,14 @@ export default (props: {
     };
 
     const labelOf = (depth: bigint) => {
-        const functionDepth = appState.translate(Phrase.FunctionDepth, {
+        const functionDepth = preferences.translate(Phrase.FunctionDepth, {
             depth: String(depth),
         });
 
         const enclosingFunction = enclosingFunctions()[Number(depth)];
 
         if (!enclosingFunction) {
-            return `${functionDepth} (${appState.translate(Phrase.OutOfRange, undefined)})`;
+            return `${functionDepth} (${preferences.translate(Phrase.OutOfRange, undefined)})`;
         }
 
         if (enclosingFunction.parameterName) {
@@ -56,7 +56,7 @@ export default (props: {
                 when={enclosingFunctions().length > 0}
                 fallback={
                     <span class="italic">
-                        {appState.translate(
+                        {preferences.translate(
                             Phrase.NoEnclosingFunction,
                             undefined,
                         )}

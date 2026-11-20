@@ -4,19 +4,19 @@ import TablePropertiesIcon from "lucide-solid/icons/table-properties";
 import XIcon from "lucide-solid/icons/x";
 import {Index, Show} from "solid-js";
 
-import {useAppState} from "@/context";
+import {useConnections, usePreferences} from "@/context";
 import {Phrase} from "@/i18n/phrases";
 import {defaultObject} from "@/model";
 import type {Atom} from "@/model/atoms";
+import {createAtomName} from "@/ui/objects/createAtomName";
 import {ObjectSelectionContext} from "@/ui/objects/selection";
 import {handleHistoryKeyDown} from "@/ui/objects/undoRedoKeys";
-import {useAtomName} from "@/ui/objects/useAtomName";
 import Button from "@/ui/reuse/Button";
 import WidthMeasurer from "@/ui/reuse/WidthMeasurer";
 
 import CopyAtomIdButton from "./CopyAtomIdButton";
+import {createPropertySync} from "./createPropertySync";
 import PropertyRow from "./PropertyRow";
-import {usePropertySync} from "./usePropertySync";
 
 /**
  * Horizontal space taken by the per-property remove button and the gap before
@@ -25,12 +25,13 @@ import {usePropertySync} from "./usePropertySync";
 const REMOVE_BUTTON_SPACE = 48;
 
 export default (props: {selectedAtom: Atom; close: () => void}) => {
-    const appState = useAppState();
-    const name = useAtomName(() => props.selectedAtom);
-    const {history, values} = usePropertySync(() => props.selectedAtom);
+    const connections = useConnections();
+    const preferences = usePreferences();
+    const name = createAtomName(() => props.selectedAtom);
+    const {history, values} = createPropertySync(() => props.selectedAtom);
 
     const addProperty = () => {
-        if (!appState.connectionClient()) return;
+        if (!connections.connectionClient()) return;
 
         // A fresh object so it is not confused with any other property.
         history.pushObjects([...history.objects(), {...defaultObject}]);
@@ -74,7 +75,7 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
                 <TablePropertiesIcon class="shrink-0" />
                 <h2 class="flex min-w-0 items-center gap-1 text-xl font-semibold text-fg-strong">
                     <span class="shrink-0">
-                        {appState.translate(Phrase.PropertiesOf, undefined)}
+                        {preferences.translate(Phrase.PropertiesOf, undefined)}
                     </span>
                     <span class="min-w-0 truncate font-bold text-primary-fg italic">
                         {name() ?? String(props.selectedAtom.value)}
@@ -83,11 +84,11 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
             </div>
             <KobalteButton
                 class="absolute top-2 right-2 rounded-2xl p-2 hover:bg-surface-hover"
-                aria-label={appState.translate(
+                aria-label={preferences.translate(
                     Phrase.CloseProperties,
                     undefined,
                 )}
-                title={appState.translate(Phrase.CloseProperties, undefined)}
+                title={preferences.translate(Phrase.CloseProperties, undefined)}
                 onClick={() => {
                     props.close();
                 }}
@@ -103,7 +104,7 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
                 >
                     <PlusIcon />
                     <span class="pr-1">
-                        {appState.translate(Phrase.AddProperty, undefined)}
+                        {preferences.translate(Phrase.AddProperty, undefined)}
                     </span>
                 </Button>
                 <CopyAtomIdButton atom={props.selectedAtom} />
@@ -118,7 +119,7 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
                             when={values()}
                             fallback={
                                 <>
-                                    {appState.translate(
+                                    {preferences.translate(
                                         Phrase.LoadingProperties,
                                         undefined,
                                     )}
@@ -129,7 +130,7 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
                                 when={history.objects().length > 0}
                                 fallback={
                                     <p class="rounded-2xl border border-line-subtle bg-surface-sunken p-3 text-sm text-fg-muted">
-                                        {appState.translate(
+                                        {preferences.translate(
                                             Phrase.NoProperties,
                                             undefined,
                                         )}

@@ -27,14 +27,20 @@ export const connectionsShareURI = (
  * Modifies the given `appState` such that all invariants are good.
  */
 export const enforceInvariants = (appState: InternalAppState) => {
-    // Filter out doubles.
-    appState.connections = appState.connections.filter(
+    // Filter out doubles. Only assign when something changed, so that commits
+    // for unrelated fields do not touch the connection list (and therefore do
+    // not trigger unnecessary persistence writes).
+    const connections = appState.connections.filter(
         (connection, i) =>
             !appState.connections.find(
                 (connection2, j) =>
                     i < j && connectionsShareURI(connection, connection2),
             ),
     );
+
+    if (connections.length !== appState.connections.length) {
+        appState.connections = connections;
+    }
 
     if (
         appState.lastUsedConnectionIndex !== undefined

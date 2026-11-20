@@ -3,7 +3,7 @@ import HouseIcon from "lucide-solid/icons/house";
 import SettingsIcon from "lucide-solid/icons/settings";
 import {Show} from "solid-js";
 
-import {useAppState} from "@/context";
+import {usePreferences} from "@/context";
 import {Phrase} from "@/i18n/phrases";
 import {Tab} from "@/state/common";
 
@@ -11,7 +11,7 @@ import SideBarToggle from "./SideBarToggle";
 import TabButton from "./TabButton";
 
 export default (props: {compact?: boolean}) => {
-    const appState = useAppState();
+    const preferences = usePreferences();
 
     return (
         <div class="rounded-4xl border border-line-subtle bg-surface-panel p-2">
@@ -31,7 +31,10 @@ export default (props: {compact?: boolean}) => {
                             Explorer
                         </h1>
                         <p class="text-sm">
-                            {appState.translate(Phrase.Version, undefined)}{" "}
+                            {preferences.translate(
+                                Phrase.Version,
+                                undefined,
+                            )}{" "}
                             {APP_VERSION}
                         </p>
                     </div>

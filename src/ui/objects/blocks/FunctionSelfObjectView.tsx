@@ -1,7 +1,7 @@
 import RotateCcwIcon from "lucide-solid/icons/rotate-ccw";
 import {Show} from "solid-js";
 
-import {useAppState} from "@/context";
+import {usePreferences} from "@/context";
 import {Phrase} from "@/i18n/phrases";
 import type {EverythingObject} from "@/model";
 import {nodeToObject, type FunctionSelfNode} from "@/model/nodes";
@@ -13,7 +13,7 @@ export default (props: {
     node: FunctionSelfNode;
     setObject: ((newObject: EverythingObject | undefined) => void) | undefined;
 }) => {
-    const appState = useAppState();
+    const preferences = usePreferences();
     const outerEnclosingFunctions = useEnclosingFunctions();
 
     const enclosingFunctions = outerEnclosingFunctions;
@@ -32,15 +32,15 @@ export default (props: {
     };
 
     const labelOf = (depth: bigint) => {
-        const self = appState.translate(Phrase.Self, undefined);
-        const functionDepth = appState.translate(Phrase.FunctionDepth, {
+        const self = preferences.translate(Phrase.Self, undefined);
+        const functionDepth = preferences.translate(Phrase.FunctionDepth, {
             depth: String(depth),
         });
 
         const enclosingFunction = enclosingFunctions()[Number(depth)];
 
         if (!enclosingFunction) {
-            return `${self} (${functionDepth} (${appState.translate(Phrase.OutOfRange, undefined)}))`;
+            return `${self} (${functionDepth} (${preferences.translate(Phrase.OutOfRange, undefined)}))`;
         }
 
         return `${self} (${functionDepth})`;
@@ -53,7 +53,7 @@ export default (props: {
                 when={enclosingFunctions().length > 0}
                 fallback={
                     <span class="italic">
-                        {appState.translate(
+                        {preferences.translate(
                             Phrase.NoEnclosingFunction,
                             undefined,
                         )}

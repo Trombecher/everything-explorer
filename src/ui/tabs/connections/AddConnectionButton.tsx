@@ -4,14 +4,15 @@ import PlusIcon from "lucide-solid/icons/plus";
 import {createSignal} from "solid-js";
 
 import * as backend from "@/backend/api";
-import {useAppState} from "@/context";
+import {useConnections, usePreferences} from "@/context";
 import {Phrase} from "@/i18n/phrases";
 import {ConnectionType} from "@/state/app";
 
 import AddRemoteConnectionDialog from "./AddRemoteConnectionDialog";
 
 export default () => {
-    const appState = useAppState();
+    const connections = useConnections();
+    const preferences = usePreferences();
 
     const [remoteDialogOpen, setRemoteDialogOpen] = createSignal(false);
 
@@ -20,7 +21,10 @@ export default () => {
             <DropdownMenu>
                 <DropdownMenu.Trigger class="flex rounded-xl bg-primary py-1 pr-1 pl-3 font-medium text-on-primary transition select-none data-expanded:bg-primary-hover">
                     <span>
-                        {appState.translate(Phrase.AddKnowledgeBase, undefined)}
+                        {preferences.translate(
+                            Phrase.AddKnowledgeBase,
+                            undefined,
+                        )}
                     </span>
                     <DropdownMenu.Icon class="origin-center transition-transform data-expanded:-scale-100">
                         <ChevronDownIcon />
@@ -30,7 +34,7 @@ export default () => {
                     <DropdownMenu.Content class="mt-2 rounded-3xl border border-line-subtle bg-surface-panel p-2 shadow-raised select-none">
                         {[
                             {
-                                name: appState.translate(
+                                name: preferences.translate(
                                     Phrase.CreateNewLocal,
                                     undefined,
                                 ),
@@ -39,7 +43,7 @@ export default () => {
                                         await backend.pickPathForNewKnowledgeBaseFile();
                                     if (path === null) return;
 
-                                    appState.addConnection({
+                                    connections.addConnection({
                                         type: ConnectionType.Local,
                                         name: "",
                                         filePath: path,
@@ -47,7 +51,7 @@ export default () => {
                                 },
                             },
                             {
-                                name: appState.translate(
+                                name: preferences.translate(
                                     Phrase.ExistingLocal,
                                     undefined,
                                 ),
@@ -56,7 +60,7 @@ export default () => {
                                         await backend.pickKnowledgeBaseFile();
                                     if (path === null) return;
 
-                                    appState.addConnection({
+                                    connections.addConnection({
                                         type: ConnectionType.Local,
                                         name: "",
                                         filePath: path,
@@ -64,7 +68,7 @@ export default () => {
                                 },
                             },
                             {
-                                name: appState.translate(
+                                name: preferences.translate(
                                     Phrase.RemoteConnection,
                                     undefined,
                                 ),
@@ -86,7 +90,7 @@ export default () => {
                 open={remoteDialogOpen()}
                 onOpenChange={setRemoteDialogOpen}
                 onAdd={(url, name) => {
-                    appState.addConnection({
+                    connections.addConnection({
                         type: ConnectionType.Remote,
                         url,
                         name,

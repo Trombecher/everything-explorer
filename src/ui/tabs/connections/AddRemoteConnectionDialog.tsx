@@ -3,7 +3,7 @@ import {TextField} from "@kobalte/core/text-field";
 import PlusIcon from "lucide-solid/icons/plus";
 import {createEffect, createMemo, createSignal, Show} from "solid-js";
 
-import {useAppState} from "@/context";
+import {useConnections, usePreferences} from "@/context";
 import {Phrase} from "@/i18n/phrases";
 import {ConnectionType} from "@/state/app";
 import Button from "@/ui/reuse/Button";
@@ -35,7 +35,8 @@ export default (props: {
     onOpenChange: (open: boolean) => void;
     onAdd: (url: string, name: string) => void;
 }) => {
-    const appState = useAppState();
+    const connections = useConnections();
+    const preferences = usePreferences();
 
     const [urlText, setUrlText] = createSignal("");
     const [nameText, setNameText] = createSignal("");
@@ -48,11 +49,13 @@ export default (props: {
         const parsedUrl = url();
         if (parsedUrl === undefined) return false;
 
-        return appState.state.connections.some(
-            connection =>
-                connection.type === ConnectionType.Remote
-                && connection.url === parsedUrl,
-        );
+        return connections
+            .list()
+            .some(
+                connection =>
+                    connection.type === ConnectionType.Remote
+                    && connection.url === parsedUrl,
+            );
     });
 
     const canSubmit = () => url() !== undefined && !urlAlreadyExists();
@@ -86,13 +89,13 @@ export default (props: {
                     class="fixed top-1/2 left-1/2 z-50 flex max-h-[90vh] w-[min(90vw,32rem)] -translate-x-1/2 -translate-y-1/2 flex-col gap-3 overflow-y-auto rounded-4xl border border-line-subtle bg-surface-panel p-4 shadow-raised"
                 >
                     <Dialog.Title class="text-2xl font-semibold text-fg-strong">
-                        {appState.translate(
+                        {preferences.translate(
                             Phrase.AddRemoteConnection,
                             undefined,
                         )}
                     </Dialog.Title>
                     <Dialog.Description class="text-base text-fg-muted">
-                        {appState.translate(
+                        {preferences.translate(
                             Phrase.RemoteConnectionDescription,
                             undefined,
                         )}
@@ -108,7 +111,7 @@ export default (props: {
                         }
                     >
                         <TextField.Label class="mb-1 block text-base font-medium text-fg">
-                            {appState.translate(Phrase.Url, undefined)}
+                            {preferences.translate(Phrase.Url, undefined)}
                         </TextField.Label>
                         <TextField.Input
                             ref={element => (urlInput = element)}
@@ -128,7 +131,7 @@ export default (props: {
 
                     <Show when={urlText().trim() !== "" && url() === undefined}>
                         <p class="text-base text-danger-fg">
-                            {appState.translate(
+                            {preferences.translate(
                                 Phrase.InvalidRemoteUrl,
                                 undefined,
                             )}
@@ -137,7 +140,7 @@ export default (props: {
 
                     <Show when={urlAlreadyExists()}>
                         <p class="text-base text-danger-fg">
-                            {appState.translate(
+                            {preferences.translate(
                                 Phrase.RemoteConnectionAlreadyExists,
                                 undefined,
                             )}
@@ -150,7 +153,7 @@ export default (props: {
                         class="mt-1"
                     >
                         <TextField.Label class="mb-1 block text-base font-medium text-fg">
-                            {appState.translate(Phrase.Name, undefined)}
+                            {preferences.translate(Phrase.Name, undefined)}
                         </TextField.Label>
                         <TextField.Input
                             spellcheck={false}
@@ -167,7 +170,7 @@ export default (props: {
                     <div class="mt-1 flex items-center gap-2">
                         <div class="grow" />
                         <Dialog.CloseButton class="cursor-pointer rounded-2xl bg-surface-control px-2 py-1 font-medium text-fg hover:bg-surface-control-hover active:scale-97">
-                            {appState.translate(Phrase.Cancel, undefined)}
+                            {preferences.translate(Phrase.Cancel, undefined)}
                         </Dialog.CloseButton>
                         <Button
                             class="flex items-center gap-0.5"
@@ -176,7 +179,7 @@ export default (props: {
                         >
                             <PlusIcon />
                             <span class="pr-1">
-                                {appState.translate(Phrase.Add, undefined)}
+                                {preferences.translate(Phrase.Add, undefined)}
                             </span>
                         </Button>
                     </div>

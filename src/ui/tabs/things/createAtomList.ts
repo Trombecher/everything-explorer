@@ -6,14 +6,14 @@ import {
     on,
 } from "solid-js";
 
-import {useAppState} from "@/context";
+import {useConnections} from "@/context";
 import type {Atom} from "@/model/atoms";
 
-export const useAtomList = () => {
-    const appState = useAppState();
+export const createAtomList = () => {
+    const connections = useConnections();
 
     const [atoms] = createResource(
-        () => appState.connectionClient(),
+        () => connections.connectionClient(),
         client => client.knownAtoms(100),
     );
 
@@ -51,7 +51,7 @@ export const useAtomList = () => {
     // when the knowledge base changes.
     createEffect(
         on(
-            () => appState.connectionClient(),
+            () => connections.connectionClient(),
             () => setAddedAtoms([]),
             {defer: true},
         ),

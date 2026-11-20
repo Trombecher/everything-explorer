@@ -1,15 +1,15 @@
 import {createEffect, createResource, on} from "solid-js";
 
-import {useAppState} from "@/context";
+import {useConnections} from "@/context";
 import {objectsEqual, type EverythingObject} from "@/model";
 import type {Atom} from "@/model/atoms";
 import {ObjectHistory} from "@/ui/objects/history";
 
-export const usePropertySync = (selectedAtom: () => Atom) => {
-    const appState = useAppState();
+export const createPropertySync = (selectedAtom: () => Atom) => {
+    const connections = useConnections();
 
     const clientAndAtom = () => {
-        const connectionClient = appState.connectionClient();
+        const connectionClient = connections.connectionClient();
         return (
             connectionClient && {connectionClient, selectedAtom: selectedAtom()}
         );

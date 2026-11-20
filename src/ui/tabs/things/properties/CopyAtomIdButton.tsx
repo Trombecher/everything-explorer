@@ -1,16 +1,16 @@
 import CheckIcon from "lucide-solid/icons/check";
 import {createSignal, onCleanup, Show} from "solid-js";
 
-import {useAppState} from "@/context";
+import {usePreferences} from "@/context";
 import {Phrase} from "@/i18n/phrases";
 import type {Atom} from "@/model/atoms";
 import CopyIcon from "@/ui/icons/CopyIcon";
 import Button, {ButtonSeverity} from "@/ui/reuse/Button";
 
 export default (props: {atom: Atom}) => {
-    const appState = useAppState();
+    const preferences = usePreferences();
 
-    const copyIdLabel = () => appState.translate(Phrase.CopyId, undefined);
+    const copyIdLabel = () => preferences.translate(Phrase.CopyId, undefined);
 
     /**
      * How long the copy button shows a check mark after copying, in ms.

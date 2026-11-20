@@ -4,7 +4,7 @@ import SearchIcon from "lucide-solid/icons/search";
 import XIcon from "lucide-solid/icons/x";
 import {Show} from "solid-js";
 
-import {useAppState} from "@/context";
+import {usePreferences} from "@/context";
 import {Phrase} from "@/i18n/phrases";
 import Button from "@/ui/reuse/Button";
 
@@ -16,10 +16,10 @@ export default (props: {
     onAddThing: () => void;
     addThingDisabled: boolean;
 }) => {
-    const appState = useAppState();
+    const preferences = usePreferences();
 
     const searchToggleLabel = () =>
-        appState.translate(
+        preferences.translate(
             props.isSearchExpanded ? Phrase.CloseSearch : Phrase.SearchThings,
             undefined,
         );
@@ -29,13 +29,13 @@ export default (props: {
             <div class="flex flex-wrap items-center gap-2 px-2 text-fg-strong">
                 <LayoutGridIcon class="shrink-0" />
                 <h2 class="shrink-0 text-xl font-semibold">
-                    {appState.translate(Phrase.Things, undefined)}
+                    {preferences.translate(Phrase.Things, undefined)}
                 </h2>
                 <label class="mx-2 flex grow items-center rounded-2xl border border-line-subtle bg-surface-sunken pl-2 focus-within:outline-2 @max-md:hidden">
                     <SearchIcon />
                     <input
                         type="search"
-                        placeholder={appState.translate(
+                        placeholder={preferences.translate(
                             Phrase.SearchByAtomId,
                             undefined,
                         )}
@@ -64,12 +64,15 @@ export default (props: {
                 <Button
                     onClick={props.onAddThing}
                     disabled={props.addThingDisabled}
-                    aria-label={appState.translate(Phrase.AddThing, undefined)}
+                    aria-label={preferences.translate(
+                        Phrase.AddThing,
+                        undefined,
+                    )}
                     class="flex gap-0.5"
                 >
                     <PlusIcon />
                     <span class="pr-1 @max-xs:hidden">
-                        {appState.translate(Phrase.AddThing, undefined)}
+                        {preferences.translate(Phrase.AddThing, undefined)}
                     </span>
                 </Button>
             </div>
@@ -78,7 +81,7 @@ export default (props: {
                     <SearchIcon />
                     <input
                         type="search"
-                        placeholder={appState.translate(
+                        placeholder={preferences.translate(
                             Phrase.SearchByAtomId,
                             undefined,
                         )}

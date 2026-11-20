@@ -1,7 +1,7 @@
 import type {Accessor} from "solid-js";
 import {createResource} from "solid-js";
 
-import {useAppState} from "@/context";
+import {useConnections, usePreferences} from "@/context";
 import {Phrase} from "@/i18n/phrases";
 import {Atom} from "@/model/atoms";
 
@@ -14,14 +14,15 @@ import {formatAtomNames} from "./formatAtomNames";
  * or when the atom has no names. Callers fall back to the numeric value in that
  * case.
  */
-export const useAtomName = (
+export const createAtomName = (
     atom: Accessor<Atom>,
 ): Accessor<string | undefined> => {
-    const appState = useAppState();
+    const connections = useConnections();
+    const preferences = usePreferences();
 
     const [names] = createResource(
         () => {
-            const connectionClient = appState.connectionClient();
+            const connectionClient = connections.connectionClient();
             return connectionClient && {connectionClient, atom: atom()};
         },
         ({connectionClient, atom}) =>
@@ -40,7 +41,7 @@ export const useAtomName = (
         // A resource keeps its last value when the connection disappears.
         if (
             !loaded
-            || loaded.connectionClient !== appState.connectionClient()
+            || loaded.connectionClient !== connections.connectionClient()
         ) {
             return undefined;
         }
@@ -49,7 +50,7 @@ export const useAtomName = (
             ? undefined
             : formatAtomNames(
                   loaded.names,
-                  appState.translate(Phrase.ObjectPlaceholder, undefined),
+                  preferences.translate(Phrase.ObjectPlaceholder, undefined),
               );
     };
 };

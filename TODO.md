@@ -99,11 +99,6 @@ other items stay valid.
 
 - (38) SolidJS 2.0 when?
 
-- (39) What is the better TypeScript abstraction layer? For DX or Agent
-  Experience?: classes or objects returned by hooks. Both guard/abstract state
-  and expose only valid transformations. Maybe we should unify or commit to one
-  style?
-
 - (40) SolidJS skill? currently `createEffect`s are used to sync data. VERY BAD
   PRACTISE! `createComputed` if possible!
 

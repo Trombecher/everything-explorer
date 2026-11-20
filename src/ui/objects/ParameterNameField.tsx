@@ -1,14 +1,14 @@
 import {TextField} from "@kobalte/core/text-field";
 import {createComputed, createSignal} from "solid-js";
 
-import {useAppState} from "@/context";
+import {usePreferences} from "@/context";
 import {Phrase} from "@/i18n/phrases";
 
 export default (props: {
     name: string | undefined;
     setName: ((newName: string | undefined) => void) | undefined;
 }) => {
-    const appState = useAppState();
+    const preferences = usePreferences();
 
     const [text, setText] = createSignal("");
     createComputed(() => setText(props.name ?? ""));
@@ -36,8 +36,11 @@ export default (props: {
             <TextField.Input
                 spellcheck={false}
                 placeholder="x"
-                title={appState.translate(Phrase.ParameterName, undefined)}
-                aria-label={appState.translate(Phrase.ParameterName, undefined)}
+                title={preferences.translate(Phrase.ParameterName, undefined)}
+                aria-label={preferences.translate(
+                    Phrase.ParameterName,
+                    undefined,
+                )}
                 onKeyDown={e => {
                     if (e.key === "Enter") {
                         e.currentTarget.blur();

@@ -10,3 +10,18 @@ export const useAppState = () => {
 
     return state;
 };
+
+/**
+ * The connections to knowledge bases and the client of the active connection.
+ */
+export const useConnections = () => useAppState().connections;
+
+/**
+ * The language and theme preferences.
+ */
+export const usePreferences = () => useAppState().preferences;
+
+/**
+ * The current tab and sidebar state.
+ */
+export const useNavigation = () => useAppState().navigation;

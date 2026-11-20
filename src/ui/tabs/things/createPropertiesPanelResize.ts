@@ -10,7 +10,7 @@ export const MIN_PROPERTIES_PANEL_WIDTH = 240;
  */
 export const MIN_ATOM_LIST_WIDTH = 280;
 
-export const usePropertiesPanelResize = () => {
+export const createPropertiesPanelResize = () => {
     const appState = useAppState();
 
     let container: HTMLDivElement | undefined;
