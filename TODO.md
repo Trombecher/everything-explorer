@@ -58,11 +58,6 @@ other items stay valid.
 
 - (17) Decide whether to store tab information in the persisted app settings.
 
-- (18) "Project documentation" (name?) directory where agents and humans can
-  store overviews of modules or procedures, like adding new nodes to the system
-  (such that the agents do not have to discover this by themselves), or reviewer
-  agent skills, or stuff like that. Skills?
-
 - (19) Show app settings file path (with open button) in app settings page.
 
 - (20) Show more app info (either on homescreen or app settings), like commit
@@ -113,6 +108,9 @@ other items stay valid.
   Experience?: classes or objects returned by hooks. Both guard/abstract state
   and expose only valid transformations. Maybe we should unify or commit to one
   style?
+
+- (40) SolidJS skill? currently `createEffect`s are used to sync data. VERY BAD
+  PRACTISE! `createComputed` if possible!
 
 ## Secondary
 
