@@ -107,6 +107,11 @@ other items stay valid.
 - (40) SolidJS skill? currently `createEffect`s are used to sync data. VERY BAD
   PRACTISE! `createComputed` if possible!
 
+- (41) Some buttons do not have an `onClick` but instead an `onPointerDown`.
+  Examples include the tab buttons. This is bad for keyboard-tab navigation. But
+  for tabs for example I want the even to happen on mouse/touch down (because it
+  feels) faster. What are my options?
+
 ## Secondary
 
 - (100) When editing objects, add a sidebar displaying the behaviour of the
