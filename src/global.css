@@ -1,13 +1,5 @@
 @import "tailwindcss";
 
-@utility bg-lush {
-    background-image:
-        radial-gradient(72% 81% at -8% 4%, #000f6882 0%, #073aff00 100%),
-        radial-gradient(75% 75% at 113% 86%, #5d00b13d 0%, #9500ff00 104%);
-    background-size: 100vw 100vh;
-    background-attachment: fixed;
-}
-
 @utility bg-flare {
     background-image:
         radial-gradient(
@@ -35,16 +27,6 @@
 
 @theme {
     --font-sans: "Inter", "Inter Variable", system-ui;
-
-    --color-neutral-100: oklch(0.97 0.0066 40.59);
-    --color-neutral-200: oklch(0.92 0.0066 40.59);
-    --color-neutral-300: oklch(87.1% 0.006 40.59);
-    --color-neutral-400: oklch(70.5% 0.015 40.59);
-    --color-neutral-500: oklch(55.2% 0.016 40.59);
-    --color-neutral-600: oklch(44.2% 0.017 40.59);
-    --color-neutral-700: oklch(37% 0.013 40.59);
-    --color-neutral-800: oklch(27.4% 0.006 40.59);
-    --color-neutral-900: oklch(21% 0.006 40.59);
 
     /* Semantic colors. UI code should use these instead of the raw palette so
        that switching modes never requires a `dark:` variant. The values are
@@ -90,9 +72,6 @@
 
     --color-scrim: oklch(0 0 0 / 40%);
 
-    --color-always-white: white;
-    --color-always-black: black;
-
     /* Elevation. Floating layers share the panel fill, so the shadow carries
        the layer in both modes; it is tuned per mode to read on light and dark
        panels alike. */
@@ -116,16 +95,6 @@
 }
 
 html[data-theme="dark"] {
-    --color-neutral-100: oklch(20% 0 none);
-    --color-neutral-200: oklch(26% 0 none);
-    --color-neutral-300: oklch(37.1% 0 none);
-    --color-neutral-400: oklch(43.9% 0 none);
-    --color-neutral-500: oklch(55.6% 0 none);
-    --color-neutral-600: oklch(70.8% 0 none);
-    --color-neutral-700: oklch(87% 0 none);
-    --color-neutral-800: oklch(92.2% 0 none);
-    --color-neutral-900: oklch(97% 0 none);
-
     /* Semantic colors. Elevation still increases with lightness, and hover
        still moves away from the surface, so these are intentionally not a
        pure lightness inversion of the light-mode values. */
@@ -147,9 +116,6 @@ html[data-theme="dark"] {
     --color-fg-muted: oklch(0.708 0 none);
     --color-fg-subtle: oklch(0.48 0 none);
 
-    --color-primary: oklch(0.623 0.214 259.815);
-    --color-primary-hover: oklch(0.546 0.245 262.881);
-    --color-primary-active: oklch(0.488 0.243 264.376);
     --color-primary-fg: oklch(0.809 0.105 251.813);
     --color-primary-subtle: oklch(0.3 0.06 255);
     --color-on-primary: oklch(0.98 0 none);
@@ -160,8 +126,6 @@ html[data-theme="dark"] {
     --color-danger-fg: oklch(0.808 0.114 19.571);
     --color-danger-subtle: oklch(0.3 0.07 25);
     --color-on-danger: oklch(0.21 0 none);
-
-    --color-scrim: oklch(0 0 0 / 40%);
 
     --elevation-raised:
         0 1px 2px oklch(0 0 0 / 40%), 0 4px 10px -2px oklch(0 0 0 / 40%),

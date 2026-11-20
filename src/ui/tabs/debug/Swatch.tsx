@@ -11,21 +11,6 @@ export default () => {
         <div class="mt-16 flex flex-col gap-2">
             <Strip
                 classes={[
-                    "bg-white",
-                    "bg-neutral-100",
-                    "bg-neutral-200",
-                    "bg-neutral-300",
-                    "bg-neutral-400",
-                    "bg-neutral-500",
-                    "bg-neutral-600",
-                    "bg-neutral-700",
-                    "bg-neutral-800",
-                    "bg-neutral-900",
-                    "bg-black",
-                ]}
-            />
-            <Strip
-                classes={[
                     "bg-surface-app",
                     "bg-surface-panel",
                     "bg-surface-sunken",
@@ -51,8 +36,6 @@ export default () => {
                     "bg-danger-fg",
                     "bg-on-danger",
                     "bg-scrim",
-                    "bg-always-white",
-                    "bg-always-black",
                 ]}
             />
             <Strip
@@ -64,6 +47,20 @@ export default () => {
                     "bg-line-emphasis",
                     "bg-line-strong",
                     "bg-line-subtle",
+                ]}
+            />
+            <Strip
+                classes={[
+                    "bg-obj-functional",
+                    "bg-obj-computation",
+                    "bg-obj-boolean",
+                    "bg-obj-set",
+                    "bg-obj-literal",
+                    "bg-obj-query",
+                    "bg-obj-control",
+                    "bg-obj-constructions",
+                    "bg-obj-atom",
+                    "bg-obj-values",
                 ]}
             />
             <div class="mt-2 flex gap-2">

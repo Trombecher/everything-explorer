@@ -18,14 +18,12 @@ this skill are relative to the repository root.
 2. **Do not use `dark:` color variants.** Every token already has a light and a
    dark value. The only allowed `dark:` color utility is `dark:bg-flare`, which
    is a gradient image, not a color.
-3. **Raw palette and literal `white`/`black` are reserved for**
-   `src/global.css`, the debug swatch (`src/ui/tabs/debug/Swatch.tsx`) and the
-   object-view category tints (`obj-*`).
+3. **Raw palette classes never appear in UI code.** Literal colors (OKLCH, hex,
+   `white`/`black`) are declared in `src/global.css` and the document shell
+   (`index.html`), not in components.
 4. **Use `on-primary` / `on-danger`** for text and icons on a solid accent fill.
    Use `primary-fg` / `danger-fg` for accent-colored text on a neutral surface.
-5. **Use `always-white` / `always-black`** only when a color must not change
-   between modes. Do not use them as general text colors.
-6. **Never derive dark values by mechanically inverting light lightness.**
+5. **Never derive dark values by mechanically inverting light lightness.**
    Elevation, hover direction, accent contrast, alpha compositing and shadows do
    not survive a pure inversion.
 
@@ -104,11 +102,9 @@ Do not use `primary` as a subtle selection background, and do not use
 
 ### Miscellaneous
 
-| Token          | Role                                   | Constraints and intent                                                         |
-| -------------- | -------------------------------------- | ------------------------------------------------------------------------------ |
-| `scrim`        | Modal overlay                          | Only for modal/dialog scrims.                                                  |
-| `always-white` | Content that must never flip with mode | Only when mode invariance is required; not a general text or background color. |
-| `always-black` | Content that must never flip with mode | Only when mode invariance is required; not a general text or background color. |
+| Token   | Role          | Constraints and intent        |
+| ------- | ------------- | ----------------------------- |
+| `scrim` | Modal overlay | Only for modal/dialog scrims. |
 
 Shadows are tokenized through `shadow-raised`, which reads the per-mode
 `--elevation-raised` token. It is the only shadow for floating layers; pair it
@@ -165,9 +161,8 @@ with general surface tokens.
   reads the per-mode `--elevation-raised` token. Do not use the raw `shadow-lg`
   / `shadow-xl` utilities for popovers, and do not add `dark:` variants; the
   token already has a value per mode.
-- **Gradients:** `bg-flare` and `bg-lush` are raw utilities in `src/global.css`.
-  `bg-flare` is currently the only legitimate `dark:` utility because it sets a
-  background image, not a color. `bg-lush` is currently unused.
+- **Gradients:** `bg-flare` is a raw utility in `src/global.css`. It is the only
+  legitimate `dark:` utility because it sets a background image, not a color.
 
 ## Menu rows
 
