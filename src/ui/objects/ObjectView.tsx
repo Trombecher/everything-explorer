@@ -1,4 +1,4 @@
-import {createEffect} from "solid-js";
+import {createEffect, createMemo} from "solid-js";
 
 import {useAppState} from "@/context";
 import type {EverythingObject} from "@/model";
@@ -60,10 +60,12 @@ export const ObjectView = (props: {
     const block = () => objectToBlock(props.object);
     const blockOptions = () => appState.layoutOptions().block;
 
+    const widthBudget = createMemo(() => props.widthBudgetInPixels);
+
     const layoutMode = () =>
         calculateLayoutModeOfBlock(
             block(),
-            props.widthBudgetInPixels,
+            widthBudget(),
             appState.layoutOptions(),
         );
 
@@ -99,13 +101,13 @@ export const ObjectView = (props: {
                 gap: `${blockOptions().itemGapInPixels}px`,
                 padding: `4px ${blockOptions().blockPaddingRightInPixels}px 4px ${blockOptions().blockPaddingLeftInPixels}px`,
             }}
-            class={`flex rounded-xl border-solid border-line-emphasis text-fg select-none data-selected:border-primary data-selected:bg-primary! data-selected:text-on-primary ${objectViewBackgroundClass(block().type)} ${layoutMode() === LayoutMode.Column ? `flex-col ${blockInColumnModeIsItemsCenter(block().type) ? "items-center" : "items-start"}` : "items-center"}`}
+            class={`border-line-emphasis text-fg data-selected:border-primary data-selected:bg-primary! data-selected:text-on-primary flex rounded-xl border-solid select-none ${objectViewBackgroundClass(block().type)} ${layoutMode() === LayoutMode.Column ? `flex-col ${blockInColumnModeIsItemsCenter(block().type) ? "items-center" : "items-start"}` : "items-center"}`}
         >
             <ObjectViewContent
                 block={block()}
                 path={props.path}
                 setObject={props.setObject}
-                widthBudgetInPixels={props.widthBudgetInPixels}
+                widthBudgetInPixels={widthBudget()}
                 layoutMode={layoutMode()}
             />
         </div>
