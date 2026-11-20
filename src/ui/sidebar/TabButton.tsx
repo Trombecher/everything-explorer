@@ -23,12 +23,37 @@ export default (props: {tab: Tab; icon: JSXElement; compact?: boolean}) => {
     const label = () =>
         preferences.translate(tabToPhrase[props.tab], undefined);
 
+    const isActive = () => navigation.currentTab() === props.tab;
+
+    // Whether the last pointer press already selected this tab. The click that
+    // follows a pointer press would otherwise select it a second time.
+    let selectedOnPress = false;
+
     return (
         <Button
-            class={`flex w-full gap-2 rounded-3xl p-2 text-left transition-transform duration-75 ease-in-out active:scale-97 ${props.tab === Tab.InstanceProperties ? "mt-auto" : ""} ${props.compact ? "justify-center" : ""} ${navigation.currentTab() === props.tab ? "bg-primary-subtle text-primary-fg font-medium" : "hover:bg-surface-hover"}`}
+            class={`flex w-full touch-manipulation gap-2 rounded-3xl p-2 text-left transition-transform duration-75 ease-in-out select-none active:scale-97 ${props.tab === Tab.InstanceProperties ? "mt-auto" : ""} ${props.compact ? "justify-center" : ""} ${isActive() ? "bg-primary-subtle text-primary-fg font-medium" : "hover:bg-surface-hover"}`}
             title={props.compact ? label() : undefined}
             aria-label={label()}
-            onPointerDown={() => {
+            aria-current={isActive() ? "page" : undefined}
+            onPointerDown={event => {
+                selectedOnPress = false;
+
+                // Mouse presses commit right away, so the tab feels responsive.
+                // Touch and pen presses can turn into a scroll gesture (in which
+                // case no click is emitted), so they are handled on click.
+                if (event.pointerType !== "mouse" || event.button !== 0) return;
+
+                selectedOnPress = true;
+                navigation.setCurrentTab(props.tab);
+            }}
+            onClick={() => {
+                // Keyboard and assistive tech also end up here, with the press
+                // never having been handled above.
+                if (selectedOnPress) {
+                    selectedOnPress = false;
+                    return;
+                }
+
                 navigation.setCurrentTab(props.tab);
             }}
         >
