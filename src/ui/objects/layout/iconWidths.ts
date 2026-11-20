@@ -13,7 +13,7 @@ export const blockIconWidthInPixels = {
     queryConstructions: 48,
     quote: 24,
     union: 24,
-    unwrap: 24,
+    unwrap: 80,
     valuesOf: 48,
     hasValue: 24,
     vee: 24,
@@ -27,7 +27,7 @@ export const blockIconWidthInPixels = {
     check: 24,
     lessThan: 24,
     functionSelf: 24,
-} as const satisfies Record<string, 12 | 24 | 32 | 40 | 48 | 56 | 64>;
+} as const satisfies Record<string, number>;
 
 /**
  * Width of the editable function parameter name field, excluding the function
