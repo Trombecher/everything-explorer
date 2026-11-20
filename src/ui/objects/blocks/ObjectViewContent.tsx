@@ -11,6 +11,7 @@ import AtomView from "../AtomView";
 import BinaryOperationView from "../BinaryOperationView";
 import ByteView from "../ByteView";
 import CharacterView from "../CharacterView";
+import FoldOperationView from "../FoldOperationView";
 import IfOperationView from "../IfOperationView";
 import IntegerView from "../IntegerView";
 import type {LayoutMode} from "../layout";
@@ -177,6 +178,16 @@ export default (props: {
                 {mapNode => (
                     <BinaryOperationView
                         block={mapNode()}
+                        path={props.path}
+                        wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                        setObject={props.setObject}
+                    />
+                )}
+            </Match>
+            <Match when={variant(props.block, NodeType.Fold)}>
+                {foldNode => (
+                    <FoldOperationView
+                        block={foldNode()}
                         path={props.path}
                         wholeWidthBudgetInPixels={props.widthBudgetInPixels}
                         setObject={props.setObject}

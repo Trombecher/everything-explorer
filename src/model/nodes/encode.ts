@@ -126,6 +126,16 @@ export const nodeToObject = (node: Node): EverythingObject => {
                     ...node.rest,
                 ],
             };
+        case NodeType.Fold:
+            return {
+                type: ObjectType.Set,
+                elements: [
+                    construction(Atom.NodeFoldSet, node.set),
+                    construction(Atom.NodeFoldFolder, node.folder),
+                    construction(Atom.NodeFoldInitial, node.initial),
+                    ...node.rest,
+                ],
+            };
         case NodeType.QueryAtomsWithProperty:
             return {
                 type: ObjectType.Set,

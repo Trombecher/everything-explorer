@@ -122,6 +122,27 @@ export const createInitialObject2 = (): EverythingObject => ({
             rest: [],
         }),
         nodeToObject({
+            type: NodeType.Fold,
+            set: defaultObject,
+            folder: nodeToObject({
+                type: NodeType.Function,
+                body: nodeToObject({
+                    type: NodeType.Function,
+                    body: nodeToObject({
+                        type: NodeType.Parameter,
+                        depth: 0n,
+                        rest: [],
+                    }),
+                    parameterName: undefined,
+                    rest: [],
+                }),
+                parameterName: undefined,
+                rest: [],
+            }),
+            initial: defaultObject,
+            rest: [],
+        }),
+        nodeToObject({
             type: NodeType.QueryAtomsWithProperty,
             property: {type: ObjectType.Atom, value: 1n},
             rest: [],

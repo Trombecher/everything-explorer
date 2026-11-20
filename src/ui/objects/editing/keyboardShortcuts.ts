@@ -56,6 +56,7 @@ const isHandledKey = (key: string): boolean =>
     || key === "l"
     || key === "f"
     || key === "m"
+    || key === "r"
     || key === "e"
     || key === "a"
     || key === "t"
@@ -256,6 +257,12 @@ export const handleKeyDown = (props: {
                 case NodeType.Filter:
                 case NodeType.Map:
                 case NodeType.QueryConstructionValues: {
+                    // Retain set.
+
+                    props.setObject(node.set);
+                    break;
+                }
+                case NodeType.Fold: {
                     // Retain set.
 
                     props.setObject(node.set);
@@ -462,6 +469,20 @@ export const handleKeyDown = (props: {
                 type: NodeType.Map,
                 set: props.object,
                 mapperFunction: defaultObject,
+                rest: [],
+            }),
+        );
+
+        props.objectSelection.selectChild(1);
+    } else if (props.event.key === "r") {
+        if (!props.setObject) return;
+
+        props.setObject(
+            nodeToObject({
+                type: NodeType.Fold,
+                set: props.object,
+                folder: defaultObject,
+                initial: defaultObject,
                 rest: [],
             }),
         );

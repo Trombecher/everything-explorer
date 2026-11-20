@@ -37,6 +37,7 @@ export const childCountOfBlock = (block: Block): number => {
         case NodeType.QueryConstructionValues:
         case NodeType.Call:
             return 2;
+        case NodeType.Fold:
         case NodeType.If:
             return 3;
         case ObjectType.Set:

@@ -225,6 +225,28 @@ const objectToNodeWithoutCache = (
         }
     }
 
+    some = singleSetAtomValue(object, Atom.NodeFoldSet.value);
+    if (some) {
+        const folder = singleSetAtomValue(object, Atom.NodeFoldFolder.value);
+        const initial = singleSetAtomValue(object, Atom.NodeFoldInitial.value);
+
+        if (folder && initial) {
+            if (finalNode) return NotANode;
+
+            finalNode = {
+                type: NodeType.Fold,
+                set: some,
+                folder,
+                initial,
+                rest: withoutAtomConstructors(object.elements, [
+                    Atom.NodeFoldSet.value,
+                    Atom.NodeFoldFolder.value,
+                    Atom.NodeFoldInitial.value,
+                ]),
+            };
+        }
+    }
+
     some = singleSetAtomValue(object, Atom.NodeAtomsWithProperty.value);
     if (some) {
         if (finalNode) return NotANode;

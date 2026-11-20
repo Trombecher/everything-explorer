@@ -118,6 +118,21 @@ export namespace Atom {
         value: 2150755713297709286586583523030939076n,
     } as const satisfies Atom;
 
+    export const NodeFoldSet = {
+        type: ObjectType.Atom,
+        value: 2166944102906103538111212580396221266n,
+    } as const satisfies Atom;
+
+    export const NodeFoldFolder = {
+        type: ObjectType.Atom,
+        value: 2166944102906948913400158817641233982n,
+    } as const satisfies Atom;
+
+    export const NodeFoldInitial = {
+        type: ObjectType.Atom,
+        value: 2166944102906490208705196484796567529n,
+    } as const satisfies Atom;
+
     export const NodeIfCondition = {
         type: ObjectType.Atom,
         value: 2150756911395278548780220055702389669n,
