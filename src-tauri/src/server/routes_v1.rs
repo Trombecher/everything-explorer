@@ -1,14 +1,14 @@
 use std::sync::Arc;
 
 use axum::{Json, extract::State, http::StatusCode, response::IntoResponse};
-use everything::{knowledge::Statement, model::Object};
+use everything::model::{Atom, Object};
 
 use crate::server::{
     WebServerState,
     evaluate::Evaluation,
     wire::{
-        JsonConstructionValuesRequest, JsonEvaluateResponse, JsonIteratorPage, JsonIteratorRequest,
-        JsonIteratorToken, JsonObject, JsonStatement,
+        JsonChangeStatementsRequest, JsonConstructionValuesRequest, JsonEvaluateResponse,
+        JsonIteratorPage, JsonIteratorRequest, JsonIteratorToken, JsonObject,
     },
 };
 
@@ -25,34 +25,27 @@ pub async fn serving_knowledge_base_path(
 pub async fn values_of_object(
     State(state): State<Arc<WebServerState>>,
     Json(json): Json<JsonObject>,
-) -> Result<Json<Vec<JsonObject>>, (StatusCode, String)> {
-    let object =
-        Object::try_from(json).map_err(|error| (StatusCode::BAD_REQUEST, error.to_string()))?;
+) -> Json<Vec<JsonObject>> {
+    let object = Object::from(json);
     let knowledge = state.knowledge().await;
     let values = knowledge.values_of(&object).map(From::from).collect();
 
-    Ok(Json(values))
+    Json(values)
 }
 
 pub async fn construction_values_of_object(
     State(state): State<Arc<WebServerState>>,
     Json(request): Json<JsonConstructionValuesRequest>,
-) -> Result<Json<Vec<JsonObject>>, (StatusCode, String)> {
-    let object = Object::try_from(request.object)
-        .map_err(|error| (StatusCode::BAD_REQUEST, format!("invalid object: {error}")))?;
-    let constructor = Object::try_from(request.constructor).map_err(|error| {
-        (
-            StatusCode::BAD_REQUEST,
-            format!("invalid constructor: {error}"),
-        )
-    })?;
+) -> Json<Vec<JsonObject>> {
+    let object = Object::from(request.object);
+    let constructor = Object::from(request.constructor);
     let knowledge = state.knowledge().await;
     let values = knowledge
         .query_construction_values(&object, constructor)
         .map(From::from)
         .collect();
 
-    Ok(Json(values))
+    Json(values)
 }
 
 /// Evaluates the given object in the knowledge base and returns the result.
@@ -63,9 +56,8 @@ pub async fn construction_values_of_object(
 pub async fn evaluate_object(
     State(state): State<Arc<WebServerState>>,
     Json(json): Json<JsonObject>,
-) -> Result<Json<JsonEvaluateResponse>, (StatusCode, String)> {
-    let object =
-        Object::try_from(json).map_err(|error| (StatusCode::BAD_REQUEST, error.to_string()))?;
+) -> Json<JsonEvaluateResponse> {
+    let object = Object::from(json);
     let knowledge = state.knowledge().await;
 
     let response = match crate::server::evaluate::evaluate_lazy(&object, &knowledge) {
@@ -77,7 +69,7 @@ pub async fn evaluate_object(
         },
     };
 
-    Ok(Json(response))
+    Json(response)
 }
 
 /// Returns the next page of a lazy set iterator.
@@ -125,30 +117,19 @@ pub async fn known_atoms(State(state): State<Arc<WebServerState>>) -> Json<Vec<S
     )
 }
 
-pub async fn add_statement(
+/// Changes the values of one atom in a single batch.
+///
+/// Removals are applied before additions, so an object that occurs in both
+/// lists remains a value of the atom. This also makes the request idempotent.
+pub async fn change_statements(
     State(state): State<Arc<WebServerState>>,
-    Json(json): Json<JsonStatement>,
+    Json(request): Json<JsonChangeStatementsRequest>,
 ) -> Result<StatusCode, (StatusCode, String)> {
-    let statement =
-        Statement::try_from(json).map_err(|error| (StatusCode::BAD_REQUEST, error.to_string()))?;
+    let add = request.add.into_iter().map(Object::from).collect();
+    let remove = request.remove.into_iter().map(Object::from).collect();
 
     state
-        .add_statement(statement)
-        .await
-        .map_err(|error| (StatusCode::INTERNAL_SERVER_ERROR, error.to_string()))?;
-
-    Ok(StatusCode::NO_CONTENT)
-}
-
-pub async fn remove_statement(
-    State(state): State<Arc<WebServerState>>,
-    Json(json): Json<JsonStatement>,
-) -> Result<StatusCode, (StatusCode, String)> {
-    let statement =
-        Statement::try_from(json).map_err(|error| (StatusCode::BAD_REQUEST, error.to_string()))?;
-
-    state
-        .remove_statement(statement)
+        .change_statements(Atom(request.atom.0), add, remove)
         .await
         .map_err(|error| (StatusCode::INTERNAL_SERVER_ERROR, error.to_string()))?;
 

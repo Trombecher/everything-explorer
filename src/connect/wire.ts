@@ -1,10 +1,6 @@
 import z from "zod";
 
-import {
-    ObjectType,
-    type EverythingObject as KnowledgeObject,
-    type Statement,
-} from "@/model";
+import {ObjectType, type EverythingObject as KnowledgeObject} from "@/model";
 
 /**
  * The JSON representation of an object, mirroring `JsonObject` in the Rust
@@ -82,18 +78,14 @@ export const jsonIteratorPageSchema: z.ZodType<JsonIteratorPage> = z.object({
 });
 
 /**
- * The JSON representation of a statement, mirroring `JsonStatement` in the Rust
- * server's wire module.
+ * The JSON representation of a request to change the statements of one atom,
+ * mirroring `JsonChangeStatementsRequest` in the Rust server's wire module.
  */
-export type JsonStatement = {
+export type JsonChangeStatementsRequest = {
     readonly atom: string;
-    readonly object: JsonObject;
+    readonly remove: readonly JsonObject[];
+    readonly add: readonly JsonObject[];
 };
-
-export const jsonStatementSchema: z.ZodType<JsonStatement> = z.object({
-    atom: z.string(),
-    object: jsonObjectSchema,
-});
 
 /**
  * Converts a wire object into the internal object model.
@@ -116,10 +108,6 @@ export const jsonObjectToObject = (json: JsonObject): KnowledgeObject => {
         case "byte":
             return {type: ObjectType.Byte, value: json.value};
         case "text":
-            if (json.text.length === 0) {
-                throw new Error("a text set must not be empty");
-            }
-
             return {type: ObjectType.Text, text: json.text};
         case "construction":
             return {
@@ -163,21 +151,3 @@ export const objectToJsonObject = (object: KnowledgeObject): JsonObject => {
             };
     }
 };
-
-/**
- * Converts a wire statement into the internal statement model.
- */
-export const jsonStatementToStatement = (json: JsonStatement): Statement => ({
-    atom: {type: ObjectType.Atom, value: BigInt(json.atom)},
-    object: jsonObjectToObject(json.object),
-});
-
-/**
- * Converts an internal statement into its wire representation.
- */
-export const statementToJsonStatement = (
-    statement: Statement,
-): JsonStatement => ({
-    atom: statement.atom.value.toString(),
-    object: objectToJsonObject(statement.object),
-});

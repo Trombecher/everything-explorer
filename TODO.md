@@ -77,9 +77,6 @@ other items stay valid.
 - (23) Incorporate the "cloud" maskot (icon) of the app, maybe in the loading
   screen or in the app title.
 
-- (24) Is the empty text allowed as an object? I think yes, because the objects
-  in the frontend are not designed to be stored in canonical form.
-
 - (25) Better UI in Evalute tab for lazy results (paging, skipping results,
   etc.).
 

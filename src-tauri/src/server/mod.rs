@@ -2,9 +2,11 @@ mod cors;
 mod evaluate;
 mod iterators;
 mod routes_v1;
+#[cfg(test)]
+mod tests;
 mod wire;
 
-use std::{path::PathBuf, sync::Arc};
+use std::{collections::BTreeSet, path::PathBuf, sync::Arc};
 
 use axum::{
     Router,
@@ -13,7 +15,8 @@ use axum::{
 use cors::cors_layer;
 use everything::{
     compute::LazySetIterator,
-    knowledge::{Knowledge, Statement},
+    knowledge::{Knowledge, Statement, Values},
+    model::{Atom, Object},
 };
 use everything_db::{PersistantKnowledge, StatementChange};
 use iterators::{LazyIteratorPage, LazyIterators};
@@ -84,23 +87,70 @@ impl WebServerState {
         *self.persistant_knowledge.lock().await = knowledge;
     }
 
-    pub async fn add_statement(&self, statement: Statement) -> Result<(), everything_db::Error> {
-        self.persistant_knowledge
-            .lock()
-            .await
-            .store(std::iter::once(StatementChange::Add(&statement)))
-    }
+    /// Changes the values of the given atom in one batch.
+    ///
+    /// All objects are canonicalized before they are compared with the current
+    /// values, so aliases such as the empty text and the empty set refer to the
+    /// same statement. Removals are applied before additions, so an object that
+    /// occurs in both lists remains a value of the atom.
+    pub async fn change_statements(
+        &self,
+        atom: Atom,
+        add: Vec<Object>,
+        remove: Vec<Object>,
+    ) -> Result<(), everything_db::Error> {
+        let mut persistant_knowledge = self.persistant_knowledge.lock().await;
+        let current = persistant_knowledge.knowledge().values_of_atom(&atom);
+        let (adds, removes) = pending_statement_changes(atom, add, remove, &current);
 
-    pub async fn remove_statement(&self, statement: Statement) -> Result<(), everything_db::Error> {
-        self.persistant_knowledge
-            .lock()
-            .await
-            .store(std::iter::once(StatementChange::Remove(&statement)))
+        if adds.is_empty() && removes.is_empty() {
+            return Ok(());
+        }
+
+        let mut changes = Vec::with_capacity(adds.len() + removes.len());
+        for statement in &removes {
+            changes.push(StatementChange::Remove(statement));
+        }
+        for statement in &adds {
+            changes.push(StatementChange::Add(statement));
+        }
+
+        persistant_knowledge.store(changes.into_iter())
     }
 
     pub async fn compact(&self) -> Result<(), everything_db::Error> {
         self.persistant_knowledge.lock().await.compact()
     }
+}
+
+/// Computes the statements to add and remove for a batch change.
+///
+/// This is where the non-canonical frontend objects meet the canonical model:
+/// both lists are reduced to canonical objects first, and an object that occurs
+/// in both lists is treated as added. The returned additions and removals are
+/// disjoint, so applying them in any order yields the same result.
+fn pending_statement_changes(
+    atom: Atom,
+    add: Vec<Object>,
+    remove: Vec<Object>,
+    current: &Values,
+) -> (Vec<Statement>, Vec<Statement>) {
+    let add = add.into_iter().collect::<BTreeSet<_>>();
+    let mut remove = remove.into_iter().collect::<BTreeSet<_>>();
+    remove.retain(|object| !add.contains(object));
+
+    let adds = add
+        .into_iter()
+        .filter(|object| !current.has(object))
+        .map(|object| Statement { atom, object })
+        .collect();
+    let removes = remove
+        .into_iter()
+        .filter(|object| current.has(object))
+        .map(|object| Statement { atom, object })
+        .collect();
+
+    (adds, removes)
 }
 
 pub struct PrivateKnowledgeServer {
@@ -130,8 +180,10 @@ impl PrivateKnowledgeServer {
                 "/api/v1/constructionValues",
                 post(routes_v1::construction_values_of_object),
             )
-            .route("/api/v1/addStatement", post(routes_v1::add_statement))
-            .route("/api/v1/removeStatement", post(routes_v1::remove_statement))
+            .route(
+                "/api/v1/changeStatements",
+                post(routes_v1::change_statements),
+            )
             .route("/api/v1/compact", post(routes_v1::compact))
             .layer(cors)
             .with_state(Arc::clone(&state));

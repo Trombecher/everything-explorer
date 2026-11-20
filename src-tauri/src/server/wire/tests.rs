@@ -5,7 +5,7 @@ fn assert_round_trips(object: Object) {
     let json = JsonObject::from(object.clone());
     let encoded = serde_json::to_string(&json).expect("the object serializes");
     let decoded: JsonObject = serde_json::from_str(&encoded).expect("the object deserializes");
-    let decoded_object = Object::try_from(decoded.clone()).expect("the object converts");
+    let decoded_object = Object::from(decoded.clone());
 
     assert_eq!(decoded, json);
     assert_eq!(decoded_object, object);
@@ -67,10 +67,9 @@ fn integers_round_trip_and_zero_is_normalized() {
         BigInt::from_str("1234567890123456789012345678901234567890").expect("the integer is valid"),
     ));
 
-    let zero = Object::try_from(JsonObject::Integer {
+    let zero = Object::from(JsonObject::Integer {
         value: JsonInteger(BigInt::ZERO),
-    })
-    .expect("zero converts");
+    });
 
     assert_eq!(zero, Object::Atom(Atom::ZERO));
 }
@@ -113,12 +112,12 @@ fn text_sets_round_trip_without_expanding_the_list_structure() {
 }
 
 #[test]
-fn empty_text_is_rejected() {
+fn empty_text_is_the_empty_set() {
     assert_eq!(
-        Object::try_from(JsonObject::Text {
+        Object::from(JsonObject::Text {
             text: String::new()
         }),
-        Err(JsonObjectError::EmptyText)
+        Object::Set(Set::empty())
     );
 }
 
@@ -167,44 +166,37 @@ fn construction_values_requests_deserialize() {
 }
 
 #[test]
-fn statements_deserialize_and_convert() {
-    let json: JsonStatement = serde_json::from_str(
+fn change_statements_requests_deserialize() {
+    let request: JsonChangeStatementsRequest = serde_json::from_str(
         r#"{
             "atom": "1",
-            "object": {"type": "construction", "constructor": {"type": "atom", "value": "2"}, "value": {"type": "atom", "value": "3"}}
+            "remove": [{"type": "atom", "value": "2"}],
+            "add": [{"type": "text", "text": ""}]
         }"#,
     )
-    .expect("the statement deserializes");
+    .expect("the request deserializes");
 
+    assert_eq!(request.atom, JsonAtom(1));
     assert_eq!(
-        Statement::try_from(json).expect("the statement converts"),
-        Statement {
-            atom: Atom(1),
-            object: Object::Construction(Construction::new(Atom(2).into(), Object::Atom(Atom(3)),)),
-        }
+        request.remove,
+        vec![JsonObject::Atom { value: JsonAtom(2) }]
+    );
+    assert_eq!(
+        request.add,
+        vec![JsonObject::Text {
+            text: String::new()
+        }]
     );
 }
 
 #[test]
-fn statements_round_trip() {
-    let statement = Statement {
-        atom: Atom(1),
-        object: Object::Construction(Construction::new(
-            Atom(2).into(),
-            Object::Set(Set::Character(CharacterSet { representing: 'a' })),
-        )),
-    };
+fn change_statements_requests_default_to_no_changes() {
+    let request: JsonChangeStatementsRequest =
+        serde_json::from_str(r#"{"atom": "1"}"#).expect("the request deserializes");
 
-    let json = JsonStatement::from(statement.clone());
-    let encoded = serde_json::to_string(&json).expect("the statement serializes");
-    let decoded: JsonStatement =
-        serde_json::from_str(&encoded).expect("the statement deserializes");
-
-    assert_eq!(decoded, json);
-    assert_eq!(
-        Statement::try_from(decoded).expect("the statement converts"),
-        statement
-    );
+    assert_eq!(request.atom, JsonAtom(1));
+    assert!(request.remove.is_empty());
+    assert!(request.add.is_empty());
 }
 
 #[test]

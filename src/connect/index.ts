@@ -1,6 +1,6 @@
 import z from "zod";
 
-import {ObjectType, type EverythingObject, type Statement} from "@/model";
+import {ObjectType, type EverythingObject} from "@/model";
 import type {Atom} from "@/model/atoms";
 
 import {
@@ -9,7 +9,7 @@ import {
     jsonObjectToObject,
     jsonObjectsSchema,
     objectToJsonObject,
-    statementToJsonStatement,
+    type JsonChangeStatementsRequest,
 } from "./wire";
 
 const knownAtomsEndpointResponse = z.array(z.string());
@@ -202,35 +202,33 @@ export class ConnectionClient {
     }
 
     /**
-     * Adds the given statement to the knowledge base.
+     * Changes the values of the given atom in one batch.
+     *
+     * The removed objects are applied before the added objects. If the same
+     * canonical object occurs in both lists, it remains a value of the atom.
      */
-    public async addStatement(statement: Statement): Promise<void> {
-        const response = await fetch(`${this.url}/api/v1/addStatement`, {
+    public async changeStatements(
+        atom: Atom,
+        changes: {
+            readonly add: readonly EverythingObject[];
+            readonly remove: readonly EverythingObject[];
+        },
+    ): Promise<void> {
+        const body: JsonChangeStatementsRequest = {
+            atom: atom.value.toString(),
+            add: changes.add.map(objectToJsonObject),
+            remove: changes.remove.map(objectToJsonObject),
+        };
+
+        const response = await fetch(`${this.url}/api/v1/changeStatements`, {
             method: "POST",
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(statementToJsonStatement(statement)),
+            body: JSON.stringify(body),
         });
 
         if (!response.ok) {
             throw new Error(
-                `failed to add statement (${response.status}): ${await response.text()}`,
-            );
-        }
-    }
-
-    /**
-     * Removes the given statement from the knowledge base.
-     */
-    public async removeStatement(statement: Statement): Promise<void> {
-        const response = await fetch(`${this.url}/api/v1/removeStatement`, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(statementToJsonStatement(statement)),
-        });
-
-        if (!response.ok) {
-            throw new Error(
-                `failed to remove statement (${response.status}): ${await response.text()}`,
+                `failed to change statements (${response.status}): ${await response.text()}`,
             );
         }
     }

@@ -1,4 +1,4 @@
-use std::{fmt, str::FromStr};
+use std::str::FromStr;
 
 use everything::num_bigint::BigInt;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
@@ -37,7 +37,7 @@ impl<'de> Deserialize<'de> for JsonAtom {
 ///
 /// The value is transferred as a decimal string because it is an arbitrary
 /// precision integer. Zero is normalized to [`everything::model::Atom::ZERO`] by
-/// [`TryFrom<JsonObject> for Object`], as an integer set never represents zero.
+/// [`From<JsonObject> for Object`], as an integer set never represents zero.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct JsonInteger(pub BigInt);
 
@@ -62,20 +62,3 @@ impl<'de> Deserialize<'de> for JsonInteger {
             .map_err(|error| serde::de::Error::custom(format!("invalid integer: {error}")))
     }
 }
-
-/// Errors that can occur when converting a [`crate::server::wire::JsonObject`]
-/// into an [`everything::model::Object`].
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum JsonObjectError {
-    EmptyText,
-}
-
-impl fmt::Display for JsonObjectError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::EmptyText => write!(f, "a text set must not be empty"),
-        }
-    }
-}
-
-impl std::error::Error for JsonObjectError {}

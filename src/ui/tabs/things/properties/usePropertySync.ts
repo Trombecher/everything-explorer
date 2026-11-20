@@ -1,7 +1,7 @@
 import {createEffect, createResource, on} from "solid-js";
 
 import {useAppState} from "@/context";
-import type {EverythingObject} from "@/model";
+import {objectsEqual, type EverythingObject} from "@/model";
 import type {Atom} from "@/model/atoms";
 import {ObjectHistory} from "@/ui/objects/history";
 
@@ -75,25 +75,22 @@ export const usePropertySync = (selectedAtom: () => Atom) => {
                     if (target === syncedObjects) continue;
 
                     const previous = syncedObjects;
+                    const add = target.filter(
+                        object =>
+                            !previous.some(other =>
+                                objectsEqual(other, object),
+                            ),
+                    );
+                    const remove = previous.filter(
+                        object =>
+                            !target.some(other => objectsEqual(other, object)),
+                    );
 
-                    // Add first so a failed add does not lose existing
-                    // statements.
-                    for (const object of target) {
-                        if (!previous.includes(object)) {
-                            await connectionClient.addStatement({
-                                atom: selectedAtom,
-                                object,
-                            });
-                        }
-                    }
-
-                    for (const object of previous) {
-                        if (!target.includes(object)) {
-                            await connectionClient.removeStatement({
-                                atom: selectedAtom,
-                                object,
-                            });
-                        }
+                    if (add.length > 0 || remove.length > 0) {
+                        await connectionClient.changeStatements(selectedAtom, {
+                            add,
+                            remove,
+                        });
                     }
 
                     syncedObjects = target;

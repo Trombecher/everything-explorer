@@ -1,7 +1,7 @@
 use everything::model::{Atom, ByteSet, CharacterSet, Construction, Object, Set, TextSet};
 use serde::{Deserialize, Serialize};
 
-use super::{JsonAtom, JsonInteger, JsonObjectError};
+use super::{JsonAtom, JsonInteger};
 
 /// The JSON representation of an [`Object`].
 ///
@@ -45,11 +45,9 @@ pub struct JsonConstructionValuesRequest {
     pub constructor: JsonObject,
 }
 
-impl TryFrom<JsonObject> for Object {
-    type Error = JsonObjectError;
-
-    fn try_from(value: JsonObject) -> Result<Self, Self::Error> {
-        Ok(match value {
+impl From<JsonObject> for Object {
+    fn from(value: JsonObject) -> Self {
+        match value {
             JsonObject::Atom { value } => Self::Atom(Atom(value.0)),
             JsonObject::Integer { value } => Self::new_integer(value.0),
             JsonObject::Character {
@@ -57,22 +55,17 @@ impl TryFrom<JsonObject> for Object {
             } => Self::Set(Set::Character(CharacterSet { representing })),
             JsonObject::Byte { value } => Self::Set(Set::Byte(ByteSet(value))),
             JsonObject::Text { text } => {
-                let text = TextSet::new(text.into()).ok_or(JsonObjectError::EmptyText)?;
-
-                Self::Set(Set::Text(text))
+                Self::Set(TextSet::new(text.into()).map_or_else(Set::empty, Set::Text))
             }
-            JsonObject::Construction { constructor, value } => Self::Construction(
-                Construction::new(Self::try_from(*constructor)?, Self::try_from(*value)?),
-            ),
+            JsonObject::Construction { constructor, value } => {
+                Self::Construction(Construction::new((*constructor).into(), (*value).into()))
+            }
             JsonObject::Set { elements } => {
-                let mut objects = elements
-                    .into_iter()
-                    .map(Self::try_from)
-                    .collect::<Result<Vec<_>, _>>()?;
+                let mut objects = elements.into_iter().map(Self::from).collect::<Vec<_>>();
 
                 Self::Set(Set::from(objects.as_mut_slice()))
             }
-        })
+        }
     }
 }
 

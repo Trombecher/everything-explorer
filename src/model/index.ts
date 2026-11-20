@@ -52,14 +52,6 @@ export type EverythingObject =
     | CharacterObject
     | ByteObject;
 
-/**
- * A statement states that an atom has an object as a property.
- */
-export type Statement = {
-    readonly atom: Atom;
-    readonly object: EverythingObject;
-};
-
 export const construction = (
     constructor: EverythingObject,
     value: EverythingObject,

@@ -31,12 +31,6 @@ export default (props: {
 
                     const newText = text();
 
-                    if (newText.length === 0) {
-                        // A text object must never be empty.
-                        setText(props.text.text);
-                        return;
-                    }
-
                     if (newText !== props.text.text) {
                         props.setText({type: ObjectType.Text, text: newText});
                     }
