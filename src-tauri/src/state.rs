@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use everything_db::PersistantKnowledge;
+use everything_db::PersistentKnowledge;
 use tokio::sync::Mutex;
 
 use crate::server::PrivateKnowledgeServer;
@@ -16,8 +16,8 @@ impl AppState {
         }
     }
 
-    async fn create_db(path: PathBuf) -> Result<PersistantKnowledge, String> {
-        tauri::async_runtime::spawn_blocking(|| PersistantKnowledge::load(path, true))
+    async fn create_db(path: PathBuf) -> Result<PersistentKnowledge, String> {
+        tauri::async_runtime::spawn_blocking(|| PersistentKnowledge::load(path, true))
             .await
             .unwrap()
             .map_err(|error| error.to_string())

@@ -18,7 +18,7 @@ use everything::{
     knowledge::{Knowledge, Statement, Values},
     model::{Atom, Object},
 };
-use everything_db::{PersistantKnowledge, StatementChange};
+use everything_db::{PersistentKnowledge, StatementChange};
 use iterators::{LazyIteratorPage, LazyIterators};
 use tauri::async_runtime::JoinHandle;
 use tokio::sync::{Mutex, oneshot};
@@ -38,12 +38,12 @@ fn bind_address() -> String {
 }
 
 pub(crate) struct WebServerState {
-    pub persistant_knowledge: Mutex<PersistantKnowledge>,
+    pub persistant_knowledge: Mutex<PersistentKnowledge>,
     lazy_iterators: Mutex<LazyIterators>,
 }
 
 impl WebServerState {
-    pub fn new(knowledge: PersistantKnowledge) -> Self {
+    pub fn new(knowledge: PersistentKnowledge) -> Self {
         Self {
             persistant_knowledge: Mutex::new(knowledge),
             lazy_iterators: Mutex::new(LazyIterators::default()),
@@ -83,7 +83,7 @@ impl WebServerState {
         self.persistant_knowledge.lock().await.path().to_path_buf()
     }
 
-    pub async fn set_knowledge(&self, knowledge: PersistantKnowledge) {
+    pub async fn set_knowledge(&self, knowledge: PersistentKnowledge) {
         *self.persistant_knowledge.lock().await = knowledge;
     }
 
@@ -161,7 +161,7 @@ pub struct PrivateKnowledgeServer {
 }
 
 impl PrivateKnowledgeServer {
-    pub async fn serve(persistant_knowledge: PersistantKnowledge) -> std::io::Result<Self> {
+    pub async fn serve(persistant_knowledge: PersistentKnowledge) -> std::io::Result<Self> {
         let cors = cors_layer();
 
         let state = Arc::new(WebServerState::new(persistant_knowledge));
