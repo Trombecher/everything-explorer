@@ -13,6 +13,21 @@ import {
 const isQueryVariantKey = (key: string): boolean =>
     key.length === 1 && key >= "1" && key <= "9";
 
+/**
+ * Focuses and selects the first input inside the object view. The input is
+ * queried asynchronously because the object may have just been replaced.
+ */
+const focusFirstInput = (container: HTMLElement) => {
+    queueMicrotask(() => {
+        const input = container.querySelector("input");
+
+        if (input) {
+            input.focus();
+            input.select();
+        }
+    });
+};
+
 const isHandledKey = (key: string): boolean =>
     key === "ArrowUp"
     || key === "ArrowDown"
@@ -44,6 +59,8 @@ const isHandledKey = (key: string): boolean =>
     || key === "e"
     || key === "a"
     || key === "t"
+    || key === "'"
+    || key === "x"
     || key === "p"
     || key === "s"
     || key === "c"
@@ -121,14 +138,10 @@ export const handleKeyDown = (props: {
             props.object.type === ObjectType.Atom
             || props.object.type === ObjectType.Integer
             || props.object.type === ObjectType.Text
+            || props.object.type === ObjectType.Character
+            || props.object.type === ObjectType.Byte
         ) {
-            // Focus field
-            const input = props.event.currentTarget.querySelector("input");
-
-            if (input) {
-                input.focus();
-                input.select();
-            }
+            focusFirstInput(props.event.currentTarget);
         }
     } else if (props.event.key === "Backspace" && !props.event.shiftKey) {
         // Replace parent with this object.
@@ -530,20 +543,7 @@ export const handleKeyDown = (props: {
         // Replace with number.
 
         props.setObject({type: ObjectType.Integer, value: 0n});
-
-        // Focus the input once the new object has been rendered. Capture the
-        // container because `event.currentTarget` is cleared after dispatch.
-
-        const container = props.event.currentTarget;
-
-        queueMicrotask(() => {
-            const input = container.querySelector("input");
-
-            if (input) {
-                input.focus();
-                input.select();
-            }
-        });
+        focusFirstInput(props.event.currentTarget);
     } else if (props.event.key === "*") {
         if (!props.setObject) return;
 
@@ -565,5 +565,19 @@ export const handleKeyDown = (props: {
         // Replace with text
 
         props.setObject?.({type: ObjectType.Text, text: ""});
+    } else if (props.event.key === "'") {
+        if (!props.setObject) return;
+
+        // Replace with character
+
+        props.setObject({type: ObjectType.Character, value: "a"});
+        focusFirstInput(props.event.currentTarget);
+    } else if (props.event.key === "x") {
+        if (!props.setObject) return;
+
+        // Replace with byte
+
+        props.setObject({type: ObjectType.Byte, value: 0});
+        focusFirstInput(props.event.currentTarget);
     }
 };

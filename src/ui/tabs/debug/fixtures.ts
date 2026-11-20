@@ -176,6 +176,9 @@ export const createInitialObject2 = (): EverythingObject => ({
             rest: [],
         }),
         nodeToObject({type: NodeType.Parameter, depth: 0n, rest: []}),
+        {type: ObjectType.Character, value: "a"},
+        {type: ObjectType.Character, value: "\n"},
+        {type: ObjectType.Byte, value: 0xa5},
         {
             type: ObjectType.Construction,
             constructor: {type: ObjectType.Character, value: "a"},

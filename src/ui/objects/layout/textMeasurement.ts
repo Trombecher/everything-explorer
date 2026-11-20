@@ -34,7 +34,7 @@ export const measureText = (text: string): number => {
  */
 const staticTextWidthCache = new Map<string, number>();
 
-export const measureStaticText = (text: "," | '"'): number => {
+export const measureStaticText = (text: "," | '"' | "'" | "x"): number => {
     const cached = staticTextWidthCache.get(text);
     if (cached !== undefined) return cached;
 

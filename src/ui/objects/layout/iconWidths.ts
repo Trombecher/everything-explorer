@@ -34,8 +34,3 @@ export const blockIconWidthInPixels = {
  * block's own padding and gaps.
  */
 export const functionParameterNameFieldWidthInPixels = 80;
-
-/**
- * Text that ObjectView renders for object types that have no view yet.
- */
-export const NOT_IMPLEMENTED_TEXT = "NOT IMPL";

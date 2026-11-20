@@ -2,10 +2,10 @@ import {ObjectType} from "@/model";
 import {NodeType} from "@/model/nodes";
 
 import {objectToBlock, type Block} from "../blocks";
+import {escapeCharacterForDisplay} from "../scalarFormatting";
 import {
     blockIconWidthInPixels,
     functionParameterNameFieldWidthInPixels,
-    NOT_IMPLEMENTED_TEXT,
 } from "./iconWidths";
 import type {LayoutOptions} from "./options";
 import {measureStaticText, measureText} from "./textMeasurement";
@@ -406,12 +406,21 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                 options,
             );
         case ObjectType.Character:
+            return rowLayoutWidth(
+                [
+                    measureStaticText("'")
+                        + measureText(escapeCharacterForDisplay(block.value))
+                        + measureStaticText("'"),
+                ],
+                options,
+            );
         case ObjectType.Byte:
-            return (
-                measureText(NOT_IMPLEMENTED_TEXT)
-                + options.block.blockBorderWidthInPixels * 2
-                + options.block.blockPaddingLeftInPixels
-                + options.block.blockPaddingRightInPixels
+            return rowLayoutWidth(
+                [
+                    measureStaticText("x"),
+                    measureText("FF") + options.block.integerInputPaddingX,
+                ],
+                options,
             );
     }
 };

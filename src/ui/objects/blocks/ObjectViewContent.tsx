@@ -9,6 +9,8 @@ import {variant} from "@/util";
 
 import AtomView from "../AtomView";
 import BinaryOperationView from "../BinaryOperationView";
+import ByteView from "../ByteView";
+import CharacterView from "../CharacterView";
 import IfOperationView from "../IfOperationView";
 import IntegerView from "../IntegerView";
 import type {LayoutMode} from "../layout";
@@ -289,6 +291,17 @@ export default (props: {
                         setInteger={props.setObject}
                     />
                 )}
+            </Match>
+            <Match when={variant(props.block, ObjectType.Character)}>
+                {character => (
+                    <CharacterView
+                        character={character()}
+                        setCharacter={props.setObject}
+                    />
+                )}
+            </Match>
+            <Match when={variant(props.block, ObjectType.Byte)}>
+                {byte => <ByteView byte={byte()} setByte={props.setObject} />}
             </Match>
             <Match when={variant(props.block, ObjectType.Set)}>
                 {set => (
