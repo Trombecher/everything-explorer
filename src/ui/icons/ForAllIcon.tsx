@@ -12,8 +12,7 @@ export default (props: {class?: string}) => {
             stroke-linejoin="round"
             {...props}
         >
-            <path d="M5 5 12 19 19 5" />
-            <path d="M8 14h8" />
+            <path d="M5 5 12 19 19 5M7.5 10h9" />
         </svg>
     );
 };
