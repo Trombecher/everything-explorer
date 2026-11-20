@@ -44,7 +44,9 @@ export default (props: {
         >
             <div class="flex shrink-0 flex-col items-center gap-0.5">
                 <Switch>
-                    <Match when={props.connection.type === ConnectionType.Local}>
+                    <Match
+                        when={props.connection.type === ConnectionType.Local}
+                    >
                         <MonitorPcIcon
                             class="size-5 shrink-0 text-fg-muted"
                             aria-hidden="true"

@@ -1,6 +1,7 @@
 import DotIcon from "lucide-solid/icons/dot";
 import EqualIcon from "lucide-solid/icons/equal";
 import PlusIcon from "lucide-solid/icons/plus";
+import type {Component} from "solid-js";
 
 import {ObjectType, type Construction, type EverythingObject} from "@/model";
 import {
@@ -10,6 +11,7 @@ import {
     type CallNode,
     type ContainsNode,
     type EqualNode,
+    type EveryNode,
     type FilterNode,
     type LessNode,
     type MapNode,
@@ -21,9 +23,11 @@ import {
 } from "@/model/nodes";
 
 import CallIcon from "../../icons/CallIcon";
+import ColonIcon from "../../icons/ColonIcon";
 import DotDotIcon from "../../icons/DotDotIcon";
 import ElementOfIcon from "../../icons/ElementOfIcon";
 import FilterIcon from "../../icons/FilterIcon";
+import ForAllIcon from "../../icons/ForAllIcon";
 import LessThanIcon from "../../icons/LessThanIcon";
 import QueryConstructionValuesIcon from "../../icons/QueryConstructionValuesIcon";
 import SetMapIcon from "../../icons/SetMapIcon";
@@ -42,6 +46,7 @@ export type BinaryOperationBlock =
     | UnionNode
     | FilterNode
     | MapNode
+    | EveryNode
     | QueryConstructionValuesNode
     | CallNode
     | Construction;
@@ -57,10 +62,24 @@ export const BlockIcon = {
     [NodeType.Union]: UnionIcon,
     [NodeType.Filter]: FilterIcon,
     [NodeType.Map]: SetMapIcon,
+    [NodeType.Every]: ColonIcon,
     [NodeType.QueryConstructionValues]: QueryConstructionValuesIcon,
     [NodeType.Call]: CallIcon,
     [ObjectType.Construction]: DotDotIcon,
 };
+
+/**
+ * Icons rendered before the first child of a binary operation.
+ *
+ * This is used by quantifier-like nodes such as `every` and `any`, which read
+ * as `prefix set : predicate`.
+ */
+const BlockPrefixIcon: Partial<
+    Record<BinaryOperationBlock["type"], Component<{class?: string}>>
+> = {[NodeType.Every]: ForAllIcon};
+
+export const prefixIconOf = (block: BinaryOperationBlock) =>
+    BlockPrefixIcon[block.type];
 
 export const getFirst = (block: BinaryOperationBlock) => {
     switch (block.type) {
@@ -76,6 +95,7 @@ export const getFirst = (block: BinaryOperationBlock) => {
             return block.element;
         case NodeType.Filter:
         case NodeType.Map:
+        case NodeType.Every:
         case NodeType.QueryConstructionValues:
             return block.set;
         case NodeType.Call:
@@ -101,6 +121,8 @@ export const getSecond = (block: BinaryOperationBlock) => {
             return block.filterFunction;
         case NodeType.Map:
             return block.mapperFunction;
+        case NodeType.Every:
+            return block.predicate;
         case NodeType.QueryConstructionValues:
             return block.propertyConstructor;
         case NodeType.Call:
@@ -127,6 +149,7 @@ export const changeBlockFirst = (
             return nodeToObject({...block, element: newFirst});
         case NodeType.Filter:
         case NodeType.Map:
+        case NodeType.Every:
         case NodeType.QueryConstructionValues:
             return nodeToObject({...block, set: newFirst});
         case NodeType.Call:
@@ -155,6 +178,8 @@ export const changeBlockSecond = (
             return nodeToObject({...block, filterFunction: newSecond});
         case NodeType.Map:
             return nodeToObject({...block, mapperFunction: newSecond});
+        case NodeType.Every:
+            return nodeToObject({...block, predicate: newSecond});
         case NodeType.QueryConstructionValues:
             return nodeToObject({...block, propertyConstructor: newSecond});
         case NodeType.Call:

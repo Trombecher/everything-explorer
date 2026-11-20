@@ -34,6 +34,7 @@ export const childCountOfBlock = (block: Block): number => {
         case NodeType.Union:
         case NodeType.Filter:
         case NodeType.Map:
+        case NodeType.Every:
         case NodeType.QueryConstructionValues:
         case NodeType.Call:
             return 2;

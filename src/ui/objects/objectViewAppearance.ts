@@ -80,6 +80,7 @@ export const objectViewColorCategory = (
         case NodeType.Union:
         case NodeType.Filter:
         case NodeType.Map:
+        case NodeType.Every:
         case NodeType.Fold:
         case ObjectType.Set:
             return ObjectViewColorCategory.Set;
@@ -130,6 +131,7 @@ export const blockInColumnModeIsItemsCenter = (blockType: Block["type"]) => {
         case NodeType.Union:
         case NodeType.Filter:
         case NodeType.Map:
+        case NodeType.Every:
         case NodeType.Fold:
         case NodeType.QueryConstructionValues:
         case NodeType.Call:

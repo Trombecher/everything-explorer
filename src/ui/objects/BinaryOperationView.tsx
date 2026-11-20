@@ -1,3 +1,4 @@
+import {Show} from "solid-js";
 import {Dynamic} from "solid-js/web";
 
 import {useAppState} from "@/context";
@@ -10,6 +11,7 @@ import {
     changeBlockSecond,
     getFirst,
     getSecond,
+    prefixIconOf,
 } from "./blocks/binaryOperationAccessors";
 import {
     binaryBlockSlotWidthBudgetInPixels,
@@ -39,6 +41,9 @@ export default (props: {
 
     return (
         <>
+            <Show when={prefixIconOf(props.block)}>
+                {icon => <Dynamic component={icon()} />}
+            </Show>
             <ObjectView
                 indentLeft={false}
                 parentObjectLayoutMode={layoutMode()}

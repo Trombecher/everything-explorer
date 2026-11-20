@@ -5,6 +5,8 @@ export const blockIconWidthInPixels = {
     construction: 24,
     dot: 24,
     elementOf: 24,
+    colon: 12,
+    prefix: 24,
     equals: 24,
     filter: 48,
     fold: 24,
