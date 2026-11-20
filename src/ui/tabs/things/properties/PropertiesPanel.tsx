@@ -70,11 +70,13 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
                 }
             }}
         >
-            <div class="flex items-center gap-2 p-2">
-                <TablePropertiesIcon />
-                <h2 class="text-xl font-semibold text-fg-strong">
-                    {appState.translate(Phrase.PropertiesOf, undefined)}{" "}
-                    <span class="font-bold text-primary-fg italic">
+            <div class="flex items-center gap-2 py-2 pr-12 pl-2">
+                <TablePropertiesIcon class="shrink-0" />
+                <h2 class="flex min-w-0 items-center gap-1 text-xl font-semibold text-fg-strong">
+                    <span class="shrink-0">
+                        {appState.translate(Phrase.PropertiesOf, undefined)}
+                    </span>
+                    <span class="min-w-0 truncate font-bold text-primary-fg italic">
                         {name() ?? String(props.selectedAtom.value)}
                     </span>
                 </h2>
