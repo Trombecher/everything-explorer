@@ -87,8 +87,6 @@ other items stay valid.
   knowledge server to a separate crate which can run the knowledge server
   headlessly.
 
-- (28) Add more colors to the debug view.
-
 - (30) Better UI for the if-node, maybe with arrows that adapt to the layout?
   (then we would need to measure height which I'd like to avoid).
 
