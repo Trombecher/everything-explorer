@@ -10,6 +10,7 @@ const PropertiesOf = Symbol();
 const CloseProperties = Symbol();
 const AddProperty = Symbol();
 const RemoveProperty = Symbol();
+const NoProperties = Symbol();
 const New = Symbol();
 
 export const thingsPhrases = {
@@ -25,6 +26,7 @@ export const thingsPhrases = {
     CloseProperties,
     AddProperty,
     RemoveProperty,
+    NoProperties,
     New,
 } as const;
 
@@ -41,5 +43,6 @@ export type ThingsTranslationArguments = {
     [CloseProperties]: undefined;
     [AddProperty]: undefined;
     [RemoveProperty]: undefined;
+    [NoProperties]: undefined;
     [New]: undefined;
 };

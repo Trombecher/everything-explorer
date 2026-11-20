@@ -41,11 +41,6 @@ other items stay valid.
 - (13) Decide what to put on the home screen. Release notes? Shortcut buttons
   for recently accessed things?
 
-- (14) Tooltip or message in the properties panel for atoms that do not have any
-  properties (just selected via a new random ULID) in the things tab, that once
-  you close this panel the atom may not be identifiable and the id will be lost.
-  (?)
-
 - (15) The atom properties are not reactive. This leads to objects not appearing
   in the view (when they should, sometimes). Make them reactive with websocket
   (worth?, subscribe / unsubscribe on unmount). Should we just refetch or do

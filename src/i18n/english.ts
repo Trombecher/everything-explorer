@@ -66,6 +66,8 @@ export const english = {
     [Phrase.CloseProperties]: () => "Close properties",
     [Phrase.AddProperty]: () => "Add property",
     [Phrase.RemoveProperty]: () => "Remove property",
+    [Phrase.NoProperties]: () =>
+        "This atom has no properties yet. It is only stored in the knowledge base once it has at least one property, so add one or copy its id before closing this panel.",
     [Phrase.Reload]: () => "Reload",
     [Phrase.Views]: () => "Views",
     [Phrase.Connection]: () => "Connection",

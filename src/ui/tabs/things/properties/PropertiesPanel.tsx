@@ -107,7 +107,7 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
                 <CopyAtomIdButton atom={props.selectedAtom} />
             </div>
 
-            <WidthMeasurer class="flex flex-col gap-2 px-2">
+            <WidthMeasurer class="mt-2 flex flex-col gap-2 px-2">
                 {widthBudgetInPixels => (
                     <ObjectSelectionContext.Provider
                         value={history.objectSelection}
@@ -123,32 +123,46 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
                                 </>
                             }
                         >
-                            <Index each={history.objects()}>
-                                {(object, index) => (
-                                    <PropertyRow
-                                        object={object()}
-                                        index={index}
-                                        siblingCount={history.objects().length}
-                                        widthBudgetInPixels={Math.max(
-                                            widthBudgetInPixels()
-                                                - REMOVE_BUTTON_SPACE,
-                                            0,
+                            <Show
+                                when={history.objects().length > 0}
+                                fallback={
+                                    <p class="rounded-2xl border border-line-subtle bg-surface-sunken p-3 text-sm text-fg-muted">
+                                        {appState.translate(
+                                            Phrase.NoProperties,
+                                            undefined,
                                         )}
-                                        setObject={newObject => {
-                                            if (newObject === undefined) {
-                                                removeProperty(index);
-                                                return;
+                                    </p>
+                                }
+                            >
+                                <Index each={history.objects()}>
+                                    {(object, index) => (
+                                        <PropertyRow
+                                            object={object()}
+                                            index={index}
+                                            siblingCount={
+                                                history.objects().length
                                             }
+                                            widthBudgetInPixels={Math.max(
+                                                widthBudgetInPixels()
+                                                    - REMOVE_BUTTON_SPACE,
+                                                0,
+                                            )}
+                                            setObject={newObject => {
+                                                if (newObject === undefined) {
+                                                    removeProperty(index);
+                                                    return;
+                                                }
 
-                                            history.pushObject(
-                                                index,
-                                                newObject,
-                                            );
-                                        }}
-                                        remove={() => removeProperty(index)}
-                                    />
-                                )}
-                            </Index>
+                                                history.pushObject(
+                                                    index,
+                                                    newObject,
+                                                );
+                                            }}
+                                            remove={() => removeProperty(index)}
+                                        />
+                                    )}
+                                </Index>
+                            </Show>
                         </Show>
                     </ObjectSelectionContext.Provider>
                 )}

@@ -69,6 +69,8 @@ export const german = {
     [Phrase.CloseProperties]: () => "Eigenschaften schließen",
     [Phrase.AddProperty]: () => "Eigenschaft hinzufügen",
     [Phrase.RemoveProperty]: () => "Eigenschaft entfernen",
+    [Phrase.NoProperties]: () =>
+        "Dieses Atom hat noch keine Eigenschaften. Es wird erst in der Wissensbasis gespeichert, sobald es mindestens eine Eigenschaft hat. Füge also eine hinzu oder kopiere seine ID, bevor du diesen Bereich schließt.",
     [Phrase.Reload]: () => "Neu laden",
     [Phrase.Views]: () => "Ansichten",
     [Phrase.Connection]: () => "Verbindung",
