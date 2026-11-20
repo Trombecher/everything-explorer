@@ -1,8 +1,7 @@
 import {Dynamic} from "solid-js/web";
 
 import {useAppState} from "@/context";
-import {defaultObject, type EverythingObject} from "@/model";
-import {nodeToObject, NodeType} from "@/model/nodes";
+import type {EverythingObject} from "@/model";
 
 import {
     BinaryOperationBlock,
@@ -58,21 +57,9 @@ export default (props: {
                     props.setObject
                     && (newFirst => {
                         if (newFirst === undefined) {
-                            if (props.block.type === NodeType.Call) {
-                                // Deleting the callee should keep the call
-                                // node, so reset the callee instead of
-                                // replacing the whole call with its argument.
-                                props.setObject?.(
-                                    nodeToObject({
-                                        ...props.block,
-                                        callee: defaultObject,
-                                    }),
-                                );
-                            } else {
-                                objectSelection.selectParent();
+                            objectSelection.selectParent();
 
-                                props.setObject?.(second());
-                            }
+                            props.setObject?.(second());
                         } else {
                             props.setObject?.(
                                 changeBlockFirst(props.block, newFirst),

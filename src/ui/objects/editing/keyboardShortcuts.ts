@@ -148,7 +148,10 @@ export const handleKeyDown = (props: {
 
         props.replaceParentWithThis?.();
     } else if (props.event.key === "Delete") {
-        // Delete whole object (or replace with empty set).
+        // Delete the whole object. The parent decides what remains: single-child
+        // parents that cannot exist without this object are removed as well,
+        // binary parents keep their other child, sets drop the element, and the
+        // root falls back to the empty set.
 
         props.setObject?.(undefined);
     } else if (props.event.key === "Backspace") {

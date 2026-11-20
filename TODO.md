@@ -22,9 +22,6 @@ other items stay valid.
 
     This may need human assistance.
 
-- (2) For some nodes, backspace and delete hotkeys do not work correctly. It is
-  to determine which blocks do not work beforehand.
-
 - (5) Atom object view ability to search for atoms by their names.
 
 - (6) Search bar searching atoms by name.

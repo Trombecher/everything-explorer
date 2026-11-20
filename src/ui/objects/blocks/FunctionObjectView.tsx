@@ -1,5 +1,5 @@
 import {useAppState} from "@/context";
-import {defaultObject, type EverythingObject} from "@/model";
+import type {EverythingObject} from "@/model";
 import {nodeToObject, type FunctionNode} from "@/model/nodes";
 import type {DeepReadonly} from "@/util";
 
@@ -69,12 +69,20 @@ export default (props: {
                     setObject={
                         props.setObject
                         && (newBody => {
-                            props.setObject?.(
-                                nodeToObject({
-                                    ...props.node,
-                                    body: newBody ?? defaultObject,
-                                }),
-                            );
+                            if (newBody === undefined) {
+                                // A function without a body is meaningless,
+                                // so remove the whole function.
+                                objectSelection.selectParent();
+
+                                props.setObject?.(undefined);
+                            } else {
+                                props.setObject?.(
+                                    nodeToObject({
+                                        ...props.node,
+                                        body: newBody,
+                                    }),
+                                );
+                            }
                         })
                     }
                     path={[...props.path, 0]}
