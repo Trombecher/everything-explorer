@@ -1,10 +1,11 @@
+import CableIcon from "lucide-solid/icons/cable";
 import {Index, Show} from "solid-js";
 
 import {useConnections, usePreferences} from "@/context";
 import {Phrase} from "@/i18n/phrases";
 
 import AddConnectionButton from "./AddConnectionButton";
-import ConnectionCard from "./ConnectionCard";
+import ConnectionRow from "./ConnectionRow";
 
 export default () => {
     const connections = useConnections();
@@ -12,9 +13,12 @@ export default () => {
 
     return (
         <div class="mx-auto my-2 max-w-3xl grow rounded-4xl border border-line-subtle bg-surface-panel p-4">
-            <h2 class="mb-4 text-2xl font-semibold tracking-tight text-fg-strong">
-                {preferences.translate(Phrase.Connections, undefined)}
-            </h2>
+            <div class="mb-4 flex items-center gap-2">
+                <CableIcon />
+                <h2 class="text-2xl font-semibold tracking-tight text-fg-strong">
+                    {preferences.translate(Phrase.Connections, undefined)}
+                </h2>
+            </div>
 
             <div class="mb-4 flex">
                 <AddConnectionButton />
@@ -31,10 +35,10 @@ export default () => {
                     </div>
                 }
             >
-                <div class="grid grid-cols-[repeat(auto-fill,minmax(10rem,1fr))] gap-3">
+                <div class="flex flex-col gap-2">
                     <Index each={connections.list()}>
                         {(connection, connectionIndex) => (
-                            <ConnectionCard
+                            <ConnectionRow
                                 connection={connection()}
                                 connectionIndex={connectionIndex}
                             />

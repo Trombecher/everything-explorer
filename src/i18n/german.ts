@@ -11,6 +11,8 @@ export const german = {
     [Phrase.AddKnowledgeBase]: () => "Wissensbasis hinzufügen",
     [Phrase.CreateNewLocal]: () => "Neue lokale erstellen",
     [Phrase.ExistingLocal]: () => "Bestehende lokale",
+    [Phrase.LocalConnectionsUnavailable]: () =>
+        "Lokale Wissensbasen sind nur in der Desktop-App verfügbar; dieses Frontend läuft headless.",
     [Phrase.RemoteConnection]: () => "Remote-Verbindung",
     [Phrase.AddRemoteConnection]: () => "Remote-Verbindung hinzufügen",
     [Phrase.RemoteConnectionDescription]: () =>

@@ -16,10 +16,14 @@ export default () => {
 
     const [remoteDialogOpen, setRemoteDialogOpen] = createSignal(false);
 
+    // Local knowledge bases are files on this machine, so they can only be
+    // picked when the frontend runs inside the Tauri app.
+    const localConnectionsDisabled = !backend.isApp();
+
     return (
         <>
             <DropdownMenu>
-                <DropdownMenu.Trigger class="flex rounded-xl bg-primary py-1 pr-1 pl-3 font-medium text-on-primary transition select-none data-expanded:bg-primary-hover">
+                <DropdownMenu.Trigger class="flex rounded-xl bg-primary py-1 pr-1 pl-3 font-medium text-on-primary transition select-none hover:bg-primary-hover data-expanded:bg-primary-active">
                     <span>
                         {preferences.translate(
                             Phrase.AddKnowledgeBase,
@@ -38,6 +42,7 @@ export default () => {
                                     Phrase.CreateNewLocal,
                                     undefined,
                                 ),
+                                disabled: localConnectionsDisabled,
                                 handler: async () => {
                                     const path =
                                         await backend.pickPathForNewKnowledgeBaseFile();
@@ -55,6 +60,7 @@ export default () => {
                                     Phrase.ExistingLocal,
                                     undefined,
                                 ),
+                                disabled: localConnectionsDisabled,
                                 handler: async () => {
                                     const path =
                                         await backend.pickKnowledgeBaseFile();
@@ -72,12 +78,22 @@ export default () => {
                                     Phrase.RemoteConnection,
                                     undefined,
                                 ),
+                                disabled: false,
                                 handler: () => setRemoteDialogOpen(true),
                             },
-                        ].map(({name, handler}) => (
+                        ].map(({name, disabled, handler}) => (
                             <DropdownMenu.Item
+                                disabled={disabled}
                                 onClick={handler}
-                                class="flex gap-1 rounded-xl py-1 pr-3 pl-1 hover:bg-primary hover:text-on-primary active:scale-97"
+                                title={
+                                    disabled
+                                        ? preferences.translate(
+                                              Phrase.LocalConnectionsUnavailable,
+                                              undefined,
+                                          )
+                                        : undefined
+                                }
+                                class={`flex gap-1 rounded-xl py-1 pr-3 pl-1 ${disabled ? "text-fg-subtle cursor-not-allowed" : "hover:bg-primary hover:text-on-primary active:scale-97"}`}
                             >
                                 <PlusIcon /> {name}
                             </DropdownMenu.Item>

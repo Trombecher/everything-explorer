@@ -2,6 +2,7 @@ const Connections = Symbol();
 const AddKnowledgeBase = Symbol();
 const CreateNewLocal = Symbol();
 const ExistingLocal = Symbol();
+const LocalConnectionsUnavailable = Symbol();
 const RemoteConnection = Symbol();
 const AddRemoteConnection = Symbol();
 const RemoteConnectionDescription = Symbol();
@@ -26,6 +27,7 @@ export const connectionPhrases = {
     AddKnowledgeBase,
     CreateNewLocal,
     ExistingLocal,
+    LocalConnectionsUnavailable,
     RemoteConnection,
     AddRemoteConnection,
     RemoteConnectionDescription,
@@ -51,6 +53,7 @@ export type ConnectionTranslationArguments = {
     [AddKnowledgeBase]: undefined;
     [CreateNewLocal]: undefined;
     [ExistingLocal]: undefined;
+    [LocalConnectionsUnavailable]: undefined;
     [RemoteConnection]: undefined;
     [AddRemoteConnection]: undefined;
     [RemoteConnectionDescription]: undefined;

@@ -11,6 +11,8 @@ export const english = {
     [Phrase.AddKnowledgeBase]: () => "Add Knowledge Base",
     [Phrase.CreateNewLocal]: () => "Create New Local",
     [Phrase.ExistingLocal]: () => "Existing Local",
+    [Phrase.LocalConnectionsUnavailable]: () =>
+        "Local knowledge bases are only available in the desktop app; this frontend is running headless.",
     [Phrase.RemoteConnection]: () => "Remote Connection",
     [Phrase.AddRemoteConnection]: () => "Add Remote Connection",
     [Phrase.RemoteConnectionDescription]: () =>
