@@ -37,6 +37,9 @@ export namespace NodeType {
         "NodeType.QueryConstructionValues",
     );
     export const QueryConstructions = Symbol("NodeType.QueryConstructions");
+    export const ConstructionConstructor = Symbol(
+        "NodeType.ConstructionConstructor",
+    );
     export const If = Symbol("NodeType.If");
     export const Call = Symbol("NodeType.Call");
     export const Parameter = Symbol("NodeType.Parameter");
@@ -242,6 +245,12 @@ export type QueryConstructionsNode = {
     readonly rest: readonly EverythingObject[];
 };
 
+export type ConstructionConstructorNode = {
+    readonly type: typeof NodeType.ConstructionConstructor;
+    readonly construction: EverythingObject;
+    readonly rest: readonly EverythingObject[];
+};
+
 export type IfNode = {
     readonly type: typeof NodeType.If;
     readonly condition: EverythingObject;
@@ -294,6 +303,7 @@ export type Node =
     | IsSetNode
     | QueryConstructionValuesNode
     | QueryConstructionsNode
+    | ConstructionConstructorNode
     | IfNode
     | CallNode
     | ParameterNode;

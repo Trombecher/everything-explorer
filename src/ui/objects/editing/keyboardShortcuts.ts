@@ -53,6 +53,7 @@ const isHandledKey = (key: string): boolean =>
     || key === "I"
     || key === "P"
     || key === "K"
+    || key === "k"
     || key === "F"
     || key === "A"
     || key === "E"
@@ -283,6 +284,12 @@ export const handleKeyDown = (props: {
                     // Retain inner object.
 
                     props.setObject(node.inner);
+                    break;
+                }
+                case NodeType.ConstructionConstructor: {
+                    // Retain construction.
+
+                    props.setObject(node.construction);
                     break;
                 }
                 case NodeType.Union: {
@@ -540,6 +547,18 @@ export const handleKeyDown = (props: {
             nodeToObject({
                 type: NodeType.IsConstruction,
                 inner: props.object,
+                rest: [],
+            }),
+        );
+
+        props.objectSelection.selectChild(0);
+    } else if (props.event.key === "k") {
+        if (!props.setObject) return;
+
+        props.setObject(
+            nodeToObject({
+                type: NodeType.ConstructionConstructor,
+                construction: props.object,
                 rest: [],
             }),
         );

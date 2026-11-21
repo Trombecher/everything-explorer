@@ -26,6 +26,7 @@ export const childCountOfBlock = (block: Block): number => {
         case NodeType.IsAtom:
         case NodeType.IsConstruction:
         case NodeType.IsSet:
+        case NodeType.ConstructionConstructor:
             return 1;
         case ObjectType.Construction:
         case NodeType.Plus:

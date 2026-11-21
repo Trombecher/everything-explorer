@@ -167,6 +167,20 @@ export const calculateQueryConstructionsNodeOperandWidthBudgetInPixels = (
             - layoutOptions.block.itemGapInPixels,
     );
 
+export const calculateConstructionConstructorNodeOperandWidthBudgetInPixels = (
+    widthBudgetInPixels: number,
+    layoutOptions: LayoutOptions,
+): number =>
+    Math.max(
+        0,
+        widthBudgetInPixels
+            - layoutOptions.block.blockBorderWidthInPixels * 2
+            - layoutOptions.block.blockPaddingLeftInPixels
+            - layoutOptions.block.blockPaddingRightInPixels
+            - blockIconWidthInPixels.constructionConstructor
+            - layoutOptions.block.itemGapInPixels,
+    );
+
 export const calculateQueryAtomsWithConstructorNodeOperandWidthBudgetInPixels =
     (widthBudgetInPixels: number, layoutOptions: LayoutOptions): number =>
         Math.max(

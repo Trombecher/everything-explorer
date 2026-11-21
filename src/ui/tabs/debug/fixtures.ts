@@ -236,6 +236,15 @@ export const createInitialObject2 = (): EverythingObject => ({
             rest: [],
         }),
         nodeToObject({
+            type: NodeType.ConstructionConstructor,
+            construction: {
+                type: ObjectType.Construction,
+                constructor: {type: ObjectType.Atom, value: 1n},
+                value: defaultObject,
+            },
+            rest: [],
+        }),
+        nodeToObject({
             type: NodeType.If,
             condition: {type: ObjectType.Integer, value: 1n},
             thenBranch: {type: ObjectType.Integer, value: 42n},

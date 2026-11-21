@@ -5,6 +5,7 @@ import type {EverythingObject} from "@/model";
 import {
     nodeToObject,
     NodeType,
+    type ConstructionConstructorNode,
     type HasValueNode,
     type IsAtomNode,
     type IsConstructionNode,
@@ -20,6 +21,7 @@ import {
 import AtomsWithConstructorIcon from "../icons/atoms/AtomsWithConstructorIcon";
 import AtomsWithPropertyIcon from "../icons/atoms/AtomsWithPropertyIcon";
 import IsAtomIcon from "../icons/atoms/IsAtomIcon";
+import ConstructionConstructorIcon from "../icons/constructions/ConstructionConstructorIcon";
 import IsConstructionIcon from "../icons/constructions/IsConstructionIcon";
 import NotIcon from "../icons/math/NotIcon";
 import HasValueIcon from "../icons/query/HasValueIcon";
@@ -29,6 +31,7 @@ import IsSetIcon from "../icons/sets/IsSetIcon";
 import UnwrapIcon from "../icons/sets/UnwrapIcon";
 import {
     calculateLayoutModeOfBlock,
+    calculateConstructionConstructorNodeOperandWidthBudgetInPixels,
     calculateHasValueNodeOperandWidthBudgetInPixels,
     calculateIsAtomNodeOperandWidthBudgetInPixels,
     calculateIsConstructionNodeOperandWidthBudgetInPixels,
@@ -44,6 +47,7 @@ import ObjectView from "./ObjectView";
 import {useObjectSelection, type ObjectSelectionPath} from "./selection";
 
 export type UnaryOperationBlock =
+    | ConstructionConstructorNode
     | HasValueNode
     | IsAtomNode
     | IsConstructionNode
@@ -56,6 +60,7 @@ export type UnaryOperationBlock =
     | UnwrapNode;
 
 const BlockIcon = {
+    [NodeType.ConstructionConstructor]: ConstructionConstructorIcon,
     [NodeType.HasValue]: HasValueIcon,
     [NodeType.IsAtom]: IsAtomIcon,
     [NodeType.IsConstruction]: IsConstructionIcon,
@@ -70,6 +75,8 @@ const BlockIcon = {
 
 const operandOf = (block: UnaryOperationBlock): EverythingObject => {
     switch (block.type) {
+        case NodeType.ConstructionConstructor:
+            return block.construction;
         case NodeType.HasValue:
             return block.inner;
         case NodeType.IsAtom:
@@ -98,6 +105,8 @@ const withOperand = (
     operand: EverythingObject,
 ): EverythingObject => {
     switch (block.type) {
+        case NodeType.ConstructionConstructor:
+            return nodeToObject({...block, construction: operand});
         case NodeType.HasValue:
             return nodeToObject({...block, inner: operand});
         case NodeType.IsAtom:
@@ -143,6 +152,11 @@ export default (props: {
         const layoutOptions = appState.layoutOptions();
 
         switch (props.block.type) {
+            case NodeType.ConstructionConstructor:
+                return calculateConstructionConstructorNodeOperandWidthBudgetInPixels(
+                    props.wholeWidthBudgetInPixels,
+                    layoutOptions,
+                );
             case NodeType.HasValue:
                 return calculateHasValueNodeOperandWidthBudgetInPixels(
                     props.wholeWidthBudgetInPixels,

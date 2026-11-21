@@ -248,6 +248,11 @@ export namespace Atom {
         value: 2166944102907011869965838540132997515n,
     } as const satisfies Atom;
 
+    export const NodeConstructorOfConstruction = {
+        type: ObjectType.Atom,
+        value: 2166944102906855387534895944602332938n,
+    } as const satisfies Atom;
+
     export const NodeConstructionValuesSet = {
         type: ObjectType.Atom,
         value: 2166943953076489335344956167016992222n,
