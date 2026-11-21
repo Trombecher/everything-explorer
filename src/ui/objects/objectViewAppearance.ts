@@ -101,14 +101,14 @@ export const objectViewColorCategory = (
         case NodeType.QueryAtomsWithConstructor:
         case NodeType.QueryConstructionValues:
         case NodeType.QueryConstructions:
-        case NodeType.ConstructionConstructor:
-        case NodeType.ConstructionValue:
             return ObjectViewColorCategory.Query;
 
         case NodeType.If:
             return ObjectViewColorCategory.Control;
 
         case ObjectType.Construction:
+        case NodeType.ConstructionConstructor:
+        case NodeType.ConstructionValue:
             return ObjectViewColorCategory.Constructions;
 
         case ObjectType.Atom:
