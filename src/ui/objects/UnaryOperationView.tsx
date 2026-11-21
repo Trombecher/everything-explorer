@@ -6,6 +6,7 @@ import {
     nodeToObject,
     NodeType,
     type HasValueNode,
+    type IsAtomNode,
     type IsSetNode,
     type NotNode,
     type QueryAtomsWithConstructorNode,
@@ -18,6 +19,7 @@ import {
 import AtomsWithConstructorIcon from "../icons/AtomsWithConstructorIcon";
 import AtomsWithPropertyIcon from "../icons/AtomsWithPropertyIcon";
 import HasValueIcon from "../icons/HasValueIcon";
+import IsAtomIcon from "../icons/IsAtomIcon";
 import IsSetIcon from "../icons/IsSetIcon";
 import NotIcon from "../icons/NotIcon";
 import QueryConstructionsIcon from "../icons/QueryConstructionsIcon";
@@ -26,6 +28,7 @@ import ValuesOfIcon from "../icons/ValuesOfIcon";
 import {
     calculateLayoutModeOfBlock,
     calculateHasValueNodeOperandWidthBudgetInPixels,
+    calculateIsAtomNodeOperandWidthBudgetInPixels,
     calculateIsSetNodeOperandWidthBudgetInPixels,
     calculateNotNodeOperandWidthBudgetInPixels,
     calculateQueryAtomsWithConstructorNodeOperandWidthBudgetInPixels,
@@ -39,6 +42,7 @@ import {useObjectSelection, type ObjectSelectionPath} from "./selection";
 
 export type UnaryOperationBlock =
     | HasValueNode
+    | IsAtomNode
     | IsSetNode
     | NotNode
     | QueryAtomsWithConstructorNode
@@ -49,6 +53,7 @@ export type UnaryOperationBlock =
 
 const BlockIcon = {
     [NodeType.HasValue]: HasValueIcon,
+    [NodeType.IsAtom]: IsAtomIcon,
     [NodeType.IsSet]: IsSetIcon,
     [NodeType.Not]: NotIcon,
     [NodeType.QueryAtomsWithConstructor]: AtomsWithConstructorIcon,
@@ -61,6 +66,8 @@ const BlockIcon = {
 const operandOf = (block: UnaryOperationBlock): EverythingObject => {
     switch (block.type) {
         case NodeType.HasValue:
+            return block.inner;
+        case NodeType.IsAtom:
             return block.inner;
         case NodeType.IsSet:
             return block.inner;
@@ -85,6 +92,8 @@ const withOperand = (
 ): EverythingObject => {
     switch (block.type) {
         case NodeType.HasValue:
+            return nodeToObject({...block, inner: operand});
+        case NodeType.IsAtom:
             return nodeToObject({...block, inner: operand});
         case NodeType.IsSet:
             return nodeToObject({...block, inner: operand});
@@ -127,6 +136,11 @@ export default (props: {
         switch (props.block.type) {
             case NodeType.HasValue:
                 return calculateHasValueNodeOperandWidthBudgetInPixels(
+                    props.wholeWidthBudgetInPixels,
+                    layoutOptions,
+                );
+            case NodeType.IsAtom:
+                return calculateIsAtomNodeOperandWidthBudgetInPixels(
                     props.wholeWidthBudgetInPixels,
                     layoutOptions,
                 );

@@ -51,6 +51,7 @@ const isHandledKey = (key: string): boolean =>
     || key === "v"
     || key === "U"
     || key === "I"
+    || key === "P"
     || key === "F"
     || key === "A"
     || key === "E"
@@ -256,6 +257,12 @@ export const handleKeyDown = (props: {
                     // Retain set.
 
                     props.setObject(node.set);
+                    break;
+                }
+                case NodeType.IsAtom: {
+                    // Retain inner object.
+
+                    props.setObject(node.inner);
                     break;
                 }
                 case NodeType.IsSet: {
@@ -465,6 +472,18 @@ export const handleKeyDown = (props: {
 
         props.setObject(
             nodeToObject({type: NodeType.IsSet, inner: props.object, rest: []}),
+        );
+
+        props.objectSelection.selectChild(0);
+    } else if (props.event.key === "P") {
+        if (!props.setObject) return;
+
+        props.setObject(
+            nodeToObject({
+                type: NodeType.IsAtom,
+                inner: props.object,
+                rest: [],
+            }),
         );
 
         props.objectSelection.selectChild(0);

@@ -205,6 +205,14 @@ export const nodeToObject = (node: Node): EverythingObject => {
                     ...node.rest,
                 ],
             };
+        case NodeType.IsAtom:
+            return {
+                type: ObjectType.Set,
+                elements: [
+                    construction(Atom.NodeIsAtom, node.inner),
+                    ...node.rest,
+                ],
+            };
         case NodeType.IsSet:
             return {
                 type: ObjectType.Set,
