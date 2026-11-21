@@ -40,6 +40,7 @@ export namespace NodeType {
     export const ConstructionConstructor = Symbol(
         "NodeType.ConstructionConstructor",
     );
+    export const ConstructionValue = Symbol("NodeType.ConstructionValue");
     export const If = Symbol("NodeType.If");
     export const Call = Symbol("NodeType.Call");
     export const Parameter = Symbol("NodeType.Parameter");
@@ -251,6 +252,12 @@ export type ConstructionConstructorNode = {
     readonly rest: readonly EverythingObject[];
 };
 
+export type ConstructionValueNode = {
+    readonly type: typeof NodeType.ConstructionValue;
+    readonly construction: EverythingObject;
+    readonly rest: readonly EverythingObject[];
+};
+
 export type IfNode = {
     readonly type: typeof NodeType.If;
     readonly condition: EverythingObject;
@@ -304,6 +311,7 @@ export type Node =
     | QueryConstructionValuesNode
     | QueryConstructionsNode
     | ConstructionConstructorNode
+    | ConstructionValueNode
     | IfNode
     | CallNode
     | ParameterNode;
