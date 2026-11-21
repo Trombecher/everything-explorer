@@ -27,7 +27,7 @@ import {
 
 import CallIcon from "../../icons/CallIcon";
 import ColonIcon from "../../icons/ColonIcon";
-import DotDotIcon from "../../icons/DotDotIcon";
+import ConstructionIcon from "../../icons/ConstructionIcon";
 import ElementOfIcon from "../../icons/ElementOfIcon";
 import ExistsIcon from "../../icons/ExistsIcon";
 import FilterIcon from "../../icons/FilterIcon";
@@ -77,7 +77,7 @@ export const BlockIcon = {
     [NodeType.Any]: ColonIcon,
     [NodeType.QueryConstructionValues]: QueryConstructionValuesIcon,
     [NodeType.Call]: CallIcon,
-    [ObjectType.Construction]: DotDotIcon,
+    [ObjectType.Construction]: ConstructionIcon,
 };
 
 /**

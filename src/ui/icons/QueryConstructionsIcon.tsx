@@ -1,12 +1,12 @@
 import SearchIcon from "lucide-solid/icons/search";
 
-import DotDotIcon from "./DotDotIcon";
+import ConstructionIcon from "./ConstructionIcon";
 
 export default () => {
     return (
         <div class="flex items-center">
             <SearchIcon />
-            <DotDotIcon />
+            <ConstructionIcon />
         </div>
     );
 };

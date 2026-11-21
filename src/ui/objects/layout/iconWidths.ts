@@ -1,7 +1,7 @@
 export const blockIconWidthInPixels = {
     atom: 24,
-    atomsWithConstructor: 48,
-    atomsWithProperty: 48,
+    atomsWithConstructor: 56,
+    atomsWithProperty: 56,
     construction: 24,
     countBar: 2,
     dot: 24,
@@ -14,7 +14,7 @@ export const blockIconWidthInPixels = {
     squarePlay: 24,
     map: 48,
     plus: 24,
-    queryConstructionValues: 48,
+    queryConstructionValues: 72,
     queryConstructions: 48,
     quote: 24,
     union: 24,

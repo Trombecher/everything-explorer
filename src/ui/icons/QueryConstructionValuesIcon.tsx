@@ -1,11 +1,14 @@
-import BoxIcon from "lucide-solid/icons/box";
-import SearchIcon from "lucide-solid/icons/search";
+import AtomIcon from "lucide-solid/icons/atom";
+
+import ConstructionConstructorIcon from "./ConstructionConstructorIcon";
+import SearchDotIcon from "./SearchDotIcon";
 
 export default () => {
     return (
         <div class="flex items-center">
-            <SearchIcon />
-            <BoxIcon />
+            <AtomIcon />
+            <SearchDotIcon />
+            <ConstructionConstructorIcon />
         </div>
     );
 };

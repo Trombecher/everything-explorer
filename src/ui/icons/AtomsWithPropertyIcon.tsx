@@ -1,11 +1,12 @@
-import AtomIcon from "lucide-solid/icons/atom";
-import SearchIcon from "lucide-solid/icons/search";
+import TagIcon from "lucide-solid/icons/tag";
+
+import SearchAtomsIcon from "./SearchAtomsIcon";
 
 export default () => {
     return (
         <div class="flex items-center">
-            <SearchIcon />
-            <AtomIcon />
+            <SearchAtomsIcon />
+            <TagIcon />
         </div>
     );
 };
