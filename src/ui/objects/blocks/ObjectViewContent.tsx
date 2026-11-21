@@ -287,6 +287,16 @@ export default (props: {
                     />
                 )}
             </Match>
+            <Match when={variant(props.block, NodeType.IsConstruction)}>
+                {isConstructionNode => (
+                    <UnaryOperationView
+                        block={isConstructionNode()}
+                        path={props.path}
+                        wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                        setObject={props.setObject}
+                    />
+                )}
+            </Match>
             <Match when={variant(props.block, NodeType.IsSet)}>
                 {isSetNode => (
                     <UnaryOperationView

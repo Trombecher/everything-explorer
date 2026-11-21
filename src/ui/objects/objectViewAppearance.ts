@@ -75,6 +75,7 @@ export const objectViewColorCategory = (
         case NodeType.And:
         case NodeType.Or:
         case NodeType.IsAtom:
+        case NodeType.IsConstruction:
         case NodeType.IsSet:
             return ObjectViewColorCategory.Boolean;
 
