@@ -74,6 +74,7 @@ export const objectViewColorCategory = (
         case NodeType.Not:
         case NodeType.And:
         case NodeType.Or:
+        case NodeType.Xor:
         case NodeType.IsAtom:
         case NodeType.IsConstruction:
         case NodeType.IsSet:
@@ -133,6 +134,7 @@ export const blockInColumnModeIsItemsCenter = (blockType: Block["type"]) => {
         case NodeType.Contains:
         case NodeType.And:
         case NodeType.Or:
+        case NodeType.Xor:
         case NodeType.Union:
         case NodeType.Filter:
         case NodeType.Map:

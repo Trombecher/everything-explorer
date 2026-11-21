@@ -56,6 +56,7 @@ const isHandledKey = (key: string): boolean =>
     || key === "F"
     || key === "A"
     || key === "E"
+    || key === "X"
     || key === " "
     || key === "*"
     || key === "l"
@@ -207,6 +208,12 @@ export const handleKeyDown = (props: {
                     break;
                 }
                 case NodeType.Or: {
+                    // Retain first operand.
+
+                    props.setObject(node.first);
+                    break;
+                }
+                case NodeType.Xor: {
                     // Retain first operand.
 
                     props.setObject(node.first);
@@ -382,6 +389,19 @@ export const handleKeyDown = (props: {
         props.setObject(
             nodeToObject({
                 type: NodeType.Or,
+                first: props.object,
+                second: defaultObject,
+                rest: [],
+            }),
+        );
+
+        props.objectSelection.selectChild(1);
+    } else if (props.event.key === "X") {
+        if (!props.setObject) return;
+
+        props.setObject(
+            nodeToObject({
+                type: NodeType.Xor,
                 first: props.object,
                 second: defaultObject,
                 rest: [],

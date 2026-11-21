@@ -149,6 +149,25 @@ const objectToNodeWithoutCache = (
         }
     }
 
+    some = singleSetAtomValue(object, Atom.NodeXorFirst.value);
+    if (some) {
+        const second = singleSetAtomValue(object, Atom.NodeXorSecond.value);
+
+        if (second) {
+            if (finalNode) return NotANode;
+
+            finalNode = {
+                type: NodeType.Xor,
+                first: some,
+                second,
+                rest: withoutAtomConstructors(object.elements, [
+                    Atom.NodeXorFirst.value,
+                    Atom.NodeXorSecond.value,
+                ]),
+            };
+        }
+    }
+
     some = singleSetAtomValue(object, Atom.NodeNot.value);
     if (some) {
         if (finalNode) return NotANode;

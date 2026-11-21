@@ -21,6 +21,7 @@ import {
     type QueryConstructionValuesNode,
     type TimesNode,
     type UnionNode,
+    type XorNode,
 } from "@/model/nodes";
 
 import CallIcon from "../../icons/CallIcon";
@@ -36,6 +37,7 @@ import SetMapIcon from "../../icons/SetMapIcon";
 import UnionIcon from "../../icons/UnionIcon";
 import VeeIcon from "../../icons/VeeIcon";
 import WedgeIcon from "../../icons/WedgeIcon";
+import XorIcon from "../../icons/XorIcon";
 
 export type BinaryOperationBlock =
     | TimesNode
@@ -45,6 +47,7 @@ export type BinaryOperationBlock =
     | ContainsNode
     | AndNode
     | OrNode
+    | XorNode
     | UnionNode
     | FilterNode
     | MapNode
@@ -62,6 +65,7 @@ export const BlockIcon = {
     [NodeType.Contains]: ElementOfIcon,
     [NodeType.And]: WedgeIcon,
     [NodeType.Or]: VeeIcon,
+    [NodeType.Xor]: XorIcon,
     [NodeType.Union]: UnionIcon,
     [NodeType.Filter]: FilterIcon,
     [NodeType.Map]: SetMapIcon,
@@ -93,6 +97,7 @@ export const getFirst = (block: BinaryOperationBlock) => {
         case NodeType.Less:
         case NodeType.And:
         case NodeType.Or:
+        case NodeType.Xor:
         case NodeType.Union:
             return block.first;
         case NodeType.Contains:
@@ -118,6 +123,7 @@ export const getSecond = (block: BinaryOperationBlock) => {
         case NodeType.Less:
         case NodeType.And:
         case NodeType.Or:
+        case NodeType.Xor:
         case NodeType.Union:
             return block.second;
         case NodeType.Contains:
@@ -150,6 +156,7 @@ export const changeBlockFirst = (
         case NodeType.Less:
         case NodeType.And:
         case NodeType.Or:
+        case NodeType.Xor:
         case NodeType.Union:
             return nodeToObject({...block, first: newFirst});
         case NodeType.Contains:
@@ -178,6 +185,7 @@ export const changeBlockSecond = (
         case NodeType.Less:
         case NodeType.And:
         case NodeType.Or:
+        case NodeType.Xor:
         case NodeType.Union:
             return nodeToObject({...block, second: newSecond});
         case NodeType.Contains:

@@ -11,6 +11,7 @@ export namespace NodeType {
     export const Contains = Symbol("NodeType.Contains");
     export const And = Symbol("NodeType.And");
     export const Or = Symbol("NodeType.Or");
+    export const Xor = Symbol("NodeType.Xor");
     export const Not = Symbol("NodeType.Not");
     export const Count = Symbol("NodeType.Count");
     export const Union = Symbol("NodeType.Union");
@@ -105,6 +106,13 @@ export type AndNode = {
 
 export type OrNode = {
     readonly type: typeof NodeType.Or;
+    readonly first: EverythingObject;
+    readonly second: EverythingObject;
+    readonly rest: readonly EverythingObject[];
+};
+
+export type XorNode = {
+    readonly type: typeof NodeType.Xor;
     readonly first: EverythingObject;
     readonly second: EverythingObject;
     readonly rest: readonly EverythingObject[];
@@ -258,6 +266,7 @@ export type Node =
     | ContainsNode
     | AndNode
     | OrNode
+    | XorNode
     | NotNode
     | CountNode
     | UnionNode

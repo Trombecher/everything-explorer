@@ -91,6 +91,15 @@ export const nodeToObject = (node: Node): EverythingObject => {
                     ...node.rest,
                 ],
             };
+        case NodeType.Xor:
+            return {
+                type: ObjectType.Set,
+                elements: [
+                    construction(Atom.NodeXorFirst, node.first),
+                    construction(Atom.NodeXorSecond, node.second),
+                    ...node.rest,
+                ],
+            };
         case NodeType.Not:
             return {
                 type: ObjectType.Set,

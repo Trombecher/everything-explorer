@@ -81,6 +81,12 @@ export const createInitialObject2 = (): EverythingObject => ({
             rest: [],
         }),
         nodeToObject({
+            type: NodeType.Xor,
+            first: {type: ObjectType.Integer, value: 1n},
+            second: {type: ObjectType.Integer, value: 0n},
+            rest: [],
+        }),
+        nodeToObject({
             type: NodeType.Not,
             operand: {type: ObjectType.Integer, value: 0n},
             rest: [],

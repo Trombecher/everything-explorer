@@ -145,6 +145,16 @@ export default (props: {
                     />
                 )}
             </Match>
+            <Match when={variant(props.block, NodeType.Xor)}>
+                {xorNode => (
+                    <BinaryOperationView
+                        block={xorNode()}
+                        path={props.path}
+                        wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                        setObject={props.setObject}
+                    />
+                )}
+            </Match>
             <Match when={variant(props.block, NodeType.Not)}>
                 {notNode => (
                     <UnaryOperationView

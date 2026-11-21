@@ -27,6 +27,7 @@ export const blockIconWidthInPixels = {
     vee: 24,
     wedge: 24,
     x: 24,
+    xor: 24,
     brace: 12,
     blackboardZ: 24,
     mapsTo: 32,
