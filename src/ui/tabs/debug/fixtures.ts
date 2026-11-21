@@ -193,6 +193,7 @@ export const createInitialObject2 = (): EverythingObject => ({
             rest: [],
         }),
         nodeToObject({type: NodeType.Unwrap, set: defaultObject, rest: []}),
+        nodeToObject({type: NodeType.IsSet, inner: defaultObject, rest: []}),
         nodeToObject({
             type: NodeType.Count,
             inner: {

@@ -50,6 +50,7 @@ const isHandledKey = (key: string): boolean =>
     || key === "h"
     || key === "v"
     || key === "U"
+    || key === "I"
     || key === "F"
     || key === "A"
     || key === "E"
@@ -257,6 +258,12 @@ export const handleKeyDown = (props: {
                     props.setObject(node.set);
                     break;
                 }
+                case NodeType.IsSet: {
+                    // Retain inner object.
+
+                    props.setObject(node.inner);
+                    break;
+                }
                 case NodeType.Union: {
                     // Retain first operand.
 
@@ -450,6 +457,14 @@ export const handleKeyDown = (props: {
 
         props.setObject(
             nodeToObject({type: NodeType.Unwrap, set: props.object, rest: []}),
+        );
+
+        props.objectSelection.selectChild(0);
+    } else if (props.event.key === "I") {
+        if (!props.setObject) return;
+
+        props.setObject(
+            nodeToObject({type: NodeType.IsSet, inner: props.object, rest: []}),
         );
 
         props.objectSelection.selectChild(0);

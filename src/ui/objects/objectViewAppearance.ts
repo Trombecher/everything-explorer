@@ -74,6 +74,7 @@ export const objectViewColorCategory = (
         case NodeType.Not:
         case NodeType.And:
         case NodeType.Or:
+        case NodeType.IsSet:
             return ObjectViewColorCategory.Boolean;
 
         case NodeType.Contains:

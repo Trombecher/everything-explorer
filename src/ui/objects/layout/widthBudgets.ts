@@ -221,6 +221,20 @@ export const calculateUnwrapNodeOperandWidthBudgetInPixels = (
             - layoutOptions.block.itemGapInPixels,
     );
 
+export const calculateIsSetNodeOperandWidthBudgetInPixels = (
+    widthBudgetInPixels: number,
+    layoutOptions: LayoutOptions,
+): number =>
+    Math.max(
+        0,
+        widthBudgetInPixels
+            - layoutOptions.block.blockBorderWidthInPixels * 2
+            - layoutOptions.block.blockPaddingLeftInPixels
+            - layoutOptions.block.blockPaddingRightInPixels
+            - blockIconWidthInPixels.isSet
+            - layoutOptions.block.itemGapInPixels,
+    );
+
 export const calculateCountNodeOperandWidthBudgetInPixels = (
     widthBudgetInPixels: number,
     layoutOptions: LayoutOptions,
