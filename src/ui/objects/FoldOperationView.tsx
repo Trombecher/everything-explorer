@@ -4,7 +4,7 @@ import {useAppState} from "@/context";
 import type {EverythingObject} from "@/model";
 import {nodeToObject, type FoldNode} from "@/model/nodes";
 
-import FoldIcon from "../icons/FoldIcon";
+import FoldIcon from "../icons/query/FoldIcon";
 import {
     binaryBlockSlotWidthBudgetInPixels,
     calculateLayoutModeOfBlock,

@@ -1,5 +1,5 @@
 import {ObjectType, type IntegerObject} from "@/model";
-import BlackBoardZIcon from "@/ui/icons/BlackBoardZIcon";
+import BlackBoardZIcon from "@/ui/icons/math/BlackBoardZIcon";
 import BigIntTextField from "@/ui/reuse/BigIntTextField";
 
 export default (props: {

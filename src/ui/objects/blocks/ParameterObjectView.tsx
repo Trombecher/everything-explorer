@@ -5,7 +5,7 @@ import {Phrase} from "@/i18n/phrases";
 import type {EverythingObject} from "@/model";
 import {nodeToObject, type ParameterNode} from "@/model/nodes";
 
-import ItalicXIcon from "../../icons/ItalicXIcon";
+import ItalicXIcon from "../../icons/functions/ItalicXIcon";
 import Select from "../../reuse/Select";
 import {useEnclosingFunctions} from "../enclosingFunctions";
 

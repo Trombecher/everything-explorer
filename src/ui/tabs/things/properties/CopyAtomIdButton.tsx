@@ -4,7 +4,7 @@ import {createSignal, onCleanup, Show} from "solid-js";
 import {usePreferences} from "@/context";
 import {Phrase} from "@/i18n/phrases";
 import type {Atom} from "@/model/atoms";
-import CopyIcon from "@/ui/icons/CopyIcon";
+import CopyIcon from "@/ui/icons/actions/CopyIcon";
 import Button, {ButtonSeverity} from "@/ui/reuse/Button";
 
 export default (props: {atom: Atom}) => {

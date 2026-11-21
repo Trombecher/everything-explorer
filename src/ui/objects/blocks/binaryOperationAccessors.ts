@@ -25,21 +25,21 @@ import {
     type XorNode,
 } from "@/model/nodes";
 
-import CallIcon from "../../icons/CallIcon";
-import ColonIcon from "../../icons/ColonIcon";
-import ConstructionIcon from "../../icons/ConstructionIcon";
-import ElementOfIcon from "../../icons/ElementOfIcon";
-import ExistsIcon from "../../icons/ExistsIcon";
-import FilterIcon from "../../icons/FilterIcon";
-import ForAllIcon from "../../icons/ForAllIcon";
-import IntersectionIcon from "../../icons/IntersectionIcon";
-import LessThanIcon from "../../icons/LessThanIcon";
-import QueryConstructionValuesIcon from "../../icons/QueryConstructionValuesIcon";
-import SetMapIcon from "../../icons/SetMapIcon";
-import UnionIcon from "../../icons/UnionIcon";
-import VeeIcon from "../../icons/VeeIcon";
-import WedgeIcon from "../../icons/WedgeIcon";
-import XorIcon from "../../icons/XorIcon";
+import ConstructionIcon from "../../icons/constructions/ConstructionIcon";
+import CallIcon from "../../icons/functions/CallIcon";
+import ElementOfIcon from "../../icons/math/ElementOfIcon";
+import ExistsIcon from "../../icons/math/ExistsIcon";
+import ForAllIcon from "../../icons/math/ForAllIcon";
+import IntersectionIcon from "../../icons/math/IntersectionIcon";
+import LessThanIcon from "../../icons/math/LessThanIcon";
+import UnionIcon from "../../icons/math/UnionIcon";
+import VeeIcon from "../../icons/math/VeeIcon";
+import WedgeIcon from "../../icons/math/WedgeIcon";
+import XorIcon from "../../icons/math/XorIcon";
+import FilterIcon from "../../icons/query/FilterIcon";
+import QueryConstructionValuesIcon from "../../icons/query/QueryConstructionValuesIcon";
+import SetMapIcon from "../../icons/query/SetMapIcon";
+import ColonIcon from "../../icons/syntax/ColonIcon";
 
 export type BinaryOperationBlock =
     | TimesNode

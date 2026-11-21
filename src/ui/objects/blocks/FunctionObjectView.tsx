@@ -3,7 +3,7 @@ import type {EverythingObject} from "@/model";
 import {nodeToObject, type FunctionNode} from "@/model/nodes";
 import type {DeepReadonly} from "@/util";
 
-import MapsToIcon from "../../icons/MapsToIcon";
+import MapsToIcon from "../../icons/math/MapsToIcon";
 import {
     useEnclosingFunctions,
     EnclosingFunctionsContext,

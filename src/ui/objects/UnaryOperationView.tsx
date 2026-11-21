@@ -17,16 +17,16 @@ import {
     type ValuesOfNode,
 } from "@/model/nodes";
 
-import AtomsWithConstructorIcon from "../icons/AtomsWithConstructorIcon";
-import AtomsWithPropertyIcon from "../icons/AtomsWithPropertyIcon";
-import HasValueIcon from "../icons/HasValueIcon";
-import IsAtomIcon from "../icons/IsAtomIcon";
-import IsConstructionIcon from "../icons/IsConstructionIcon";
-import IsSetIcon from "../icons/IsSetIcon";
-import NotIcon from "../icons/NotIcon";
-import QueryConstructionsIcon from "../icons/QueryConstructionsIcon";
-import UnwrapIcon from "../icons/UnwrapIcon";
-import ValuesOfIcon from "../icons/ValuesOfIcon";
+import AtomsWithConstructorIcon from "../icons/atoms/AtomsWithConstructorIcon";
+import AtomsWithPropertyIcon from "../icons/atoms/AtomsWithPropertyIcon";
+import IsAtomIcon from "../icons/atoms/IsAtomIcon";
+import IsConstructionIcon from "../icons/constructions/IsConstructionIcon";
+import NotIcon from "../icons/math/NotIcon";
+import HasValueIcon from "../icons/query/HasValueIcon";
+import QueryConstructionsIcon from "../icons/query/QueryConstructionsIcon";
+import ValuesOfIcon from "../icons/query/ValuesOfIcon";
+import IsSetIcon from "../icons/sets/IsSetIcon";
+import UnwrapIcon from "../icons/sets/UnwrapIcon";
 import {
     calculateLayoutModeOfBlock,
     calculateHasValueNodeOperandWidthBudgetInPixels,

@@ -1,6 +1,6 @@
 import AtomIcon from "lucide-solid/icons/atom";
 
-import ConstructionConstructorIcon from "./ConstructionConstructorIcon";
+import ConstructionConstructorIcon from "../constructions/ConstructionConstructorIcon";
 import SearchDotIcon from "./SearchDotIcon";
 
 export default () => {

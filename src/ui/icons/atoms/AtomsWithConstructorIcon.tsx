@@ -1,5 +1,5 @@
-import ConstructionConstructorIcon from "./ConstructionConstructorIcon";
-import SearchAtomsIcon from "./SearchAtomsIcon";
+import ConstructionConstructorIcon from "../constructions/ConstructionConstructorIcon";
+import SearchAtomsIcon from "../query/SearchAtomsIcon";
 
 export default () => {
     return (

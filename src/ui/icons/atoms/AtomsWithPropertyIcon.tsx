@@ -1,6 +1,6 @@
 import TagIcon from "lucide-solid/icons/tag";
 
-import SearchAtomsIcon from "./SearchAtomsIcon";
+import SearchAtomsIcon from "../query/SearchAtomsIcon";
 
 export default () => {
     return (

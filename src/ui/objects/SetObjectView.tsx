@@ -5,7 +5,7 @@ import type {EverythingObject} from "@/model";
 import {type EverythingSet, ObjectType} from "@/model";
 import type {DeepReadonly} from "@/util";
 
-import BraceIcon from "../icons/BraceIcon";
+import BraceIcon from "../icons/sets/BraceIcon";
 import {
     calculateLayoutModeOfBlock,
     calculateSetElementWidthBudgetInPixels,

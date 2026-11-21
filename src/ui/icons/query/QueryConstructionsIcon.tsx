@@ -1,6 +1,6 @@
 import SearchIcon from "lucide-solid/icons/search";
 
-import ConstructionIcon from "./ConstructionIcon";
+import ConstructionIcon from "../constructions/ConstructionIcon";
 
 export default () => {
     return (
