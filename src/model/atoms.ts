@@ -143,6 +143,16 @@ export namespace Atom {
         value: 2166698849806407199650439702292185631n,
     } as const satisfies Atom;
 
+    export const NodeAnySet = {
+        type: ObjectType.Atom,
+        value: 2166698849805453912896075884999506648n,
+    } as const satisfies Atom;
+
+    export const NodeAnyPredicate = {
+        type: ObjectType.Atom,
+        value: 2166698849805816631718884425726665751n,
+    } as const satisfies Atom;
+
     export const NodeIfCondition = {
         type: ObjectType.Atom,
         value: 2150756911395278548780220055702389669n,

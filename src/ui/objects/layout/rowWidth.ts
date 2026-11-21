@@ -196,6 +196,7 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                 options,
             );
         case NodeType.Every:
+        case NodeType.Any:
             return rowLayoutWidth(
                 [
                     blockIconWidthInPixels.prefix,

@@ -137,6 +137,21 @@ export const createInitialObject2 = (): EverythingObject => ({
             rest: [],
         }),
         nodeToObject({
+            type: NodeType.Any,
+            set: defaultObject,
+            predicate: nodeToObject({
+                type: NodeType.Function,
+                body: nodeToObject({
+                    type: NodeType.Parameter,
+                    depth: 0n,
+                    rest: [],
+                }),
+                parameterName: undefined,
+                rest: [],
+            }),
+            rest: [],
+        }),
+        nodeToObject({
             type: NodeType.Fold,
             set: defaultObject,
             folder: nodeToObject({

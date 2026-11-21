@@ -8,6 +8,7 @@ import {
     nodeToObject,
     NodeType,
     type AndNode,
+    type AnyNode,
     type CallNode,
     type ContainsNode,
     type EqualNode,
@@ -26,6 +27,7 @@ import CallIcon from "../../icons/CallIcon";
 import ColonIcon from "../../icons/ColonIcon";
 import DotDotIcon from "../../icons/DotDotIcon";
 import ElementOfIcon from "../../icons/ElementOfIcon";
+import ExistsIcon from "../../icons/ExistsIcon";
 import FilterIcon from "../../icons/FilterIcon";
 import ForAllIcon from "../../icons/ForAllIcon";
 import LessThanIcon from "../../icons/LessThanIcon";
@@ -47,6 +49,7 @@ export type BinaryOperationBlock =
     | FilterNode
     | MapNode
     | EveryNode
+    | AnyNode
     | QueryConstructionValuesNode
     | CallNode
     | Construction;
@@ -63,6 +66,7 @@ export const BlockIcon = {
     [NodeType.Filter]: FilterIcon,
     [NodeType.Map]: SetMapIcon,
     [NodeType.Every]: ColonIcon,
+    [NodeType.Any]: ColonIcon,
     [NodeType.QueryConstructionValues]: QueryConstructionValuesIcon,
     [NodeType.Call]: CallIcon,
     [ObjectType.Construction]: DotDotIcon,
@@ -76,7 +80,7 @@ export const BlockIcon = {
  */
 const BlockPrefixIcon: Partial<
     Record<BinaryOperationBlock["type"], Component<{class?: string}>>
-> = {[NodeType.Every]: ForAllIcon};
+> = {[NodeType.Every]: ForAllIcon, [NodeType.Any]: ExistsIcon};
 
 export const prefixIconOf = (block: BinaryOperationBlock) =>
     BlockPrefixIcon[block.type];
@@ -96,6 +100,7 @@ export const getFirst = (block: BinaryOperationBlock) => {
         case NodeType.Filter:
         case NodeType.Map:
         case NodeType.Every:
+        case NodeType.Any:
         case NodeType.QueryConstructionValues:
             return block.set;
         case NodeType.Call:
@@ -122,6 +127,8 @@ export const getSecond = (block: BinaryOperationBlock) => {
         case NodeType.Map:
             return block.mapperFunction;
         case NodeType.Every:
+            return block.predicate;
+        case NodeType.Any:
             return block.predicate;
         case NodeType.QueryConstructionValues:
             return block.propertyConstructor;
@@ -150,6 +157,7 @@ export const changeBlockFirst = (
         case NodeType.Filter:
         case NodeType.Map:
         case NodeType.Every:
+        case NodeType.Any:
         case NodeType.QueryConstructionValues:
             return nodeToObject({...block, set: newFirst});
         case NodeType.Call:
@@ -179,6 +187,8 @@ export const changeBlockSecond = (
         case NodeType.Map:
             return nodeToObject({...block, mapperFunction: newSecond});
         case NodeType.Every:
+            return nodeToObject({...block, predicate: newSecond});
+        case NodeType.Any:
             return nodeToObject({...block, predicate: newSecond});
         case NodeType.QueryConstructionValues:
             return nodeToObject({...block, propertyConstructor: newSecond});

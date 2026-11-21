@@ -17,6 +17,7 @@ export namespace NodeType {
     export const Map = Symbol("NodeType.Map");
     export const Fold = Symbol("NodeType.Fold");
     export const Every = Symbol("NodeType.Every");
+    export const Any = Symbol("NodeType.Any");
     export const QueryAtomsWithProperty = Symbol(
         "NodeType.QueryAtomsWithProperty",
     );
@@ -147,6 +148,13 @@ export type EveryNode = {
     readonly rest: readonly EverythingObject[];
 };
 
+export type AnyNode = {
+    readonly type: typeof NodeType.Any;
+    readonly set: EverythingObject;
+    readonly predicate: EverythingObject;
+    readonly rest: readonly EverythingObject[];
+};
+
 export type QueryAtomsWithPropertyNode = {
     readonly type: typeof NodeType.QueryAtomsWithProperty;
     readonly property: EverythingObject;
@@ -228,6 +236,7 @@ export type Node =
     | MapNode
     | FoldNode
     | EveryNode
+    | AnyNode
     | QueryAtomsWithPropertyNode
     | QueryAtomsWithConstructorNode
     | ValuesOfNode

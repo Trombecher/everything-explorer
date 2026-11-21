@@ -269,6 +269,28 @@ const objectToNodeWithoutCache = (
         }
     }
 
+    some = singleSetAtomValue(object, Atom.NodeAnySet.value);
+    if (some) {
+        const predicate = singleSetAtomValue(
+            object,
+            Atom.NodeAnyPredicate.value,
+        );
+
+        if (predicate) {
+            if (finalNode) return NotANode;
+
+            finalNode = {
+                type: NodeType.Any,
+                set: some,
+                predicate,
+                rest: withoutAtomConstructors(object.elements, [
+                    Atom.NodeAnySet.value,
+                    Atom.NodeAnyPredicate.value,
+                ]),
+            };
+        }
+    }
+
     some = singleSetAtomValue(object, Atom.NodeAtomsWithProperty.value);
     if (some) {
         if (finalNode) return NotANode;

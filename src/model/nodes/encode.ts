@@ -145,6 +145,15 @@ export const nodeToObject = (node: Node): EverythingObject => {
                     ...node.rest,
                 ],
             };
+        case NodeType.Any:
+            return {
+                type: ObjectType.Set,
+                elements: [
+                    construction(Atom.NodeAnySet, node.set),
+                    construction(Atom.NodeAnyPredicate, node.predicate),
+                    ...node.rest,
+                ],
+            };
         case NodeType.QueryAtomsWithProperty:
             return {
                 type: ObjectType.Set,
