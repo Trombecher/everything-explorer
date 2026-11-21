@@ -14,6 +14,7 @@ import {
     type EqualNode,
     type EveryNode,
     type FilterNode,
+    type IntersectionNode,
     type LessNode,
     type MapNode,
     type OrNode,
@@ -31,6 +32,7 @@ import ElementOfIcon from "../../icons/ElementOfIcon";
 import ExistsIcon from "../../icons/ExistsIcon";
 import FilterIcon from "../../icons/FilterIcon";
 import ForAllIcon from "../../icons/ForAllIcon";
+import IntersectionIcon from "../../icons/IntersectionIcon";
 import LessThanIcon from "../../icons/LessThanIcon";
 import QueryConstructionValuesIcon from "../../icons/QueryConstructionValuesIcon";
 import SetMapIcon from "../../icons/SetMapIcon";
@@ -49,6 +51,7 @@ export type BinaryOperationBlock =
     | OrNode
     | XorNode
     | UnionNode
+    | IntersectionNode
     | FilterNode
     | MapNode
     | EveryNode
@@ -67,6 +70,7 @@ export const BlockIcon = {
     [NodeType.Or]: VeeIcon,
     [NodeType.Xor]: XorIcon,
     [NodeType.Union]: UnionIcon,
+    [NodeType.Intersection]: IntersectionIcon,
     [NodeType.Filter]: FilterIcon,
     [NodeType.Map]: SetMapIcon,
     [NodeType.Every]: ColonIcon,
@@ -99,6 +103,7 @@ export const getFirst = (block: BinaryOperationBlock) => {
         case NodeType.Or:
         case NodeType.Xor:
         case NodeType.Union:
+        case NodeType.Intersection:
             return block.first;
         case NodeType.Contains:
             return block.element;
@@ -125,6 +130,7 @@ export const getSecond = (block: BinaryOperationBlock) => {
         case NodeType.Or:
         case NodeType.Xor:
         case NodeType.Union:
+        case NodeType.Intersection:
             return block.second;
         case NodeType.Contains:
             return block.set;
@@ -158,6 +164,7 @@ export const changeBlockFirst = (
         case NodeType.Or:
         case NodeType.Xor:
         case NodeType.Union:
+        case NodeType.Intersection:
             return nodeToObject({...block, first: newFirst});
         case NodeType.Contains:
             return nodeToObject({...block, element: newFirst});
@@ -187,6 +194,7 @@ export const changeBlockSecond = (
         case NodeType.Or:
         case NodeType.Xor:
         case NodeType.Union:
+        case NodeType.Intersection:
             return nodeToObject({...block, second: newSecond});
         case NodeType.Contains:
             return nodeToObject({...block, set: newSecond});

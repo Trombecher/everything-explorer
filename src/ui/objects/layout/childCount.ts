@@ -37,6 +37,7 @@ export const childCountOfBlock = (block: Block): number => {
         case NodeType.Or:
         case NodeType.Xor:
         case NodeType.Union:
+        case NodeType.Intersection:
         case NodeType.Filter:
         case NodeType.Map:
         case NodeType.Every:

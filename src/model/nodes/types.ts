@@ -15,6 +15,7 @@ export namespace NodeType {
     export const Not = Symbol("NodeType.Not");
     export const Count = Symbol("NodeType.Count");
     export const Union = Symbol("NodeType.Union");
+    export const Intersection = Symbol("NodeType.Intersection");
     export const Filter = Symbol("NodeType.Filter");
     export const Map = Symbol("NodeType.Map");
     export const Fold = Symbol("NodeType.Fold");
@@ -132,6 +133,13 @@ export type CountNode = {
 
 export type UnionNode = {
     readonly type: typeof NodeType.Union;
+    readonly first: EverythingObject;
+    readonly second: EverythingObject;
+    readonly rest: readonly EverythingObject[];
+};
+
+export type IntersectionNode = {
+    readonly type: typeof NodeType.Intersection;
     readonly first: EverythingObject;
     readonly second: EverythingObject;
     readonly rest: readonly EverythingObject[];
@@ -270,6 +278,7 @@ export type Node =
     | NotNode
     | CountNode
     | UnionNode
+    | IntersectionNode
     | FilterNode
     | MapNode
     | FoldNode

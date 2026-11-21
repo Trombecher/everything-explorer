@@ -291,6 +291,12 @@ export const handleKeyDown = (props: {
                     props.setObject(node.first);
                     break;
                 }
+                case NodeType.Intersection: {
+                    // Retain first operand.
+
+                    props.setObject(node.first);
+                    break;
+                }
                 case NodeType.Filter:
                 case NodeType.Map:
                 case NodeType.Every:
@@ -422,7 +428,20 @@ export const handleKeyDown = (props: {
         );
 
         props.objectSelection.selectChild(1);
-    } else if (props.event.key === "n" || props.event.key === "!") {
+    } else if (props.event.key === "n") {
+        if (!props.setObject) return;
+
+        props.setObject(
+            nodeToObject({
+                type: NodeType.Intersection,
+                first: props.object,
+                second: defaultObject,
+                rest: [],
+            }),
+        );
+
+        props.objectSelection.selectChild(1);
+    } else if (props.event.key === "!") {
         if (!props.setObject) return;
 
         props.setObject(

@@ -18,6 +18,7 @@ export const blockIconWidthInPixels = {
     queryConstructions: 48,
     quote: 24,
     union: 24,
+    intersection: 24,
     unwrap: 80,
     valuesOf: 48,
     hasValue: 24,

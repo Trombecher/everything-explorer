@@ -98,6 +98,12 @@ export const createInitialObject2 = (): EverythingObject => ({
             rest: [],
         }),
         nodeToObject({
+            type: NodeType.Intersection,
+            first: defaultObject,
+            second: defaultObject,
+            rest: [],
+        }),
+        nodeToObject({
             type: NodeType.Filter,
             set: defaultObject,
             filterFunction: nodeToObject({

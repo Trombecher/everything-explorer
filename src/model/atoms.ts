@@ -113,6 +113,16 @@ export namespace Atom {
         value: 2150602676477464422271577313769115263n,
     } as const satisfies Atom;
 
+    export const NodeIntersectionFirst = {
+        type: ObjectType.Atom,
+        value: 6105450065514020261664789753451078433n,
+    } as const satisfies Atom;
+
+    export const NodeIntersectionSecond = {
+        type: ObjectType.Atom,
+        value: 294371887698077017665747245360098400935n,
+    } as const satisfies Atom;
+
     export const NodeFilterSet = {
         type: ObjectType.Atom,
         value: 2150755714608308122129968313720999578n,

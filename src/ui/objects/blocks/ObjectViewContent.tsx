@@ -185,6 +185,16 @@ export default (props: {
                     />
                 )}
             </Match>
+            <Match when={variant(props.block, NodeType.Intersection)}>
+                {intersectionNode => (
+                    <BinaryOperationView
+                        block={intersectionNode()}
+                        path={props.path}
+                        wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                        setObject={props.setObject}
+                    />
+                )}
+            </Match>
             <Match when={variant(props.block, NodeType.Filter)}>
                 {filterNode => (
                     <BinaryOperationView

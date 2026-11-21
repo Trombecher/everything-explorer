@@ -125,6 +125,15 @@ export const nodeToObject = (node: Node): EverythingObject => {
                     ...node.rest,
                 ],
             };
+        case NodeType.Intersection:
+            return {
+                type: ObjectType.Set,
+                elements: [
+                    construction(Atom.NodeIntersectionFirst, node.first),
+                    construction(Atom.NodeIntersectionSecond, node.second),
+                    ...node.rest,
+                ],
+            };
         case NodeType.Filter:
             return {
                 type: ObjectType.Set,

@@ -213,6 +213,28 @@ const objectToNodeWithoutCache = (
         }
     }
 
+    some = singleSetAtomValue(object, Atom.NodeIntersectionFirst.value);
+    if (some) {
+        const second = singleSetAtomValue(
+            object,
+            Atom.NodeIntersectionSecond.value,
+        );
+
+        if (second) {
+            if (finalNode) return NotANode;
+
+            finalNode = {
+                type: NodeType.Intersection,
+                first: some,
+                second,
+                rest: withoutAtomConstructors(object.elements, [
+                    Atom.NodeIntersectionFirst.value,
+                    Atom.NodeIntersectionSecond.value,
+                ]),
+            };
+        }
+    }
+
     some = singleSetAtomValue(object, Atom.NodeFilterSet.value);
     if (some) {
         const filterFunction = singleSetAtomValue(
