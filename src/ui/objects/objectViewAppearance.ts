@@ -68,6 +68,7 @@ export const objectViewColorCategory = (
         case NodeType.Times:
         case NodeType.Less:
         case NodeType.Equal:
+        case NodeType.Count:
             return ObjectViewColorCategory.Computation;
 
         case NodeType.Not:

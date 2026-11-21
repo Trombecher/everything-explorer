@@ -5,6 +5,7 @@ import {objectToBlock, type Block} from "../blocks";
 import {escapeCharacterForDisplay} from "../scalarFormatting";
 import {
     blockIconWidthInPixels,
+    countBarMarginXInPixels,
     functionParameterNameFieldWidthInPixels,
 } from "./iconWidths";
 import type {LayoutOptions} from "./options";
@@ -284,6 +285,20 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                         objectToBlock(block.set),
                         options,
                     ),
+                ],
+                options,
+            );
+        case NodeType.Count:
+            return rowLayoutWidth(
+                [
+                    blockIconWidthInPixels.countBar
+                        + countBarMarginXInPixels * 2,
+                    calculateRowLayoutWidthOfBlock(
+                        objectToBlock(block.inner),
+                        options,
+                    ),
+                    blockIconWidthInPixels.countBar
+                        + countBarMarginXInPixels * 2,
                 ],
                 options,
             );

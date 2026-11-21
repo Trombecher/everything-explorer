@@ -2,6 +2,7 @@ import type {EverythingSet} from "@/model";
 
 import {
     blockIconWidthInPixels,
+    countBarMarginXInPixels,
     functionParameterNameFieldWidthInPixels,
 } from "./iconWidths";
 import {calculateLayoutModeOfBlock, LayoutMode} from "./layoutMode";
@@ -218,6 +219,21 @@ export const calculateUnwrapNodeOperandWidthBudgetInPixels = (
             - layoutOptions.block.blockPaddingRightInPixels
             - blockIconWidthInPixels.unwrap
             - layoutOptions.block.itemGapInPixels,
+    );
+
+export const calculateCountNodeOperandWidthBudgetInPixels = (
+    widthBudgetInPixels: number,
+    layoutOptions: LayoutOptions,
+): number =>
+    Math.max(
+        0,
+        widthBudgetInPixels
+            - layoutOptions.block.blockBorderWidthInPixels * 2
+            - layoutOptions.block.blockPaddingLeftInPixels
+            - layoutOptions.block.blockPaddingRightInPixels
+            - (blockIconWidthInPixels.countBar + countBarMarginXInPixels * 2)
+                * 2
+            - layoutOptions.block.itemGapInPixels * 2,
     );
 
 export const calculateLiteralNodeInnerObjectWidthBudgetInPixels = (

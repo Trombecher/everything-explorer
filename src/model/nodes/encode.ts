@@ -99,6 +99,14 @@ export const nodeToObject = (node: Node): EverythingObject => {
                     ...node.rest,
                 ],
             };
+        case NodeType.Count:
+            return {
+                type: ObjectType.Set,
+                elements: [
+                    construction(Atom.NodeCount, node.inner),
+                    ...node.rest,
+                ],
+            };
         case NodeType.Union:
             return {
                 type: ObjectType.Set,

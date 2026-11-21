@@ -67,6 +67,7 @@ const isHandledKey = (key: string): boolean =>
     || key === "p"
     || key === "s"
     || key === "c"
+    || key === "C"
     || key === "z";
 
 export const handleKeyDown = (props: {
@@ -212,6 +213,12 @@ export const handleKeyDown = (props: {
                     // Retain operand.
 
                     props.setObject(node.operand);
+                    break;
+                }
+                case NodeType.Count: {
+                    // Retain inner object.
+
+                    props.setObject(node.inner);
                     break;
                 }
                 case NodeType.QueryAtomsWithProperty: {
@@ -379,6 +386,14 @@ export const handleKeyDown = (props: {
 
         props.setObject(
             nodeToObject({type: NodeType.Not, operand: props.object, rest: []}),
+        );
+
+        props.objectSelection.selectChild(0);
+    } else if (props.event.key === "C") {
+        if (!props.setObject) return;
+
+        props.setObject(
+            nodeToObject({type: NodeType.Count, inner: props.object, rest: []}),
         );
 
         props.objectSelection.selectChild(0);

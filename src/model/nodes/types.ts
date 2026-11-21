@@ -12,6 +12,7 @@ export namespace NodeType {
     export const And = Symbol("NodeType.And");
     export const Or = Symbol("NodeType.Or");
     export const Not = Symbol("NodeType.Not");
+    export const Count = Symbol("NodeType.Count");
     export const Union = Symbol("NodeType.Union");
     export const Filter = Symbol("NodeType.Filter");
     export const Map = Symbol("NodeType.Map");
@@ -109,6 +110,12 @@ export type OrNode = {
 export type NotNode = {
     readonly type: typeof NodeType.Not;
     readonly operand: EverythingObject;
+    readonly rest: readonly EverythingObject[];
+};
+
+export type CountNode = {
+    readonly type: typeof NodeType.Count;
+    readonly inner: EverythingObject;
     readonly rest: readonly EverythingObject[];
 };
 
@@ -231,6 +238,7 @@ export type Node =
     | AndNode
     | OrNode
     | NotNode
+    | CountNode
     | UnionNode
     | FilterNode
     | MapNode

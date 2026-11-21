@@ -11,6 +11,7 @@ import AtomView from "../AtomView";
 import BinaryOperationView from "../BinaryOperationView";
 import ByteView from "../ByteView";
 import CharacterView from "../CharacterView";
+import CountObjectView from "../CountObjectView";
 import FoldOperationView from "../FoldOperationView";
 import IfOperationView from "../IfOperationView";
 import IntegerView from "../IntegerView";
@@ -148,6 +149,16 @@ export default (props: {
                 {notNode => (
                     <UnaryOperationView
                         block={notNode()}
+                        path={props.path}
+                        wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                        setObject={props.setObject}
+                    />
+                )}
+            </Match>
+            <Match when={variant(props.block, NodeType.Count)}>
+                {countNode => (
+                    <CountObjectView
+                        block={countNode()}
                         path={props.path}
                         wholeWidthBudgetInPixels={props.widthBudgetInPixels}
                         setObject={props.setObject}

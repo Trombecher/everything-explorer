@@ -3,6 +3,7 @@ export const blockIconWidthInPixels = {
     atomsWithConstructor: 48,
     atomsWithProperty: 48,
     construction: 24,
+    countBar: 2,
     dot: 24,
     elementOf: 24,
     colon: 12,
@@ -32,6 +33,12 @@ export const blockIconWidthInPixels = {
     lessThan: 24,
     functionSelf: 24,
 } as const satisfies Record<string, number>;
+
+/**
+ * Horizontal margin on each side of a count bar, corresponding to Tailwind's
+ * `mx-0.5`.
+ */
+export const countBarMarginXInPixels = 2;
 
 /**
  * Width of the editable function parameter name field, excluding the function
