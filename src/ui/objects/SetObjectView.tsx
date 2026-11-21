@@ -5,7 +5,7 @@ import type {EverythingObject} from "@/model";
 import {type EverythingSet, ObjectType} from "@/model";
 import type {DeepReadonly} from "@/util";
 
-import LeftBraceIcon from "../icons/LeftBraceIcon";
+import BraceIcon from "../icons/BraceIcon";
 import {
     calculateLayoutModeOfBlock,
     calculateSetElementWidthBudgetInPixels,
@@ -34,7 +34,7 @@ export default (props: {
 
     return (
         <>
-            <LeftBraceIcon />
+            <BraceIcon side="left" />
             <Index each={props.set.elements}>
                 {(element, i) => (
                     <span class="flex items-center">
@@ -106,7 +106,7 @@ export default (props: {
                     </span>
                 )}
             </Index>
-            <LeftBraceIcon class="-scale-x-100" />
+            <BraceIcon side="right" />
         </>
     );
 };

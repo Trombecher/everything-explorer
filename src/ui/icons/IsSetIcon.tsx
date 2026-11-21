@@ -1,12 +1,12 @@
 import QuestionMarkIcon from "lucide-solid/icons/question-mark";
 
-import LeftBraceIcon from "./LeftBraceIcon";
+import BraceIcon from "./BraceIcon";
 
 export default () => {
     return (
         <div class="flex items-center">
-            <LeftBraceIcon />
-            <LeftBraceIcon class="ml-1 -scale-x-100" />
+            <BraceIcon side="left" />
+            <BraceIcon side="right" class="ml-1" />
             <QuestionMarkIcon class="-mx-0.5" />
         </div>
     );

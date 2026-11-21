@@ -1,7 +1,7 @@
 import ArrowRightIcon from "lucide-solid/icons/arrow-right";
 import {type JSX} from "solid-js";
 
-import LeftBraceIcon from "./LeftBraceIcon";
+import BraceIcon from "./BraceIcon";
 
 const NarrowSquareIcon = (props: JSX.SvgSVGAttributes<SVGSVGElement>) => {
     return (
@@ -25,9 +25,9 @@ const NarrowSquareIcon = (props: JSX.SvgSVGAttributes<SVGSVGElement>) => {
 export default () => {
     return (
         <div class="flex items-center">
-            <LeftBraceIcon />
+            <BraceIcon side="left" />
             <NarrowSquareIcon />
-            <LeftBraceIcon class="-scale-x-100" />
+            <BraceIcon side="right" />
             <ArrowRightIcon class="-ml-0.5" />
             <NarrowSquareIcon class="mr-0.5" />
         </div>
