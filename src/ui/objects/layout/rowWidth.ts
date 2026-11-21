@@ -224,7 +224,7 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                         objectToBlock(block.folder),
                         options,
                     ),
-                    blockIconWidthInPixels.arrowRight,
+                    blockIconWidthInPixels.squarePlay,
                     calculateRowLayoutWidthOfBlock(
                         objectToBlock(block.initial),
                         options,

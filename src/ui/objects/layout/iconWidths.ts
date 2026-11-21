@@ -10,7 +10,7 @@ export const blockIconWidthInPixels = {
     equals: 24,
     filter: 48,
     fold: 24,
-    arrowRight: 24,
+    squarePlay: 24,
     map: 48,
     plus: 24,
     queryConstructionValues: 48,

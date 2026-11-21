@@ -1,4 +1,4 @@
-import ArrowRightIcon from "lucide-solid/icons/arrow-right";
+import SquarePlayIcon from "lucide-solid/icons/square-play";
 
 import {useAppState} from "@/context";
 import type {EverythingObject} from "@/model";
@@ -94,7 +94,7 @@ export default (props: {
                 path={[...props.path, 1]}
                 widthBudgetInPixels={childWidthBudgetInPixels()}
             />
-            <ArrowRightIcon />
+            <SquarePlayIcon />
             <ObjectView
                 indentLeft={false}
                 parentObjectLayoutMode={layoutMode()}
