@@ -10,6 +10,7 @@ import {
 } from "@/ui/objects/layout";
 import type {DeepReadonly} from "@/util";
 
+import {type ClipboardState, createClipboardState} from "./clipboard";
 import {enforceInvariants} from "./connections";
 import {type ConnectionState, createConnectionState} from "./connectionState";
 import {createEvaluateHistory} from "./evaluate";
@@ -45,6 +46,11 @@ export class AppState {
     public readonly preferences: PreferencesState;
 
     /**
+     * The virtual clipboard.
+     */
+    public readonly clipboard: ClipboardState;
+
+    /**
      * The current tab and sidebar state.
      */
     public readonly navigation: NavigationState;
@@ -72,6 +78,14 @@ export class AppState {
      */
     public readonly propertiesPanelWidth: Accessor<number>;
     public readonly setPropertiesPanelWidth: Setter<number>;
+
+    /**
+     * Width of the clipboard panel on the right of the app in px.
+     *
+     * This is runtime state, not part of the persisted app state.
+     */
+    public readonly clipboardPanelWidth: Accessor<number>;
+    public readonly setClipboardPanelWidth: Setter<number>;
 
     /**
      * Id of the atom whose properties are open in the things tab.
@@ -107,6 +121,8 @@ export class AppState {
 
         this.preferences = createPreferencesState(store);
 
+        this.clipboard = createClipboardState(store);
+
         this.connections = createConnectionState(store, {
             onDisconnected: () => {
                 const currentTab = navigation.currentTab();
@@ -139,6 +155,12 @@ export class AppState {
 
         this.propertiesPanelWidth = propertiesPanelWidth;
         this.setPropertiesPanelWidth = setPropertiesPanelWidth;
+
+        // Clipboard panel width
+        const [clipboardPanelWidth, setClipboardPanelWidth] = createSignal(340);
+
+        this.clipboardPanelWidth = clipboardPanelWidth;
+        this.setClipboardPanelWidth = setClipboardPanelWidth;
 
         // Selected atom id
         const [selectedAtomId, setSelectedAtomId] = createSignal<

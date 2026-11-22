@@ -4,6 +4,7 @@ import {Language} from "@/i18n";
 import {
     ConnectionType,
     defaultAppStateData,
+    type ClipboardSlot,
     type Connection,
     type InternalAppState,
     type LanguageSetting,
@@ -11,6 +12,12 @@ import {
 import {System} from "@/state/common";
 import {Theme, type ThemeSetting} from "@/state/theme";
 import type {DeepReadonly} from "@/util";
+
+import {
+    objectToStoredObject,
+    storedObjectSchema,
+    storedObjectToObject,
+} from "./object";
 
 const storedLanguageSettingSchema = z.enum(["en-US", "de"]);
 
@@ -28,6 +35,11 @@ const storedConnectionSchema = z.discriminatedUnion("type", [
     }),
     z.object({type: z.literal("remote"), url: z.string(), name: z.string()}),
 ]);
+
+const storedClipboardSlotSchema = z.object({
+    name: z.string().min(1),
+    object: storedObjectSchema,
+});
 
 export const storedAppStateSchema = z.object({
     /**
@@ -49,6 +61,14 @@ export const storedAppStateSchema = z.object({
      * Default: none
      */
     lastUsedConnectionIndex: nonNegativeIntegerSchema.optional(),
+
+    /**
+     * Default: empty array.
+     *
+     * Slots are validated individually so that one invalid slot does not reset
+     * the whole stored app state.
+     */
+    clipboard: z.unknown().optional(),
 });
 
 export type StoredAppState = z.infer<typeof storedAppStateSchema>;
@@ -153,6 +173,10 @@ export const serializeAppState = (
         ...(themeSetting === undefined ? {} : {themeSetting}),
         connections: state.connections.map(connectionToStored),
         lastUsedConnectionIndex: state.lastUsedConnectionIndex,
+        clipboard: state.clipboard.map(slot => ({
+            name: slot.name,
+            object: objectToStoredObject(slot.object),
+        })),
     };
 };
 
@@ -171,7 +195,24 @@ export const deserializeAppState = (stored: unknown): InternalAppState => {
         themeSetting,
         connections,
         lastUsedConnectionIndex,
+        clipboard,
     } = result.data;
+
+    const clipboardSlots: ClipboardSlot[] = [];
+    const storedClipboardSlots = Array.isArray(clipboard) ? clipboard : [];
+
+    for (const storedSlot of storedClipboardSlots) {
+        const slotResult = storedClipboardSlotSchema.safeParse(storedSlot);
+        if (!slotResult.success) continue;
+
+        const name = slotResult.data.name.trim();
+        if (name.length === 0) continue;
+
+        clipboardSlots.push({
+            name,
+            object: storedObjectToObject(slotResult.data.object),
+        });
+    }
 
     return {
         ...defaultAppStateData(),
@@ -179,5 +220,6 @@ export const deserializeAppState = (stored: unknown): InternalAppState => {
         themeSetting: themeSettingFromStored(themeSetting),
         connections: (connections ?? []).map(connectionFromStored),
         lastUsedConnectionIndex,
+        clipboard: clipboardSlots,
     };
 };

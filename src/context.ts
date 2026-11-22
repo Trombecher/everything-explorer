@@ -22,6 +22,11 @@ export const useConnections = () => useAppState().connections;
 export const usePreferences = () => useAppState().preferences;
 
 /**
+ * The virtual clipboard.
+ */
+export const useClipboard = () => useAppState().clipboard;
+
+/**
  * The current tab and sidebar state.
  */
 export const useNavigation = () => useAppState().navigation;

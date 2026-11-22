@@ -81,9 +81,6 @@ other items stay valid.
 
 - (32) Some nodes are still unimplemented in the frontend but in the backend.
 
-- (33) Agent DSL? How do we copy / paste objects? Encode into clipboard and then
-  parse? or just virtual clipboard?
-
 - (34) Better UI for parameter nodes and self-nodes.
 
 - (36) Add frontend tests for data validation and transformation, not yet for

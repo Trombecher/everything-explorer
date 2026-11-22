@@ -86,4 +86,11 @@ export const german = {
         "unbekannt - Rückfall auf Englisch",
     [Phrase.Detected]: () => "erkannt",
     [Phrase.ObjectPlaceholder]: () => "<Objekt>",
+    [Phrase.Clipboard]: () => "Zwischenablage",
+    [Phrase.EmptyClipboard]: () => "Noch keine Objekte in der Zwischenablage.",
+    [Phrase.ClipboardShortcutHint]: () =>
+        "Alt+1…0: fokussiertes Objekt ersetzen · Strg+Alt+N: fokussiertes Objekt kopieren",
+    [Phrase.ClipboardSlotName]: () => "Slot-Name",
+    [Phrase.DeleteClipboardSlot]: () => "Slot löschen",
+    [Phrase.ResizeClipboardPanel]: () => "Größe der Zwischenablage ändern",
 } as const satisfies TranslationTable;

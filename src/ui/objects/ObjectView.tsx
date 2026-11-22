@@ -1,11 +1,12 @@
 import {createEffect, createMemo} from "solid-js";
 
-import {useAppState} from "@/context";
+import {useAppState, useClipboard} from "@/context";
 import type {EverythingObject} from "@/model";
 import type {DeepReadonly} from "@/util";
 
 import {objectToBlock} from "./blocks";
 import ObjectViewContent from "./blocks/ObjectViewContent";
+import {handleClipboardKeyDown} from "./editing/clipboardShortcuts";
 import {handleKeyDown} from "./editing/keyboardShortcuts";
 import {calculateLayoutModeOfBlock, LayoutMode} from "./layout";
 import {
@@ -56,6 +57,7 @@ export const ObjectView = (props: {
 }) => {
     const objectSelection = useObjectSelection();
     const appState = useAppState();
+    const clipboard = useClipboard();
 
     const block = () => objectToBlock(props.object);
     const blockOptions = () => appState.layoutOptions().block;
@@ -71,7 +73,17 @@ export const ObjectView = (props: {
 
     return (
         <div
-            onKeyDown={event =>
+            onKeyDown={event => {
+                if (
+                    handleClipboardKeyDown({
+                        event,
+                        object: props.object,
+                        setObject: props.setObject,
+                        clipboard,
+                    })
+                )
+                    return;
+
                 handleKeyDown({
                     event,
                     object: props.object,
@@ -81,8 +93,8 @@ export const ObjectView = (props: {
                     setObject: props.setObject,
                     parentObjectLayoutMode: props.parentObjectLayoutMode,
                     leftArrowSiblingIndex: props.leftArrowSiblingIndex,
-                })
-            }
+                });
+            }}
             ref={div => {
                 createEffect(() => {
                     if (objectSelection.isSelected(props.path)) {

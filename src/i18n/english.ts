@@ -82,4 +82,11 @@ export const english = {
     [Phrase.UnknownFallbackToEnglish]: () => "unknown - fallback to english",
     [Phrase.Detected]: () => "detected",
     [Phrase.ObjectPlaceholder]: () => "<object>",
+    [Phrase.Clipboard]: () => "Clipboard",
+    [Phrase.EmptyClipboard]: () => "No objects in the clipboard yet.",
+    [Phrase.ClipboardShortcutHint]: () =>
+        "Alt+1…0: replace focused object · Ctrl+Alt+N: copy focused object",
+    [Phrase.ClipboardSlotName]: () => "Slot name",
+    [Phrase.DeleteClipboardSlot]: () => "Delete slot",
+    [Phrase.ResizeClipboardPanel]: () => "Resize clipboard panel",
 } as const satisfies TranslationTable;

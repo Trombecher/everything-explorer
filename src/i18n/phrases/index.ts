@@ -1,3 +1,7 @@
+import {
+    clipboardPhrases,
+    type ClipboardTranslationArguments,
+} from "./clipboard";
 import {commonPhrases, type CommonTranslationArguments} from "./common";
 import {
     connectionPhrases,
@@ -15,6 +19,7 @@ const phrases = {
     ...evaluatePhrases,
     ...settingsPhrases,
     ...objectsPhrases,
+    ...clipboardPhrases,
 } as const;
 
 export const Phrase = phrases;
@@ -32,5 +37,6 @@ export namespace Phrase {
             & EvaluateTranslationArguments
             & SettingsTranslationArguments
             & ObjectsTranslationArguments
+            & ClipboardTranslationArguments
     >;
 }
