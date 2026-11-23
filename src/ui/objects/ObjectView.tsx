@@ -74,6 +74,20 @@ export const ObjectView = (props: {
     return (
         <div
             onKeyDown={event => {
+                // Enter/Escape finish editing a value input. The input's own
+                // handler commits and may blur it; return focus to this object
+                // view so the selection and keyboard navigation stay active.
+                if (
+                    (event.key === "Enter" || event.key === "Escape")
+                    && !event.isComposing
+                    && event.target instanceof HTMLInputElement
+                    && event.target.closest("[data-object-view]")
+                        === event.currentTarget
+                ) {
+                    event.currentTarget.focus();
+                    return;
+                }
+
                 if (
                     handleClipboardKeyDown({
                         event,
@@ -97,23 +111,49 @@ export const ObjectView = (props: {
             }}
             ref={div => {
                 createEffect(() => {
-                    if (objectSelection.isSelected(props.path)) {
-                        div.focus();
-                    }
+                    const request = objectSelection.focusRequest();
+                    if (
+                        request === undefined
+                        || request.length !== props.path.length
+                        || request.some(
+                            (position, i) => position !== props.path[i],
+                        )
+                    )
+                        return;
+
+                    objectSelection.clearFocusRequest(request);
+
+                    // Focusing a view that contains a focused input would steal
+                    // focus from that input. A focused descendant object view,
+                    // on the other hand, must lose focus when the cursor moves
+                    // to this ancestor.
+                    const active = document.activeElement;
+                    const activeIsView =
+                        active instanceof Element
+                        && active.matches("[data-object-view]");
+
+                    if (activeIsView || !div.contains(active)) div.focus();
                 });
             }}
-            onFocus={() => {
-                objectSelection.setPath(props.path);
+            onFocusIn={event => {
+                // `focusin` bubbles, so only the innermost object view of the
+                // focused element updates the cursor.
+                if (
+                    event.target.closest("[data-object-view]")
+                    === event.currentTarget
+                ) {
+                    objectSelection.setPath(props.path);
+                }
             }}
-            tabIndex={objectSelection.isSelected(props.path) ? 0 : -1}
-            data-selected={objectSelection.dataSelected(props.path)}
+            data-object-view=""
+            tabIndex={objectSelection.isCursor(props.path) ? 0 : -1}
             style={{
                 "margin-left": `${props.indentLeft ? blockOptions().setElementIndentInPixels : 0}px`,
                 "border-width": `${blockOptions().blockBorderWidthInPixels}px`,
                 gap: `${blockOptions().itemGapInPixels}px`,
                 padding: `4px ${blockOptions().blockPaddingRightInPixels}px 4px ${blockOptions().blockPaddingLeftInPixels}px`,
             }}
-            class={`flex rounded-xl border-solid border-line-emphasis text-fg select-none data-selected:border-primary data-selected:bg-primary! data-selected:text-on-primary ${objectViewBackgroundClass(block().type)} ${layoutMode() === LayoutMode.Column ? `flex-col ${blockInColumnModeIsItemsCenter(block().type) ? "items-center" : "items-start"}` : "items-center"}`}
+            class={`flex rounded-xl border-solid border-line-emphasis text-fg outline-none select-none ${objectViewBackgroundClass(block().type)} ${layoutMode() === LayoutMode.Column ? `flex-col ${blockInColumnModeIsItemsCenter(block().type) ? "items-center" : "items-start"}` : "items-center"}`}
         >
             <ObjectViewContent
                 block={block()}

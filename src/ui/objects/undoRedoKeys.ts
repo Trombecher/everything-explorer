@@ -19,6 +19,16 @@ export const handleHistoryKeyDown = (
     event.stopImmediatePropagation();
     event.stopPropagation();
 
-    if (undo) history.undo();
-    else history.redo();
+    if (undo) {
+        if (!history.canUndo()) return;
+
+        history.undo();
+    } else {
+        if (!history.canRedo()) return;
+
+        history.redo();
+    }
+
+    // Undo/redo may restore a different selection.
+    history.objectSelection.requestFocus();
 };

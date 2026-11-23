@@ -64,10 +64,10 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
 
                 if (event.key === "ArrowDown") {
                     event.preventDefault();
-                    history.objectSelection.setPath([0]);
+                    history.objectSelection.focusPath([0]);
                 } else if (event.key === "ArrowUp") {
                     event.preventDefault();
-                    history.objectSelection.setPath([propertyCount - 1]);
+                    history.objectSelection.focusPath([propertyCount - 1]);
                 }
             }}
         >

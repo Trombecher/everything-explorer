@@ -1,5 +1,10 @@
-import type {Accessor, Setter} from "solid-js";
-import {createContext, useContext} from "solid-js";
+import {
+    type Accessor,
+    createContext,
+    createSignal,
+    type Setter,
+    useContext,
+} from "solid-js";
 
 import type {DeepReadonly} from "@/util";
 
@@ -18,23 +23,73 @@ export class ObjectSelection {
     public readonly pathInfo: Accessor<ObjectSelectionPathInfo>;
     private readonly setPathInfo: Setter<ObjectSelectionPathInfo>;
 
+    /**
+     * The path that should receive focus, or `undefined` if no focus was
+     * requested. Requests are consumed by the matching object view.
+     */
+    public readonly focusRequest: Accessor<
+        DeepReadonly<ObjectSelectionPath> | undefined
+    >;
+    private readonly setFocusRequest: Setter<
+        DeepReadonly<ObjectSelectionPath> | undefined
+    >;
+
     constructor(
         pathInfo: Accessor<ObjectSelectionPathInfo>,
         setPathInfo: Setter<ObjectSelectionPathInfo>,
     ) {
         this.pathInfo = pathInfo;
         this.setPathInfo = setPathInfo;
+
+        const [focusRequest, setFocusRequest] = createSignal<
+            DeepReadonly<ObjectSelectionPath> | undefined
+        >();
+        this.focusRequest = focusRequest;
+        this.setFocusRequest = setFocusRequest;
     }
 
-    isSelected(path: DeepReadonly<ObjectSelectionPath>) {
+    /**
+     * Whether `path` is the keyboard cursor. This is independent of the DOM
+     * focus: the cursor is remembered so that Tab and keyboard navigation can
+     * return to the last object, but only the focused object view is
+     * highlighted.
+     */
+    isCursor(path: DeepReadonly<ObjectSelectionPath>) {
         return (
             path.length === this.pathInfo().effectiveLength
             && path.every((position, i) => position === this.pathInfo().path[i])
         );
     }
 
-    dataSelected(path: DeepReadonly<ObjectSelectionPath>): "" | undefined {
-        return this.isSelected(path) ? "" : undefined;
+    /**
+     * The path of the object view at the cursor.
+     */
+    private cursorPath(): ObjectSelectionPath {
+        const {path, effectiveLength} = this.pathInfo();
+
+        return path.slice(0, effectiveLength);
+    }
+
+    /**
+     * Requests that the object view at the current cursor receives DOM focus.
+     */
+    requestFocus() {
+        const target = this.cursorPath();
+        this.setFocusRequest(target);
+
+        // A request for a path that has no object view (e.g. after undoing to
+        // a selection that no longer exists) must not leak into a later mount.
+        queueMicrotask(() => {
+            if (this.focusRequest() === target) this.setFocusRequest(undefined);
+        });
+    }
+
+    /**
+     * Marks the request as handled. Does nothing if another request replaced it
+     * in the meantime.
+     */
+    clearFocusRequest(request: DeepReadonly<ObjectSelectionPath>) {
+        if (this.focusRequest() === request) this.setFocusRequest(undefined);
     }
 
     setPath(path: DeepReadonly<ObjectSelectionPath>) {
@@ -62,6 +117,14 @@ export class ObjectSelection {
         });
     }
 
+    /**
+     * Selects the cursor path and moves DOM focus to its object view.
+     */
+    focusPath(path: DeepReadonly<ObjectSelectionPath>) {
+        this.setPath(path);
+        this.requestFocus();
+    }
+
     selectParent() {
         // Reduce effective length.
         this.setPathInfo(
@@ -70,6 +133,7 @@ export class ObjectSelection {
                 effectiveLength: Math.max(pathInfo.effectiveLength - 1, 0),
             }),
         );
+        this.requestFocus();
     }
 
     selectChild(childIndex: number | "previous") {
@@ -97,6 +161,7 @@ export class ObjectSelection {
                 };
             },
         );
+        this.requestFocus();
     }
 
     selectPreviousSibling() {
@@ -115,6 +180,7 @@ export class ObjectSelection {
                 };
             },
         );
+        this.requestFocus();
     }
 
     selectSibling(index: number) {
@@ -132,6 +198,7 @@ export class ObjectSelection {
                 };
             },
         );
+        this.requestFocus();
     }
 
     selectNextSibling(siblingCount: number) {
@@ -151,6 +218,7 @@ export class ObjectSelection {
                 };
             },
         );
+        this.requestFocus();
     }
 }
 

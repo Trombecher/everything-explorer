@@ -151,3 +151,14 @@ html[data-theme="dark"] {
         @apply outline-primary outline-offset-2 focus-visible:outline-2;
     }
 }
+
+/* The focused object view. `:focus-within` keeps the highlight while one of
+   the view's value inputs is being edited. Restricting the selector to views
+   that do not contain another focused view makes only the innermost view
+   highlighted, instead of all of its ancestors. This rule is intentionally
+   unlayered so it can override the object view's background utility class. */
+[data-object-view]:focus-within:not(:has([data-object-view]:focus-within)) {
+    border-color: var(--color-primary);
+    background-color: var(--color-primary);
+    color: var(--color-on-primary);
+}
