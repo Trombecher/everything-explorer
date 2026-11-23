@@ -26,15 +26,6 @@ other items stay valid.
 
 - (6) Search bar searching atoms by name.
 
-- (11) The trash can icon (remove connection) overflows the connection box in
-  the connections view, when connected (`<dot> connected` is added to that
-  flex). Also, the padding is off, "local" has less padding to the box border
-  than the title and the monospace path. That path should not be monospace. Also
-  the connection deletion button should ask (for local connections) whether to
-  delete also the knowledge base file, or just the connection. Also when
-  connected, the border is too bright of blue and the background does not change
-  to a blueish background.
-
 - (13) Decide what to put on the home screen. Release notes? Shortcut buttons
   for recently accessed things?
 
@@ -76,10 +67,6 @@ other items stay valid.
 
 - (30) Better UI for the if-node, maybe with arrows that adapt to the layout?
   (then we would need to measure height which I'd like to avoid).
-
-- (31) Add more query nodes in the backend, and then in the frontend.
-
-- (32) Some nodes are still unimplemented in the frontend but in the backend.
 
 - (34) Better UI for parameter nodes and self-nodes.
 
