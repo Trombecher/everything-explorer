@@ -81,7 +81,7 @@ other items stay valid.
 
 - (40) SolidJS skill: see `.agents/skills/solidjs.md`. Remaining work is the
   effect-based state synchronization listed in its "Known deviations" section
-  (dialog field reset and the per-node focus request).
+  (the per-node focus request).
 
 ## Secondary
 

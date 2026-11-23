@@ -96,8 +96,9 @@ reset where the event is already handled:
   and fires `onConnectionChanged`. State that depends on the active knowledge
   base (atom name caches, atom search text) resets in that callback, not by
   watching `connectionClient`.
-- Dialog fields reset in the dialog's `onOpenChange`, not in an effect that
-  watches `props.open`.
+- Dialog fields live in a component inside `Dialog.Content`. Kobalte unmounts
+  that content when the dialog closes, so every opening starts with fresh state;
+  no reset effect and no reset call on the individual close paths.
 - A search field and its parsed selection are one piece of state. Store the raw
   text in `AppState` and derive the parsed value; do not mirror two signals.
 - Purely local state that only exists while a dialog is open can also live in a
@@ -170,16 +171,14 @@ is reported as `EFFECT_RELAY_TEAR` and `createComputed` no longer exists.
 Delete an entry when it is fixed. These are the remaining effect-based
 synchronizations found in the audit:
 
-- `src/ui/tabs/connections/AddRemoteConnectionDialog.tsx:64` — resets the text
-  fields when `props.open` becomes true. Reset in `onOpenChange`.
 - `src/ui/objects/ObjectView.tsx:113` — one effect per object view consumes
   `objectSelection.focusRequest()`. Replace with a single focus consumer or a
   callback registry.
 
 The other audited sites are fixed: the connection resets live in
 `connectionState`, the atom search text lives in `AppState`, the atom-name cache
-is written from a `createComputed`, and the dead locally-added-atom list is
-gone.
+is written from a `createComputed`, the dialog content owns its field state so
+it resets by unmounting, and the dead locally-added-atom list is gone.
 
 Legitimate effects that should stay: `src/Root.tsx:25` and `:31`,
 `src/ui/App.tsx:63` and `:70`, and
