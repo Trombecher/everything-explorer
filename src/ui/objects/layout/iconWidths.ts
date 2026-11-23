@@ -22,7 +22,7 @@ export const blockIconWidthInPixels = {
     union: 24,
     intersection: 24,
     unwrap: 80,
-    valuesOf: 48,
+    valuesOf: 32,
     hasValue: 24,
     isAtom: 48,
     isConstruction: 48,
