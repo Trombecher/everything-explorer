@@ -75,10 +75,14 @@ other items stay valid.
 
 - (37) Better app background.
 
-- (38) SolidJS 2.0 when?
+- (38) SolidJS 2.0 when? The rules in `.agents/skills/solidjs.md` are
+  v2-forward, so the migration should mostly remove the v1 write-backs instead
+  of rewriting them.
 
-- (40) SolidJS skill? currently `createEffect`s are used to sync data. VERY BAD
-  PRACTISE! `createComputed` if possible!
+- (40) SolidJS skill: see `.agents/skills/solidjs.md`. Remaining work is the
+  effect-based state synchronization listed in its "Known deviations" section
+  (connection resets, dialog reset, atom-name cache, focus requests, atom list
+  and search mirror).
 
 ## Secondary
 
