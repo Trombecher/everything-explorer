@@ -56,18 +56,34 @@ export const calculateSetElementWidthBudgetInPixels = (
 
 export const calculateFunctionBodyWidthBudgetInPixels = (
     widthBudgetInPixelsForFunction: number,
+    layoutModeOfFunction: LayoutMode,
     layoutOptions: LayoutOptions,
-) =>
-    Math.max(
+): number => {
+    const innerWidthBudgetInPixels = Math.max(
         0,
         widthBudgetInPixelsForFunction
             - layoutOptions.block.blockBorderWidthInPixels * 2
             - layoutOptions.block.blockPaddingLeftInPixels
-            - layoutOptions.block.blockPaddingRightInPixels
-            - layoutOptions.block.itemGapInPixels * 2
-            - blockIconWidthInPixels.mapsTo
-            - functionParameterNameFieldWidthInPixels,
+            - layoutOptions.block.blockPaddingRightInPixels,
     );
+
+    switch (layoutModeOfFunction) {
+        case LayoutMode.Row:
+            return Math.max(
+                0,
+                innerWidthBudgetInPixels
+                    - layoutOptions.block.itemGapInPixels * 2
+                    - blockIconWidthInPixels.mapsTo
+                    - functionParameterNameFieldWidthInPixels,
+            );
+        case LayoutMode.Column:
+            return Math.max(
+                0,
+                innerWidthBudgetInPixels
+                    - layoutOptions.block.setElementIndentInPixels,
+            );
+    }
+};
 
 export const binaryBlockSlotWidthBudgetInPixels = (
     layoutModeOfBinaryBlock: LayoutMode,

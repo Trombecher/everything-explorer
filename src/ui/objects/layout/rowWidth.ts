@@ -30,8 +30,9 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
         case NodeType.Function:
             return rowLayoutWidth(
                 [
-                    functionParameterNameFieldWidthInPixels,
-                    blockIconWidthInPixels.mapsTo,
+                    functionParameterNameFieldWidthInPixels
+                        + options.block.itemGapInPixels
+                        + blockIconWidthInPixels.mapsTo,
                     calculateRowLayoutWidthOfBlock(
                         objectToBlock(block.body),
                         options,

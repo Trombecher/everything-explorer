@@ -39,8 +39,10 @@ export const calculateLayoutModeOfBlock = (
 
     if (
         // Sets and new-set nodes have braces in addition to their children,
-        // so column mode can reduce their width even with a single child.
+        // and a function has its parameter and arrow next to its body. Column
+        // mode can reduce their width even with a single child.
         (childCountOfBlock(block) >= 2
+            || block.type === NodeType.Function
             || block.type === NodeType.NewSet
             || block.type === ObjectType.Set)
         && calculateRowLayoutWidthOfBlock(block, layoutOptions)

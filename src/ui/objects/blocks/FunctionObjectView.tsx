@@ -34,26 +34,33 @@ export default (props: {
 
     return (
         <>
-            <ParameterNameField
-                name={props.node.parameterName}
-                setName={
-                    props.setObject
-                    && (newName => {
-                        props.setObject?.(
-                            nodeToObject({
-                                ...props.node,
-                                parameterName: newName,
-                            }),
-                        );
-                    })
-                }
-            />
-            <MapsToIcon />
+            <div
+                class="flex items-center"
+                style={{
+                    gap: `${appState.layoutOptions().block.itemGapInPixels}px`,
+                }}
+            >
+                <ParameterNameField
+                    name={props.node.parameterName}
+                    setName={
+                        props.setObject
+                        && (newName => {
+                            props.setObject?.(
+                                nodeToObject({
+                                    ...props.node,
+                                    parameterName: newName,
+                                }),
+                            );
+                        })
+                    }
+                />
+                <MapsToIcon />
+            </div>
             <EnclosingFunctionsContext.Provider
                 value={enclosingFunctionsForBody}
             >
                 <ObjectView
-                    indentLeft={false}
+                    indentLeft={props.layoutMode === LayoutMode.Column}
                     parentObjectLayoutMode={props.layoutMode}
                     replaceParentWithThis={
                         props.setObject
@@ -88,6 +95,7 @@ export default (props: {
                     path={[...props.path, 0]}
                     widthBudgetInPixels={calculateFunctionBodyWidthBudgetInPixels(
                         props.widthBudgetInPixels,
+                        props.layoutMode,
                         appState.layoutOptions(),
                     )}
                 />
