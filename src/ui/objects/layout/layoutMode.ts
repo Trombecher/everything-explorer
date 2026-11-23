@@ -1,3 +1,4 @@
+import {ObjectType} from "@/model";
 import {NodeType} from "@/model/nodes";
 
 import type {Block} from "../blocks";
@@ -37,9 +38,11 @@ export const calculateLayoutModeOfBlock = (
     }
 
     if (
-        // A new-set node with a single value still has three visual parts
-        // (hammer, braces and value), so column mode can reduce its width.
-        (childCountOfBlock(block) >= 2 || block.type === NodeType.NewSet)
+        // Sets and new-set nodes have braces in addition to their children,
+        // so column mode can reduce their width even with a single child.
+        (childCountOfBlock(block) >= 2
+            || block.type === NodeType.NewSet
+            || block.type === ObjectType.Set)
         && calculateRowLayoutWidthOfBlock(block, layoutOptions)
             > widthBudgetInPixels
     ) {
