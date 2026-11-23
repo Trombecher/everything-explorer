@@ -157,33 +157,30 @@ is reported as `EFFECT_RELAY_TEAR` and `createComputed` no longer exists.
   identity guard, and prefer a per-key cache over replacing a whole `Map` (a
   global map copy invalidates every object view).
 - **Selection and focus** (`src/ui/objects/selection.ts`,
-  `src/ui/objects/ObjectView.tsx`): selection paths are state; a focus request
-  is a command. Prefer a callback registered by the tree root over a signal that
-  every object view subscribes to. Never create one effect per rendered node for
-  a global request.
+  `src/ui/objects/ObjectView.tsx`, `src/ui/objects/focus.ts`): selection paths
+  are state; a focus request is a command. Each rendered tree installs exactly
+  one `createObjectSelectionFocus` consumer on its container (`PropertiesPanel`,
+  `EvaluateView` editor and result, `DebugView`), and object views carry
+  `data-object-path` so the consumer finds its target. Never create one effect
+  per rendered node for a global request.
 - **Refs**: a `ref` callback runs inside the compiler's render effect. Create
   effects in the component body, not inside a `ref`, unless the effect is truly
   tied to that element. If you need one-time owned DOM setup, use `onMount` and
   `onCleanup`.
 
-## Known deviations (TODO 40)
+## Effect audit
 
-Delete an entry when it is fixed. These are the remaining effect-based
-synchronizations found in the audit:
-
-- `src/ui/objects/ObjectView.tsx:113` — one effect per object view consumes
-  `objectSelection.focusRequest()`. Replace with a single focus consumer or a
-  callback registry.
-
-The other audited sites are fixed: the connection resets live in
-`connectionState`, the atom search text lives in `AppState`, the atom-name cache
-is written from a `createComputed`, the dialog content owns its field state so
-it resets by unmounting, and the dead locally-added-atom list is gone.
+All state synchronization sites from the effect audit are fixed: connection
+resets live in `connectionState`, the atom search text lives in `AppState`, the
+atom-name cache is written from a `createComputed`, the dialog content owns its
+field state so it resets by unmounting, focus requests have a single consumer
+per tree, and the dead locally-added-atom list is gone.
 
 Legitimate effects that should stay: `src/Root.tsx:25` and `:31`,
 `src/ui/App.tsx:63` and `:70`, and
 `src/ui/tabs/things/properties/createPropertySync.ts:124` (network I/O) plus
-`:115` (async resource adoption).
+`:115` (async resource adoption). A new effect that copies reactive state into
+another signal is a regression, not a feature.
 
 ## Review checklist
 

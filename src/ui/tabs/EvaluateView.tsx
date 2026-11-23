@@ -7,6 +7,7 @@ import type {LazyObjectIterator} from "@/connect";
 import {useAppState, useConnections, usePreferences} from "@/context";
 import {Phrase} from "@/i18n/phrases";
 import {defaultObject, ObjectType, type EverythingObject} from "@/model";
+import {createObjectSelectionFocus} from "@/ui/objects/focus";
 import {LayoutMode} from "@/ui/objects/layout";
 import ObjectView from "@/ui/objects/ObjectView";
 import {
@@ -167,6 +168,12 @@ export default () => {
         setResultSelectionPathInfo,
     );
 
+    let editorContainer: HTMLDivElement | undefined;
+    let resultContainer: HTMLDivElement | undefined;
+
+    createObjectSelectionFocus(history.objectSelection, () => editorContainer);
+    createObjectSelectionFocus(resultSelection, () => resultContainer);
+
     return (
         <div class="flex min-w-0 grow py-2">
             <div
@@ -181,32 +188,34 @@ export default () => {
                     </h2>
                 </div>
 
-                <WidthMeasurer class="min-w-0">
-                    {widthBudgetInPixels => (
-                        <ObjectSelectionContext.Provider
-                            value={history.objectSelection}
-                        >
-                            <ObjectView
-                                indentLeft={false}
-                                siblingCount={1}
-                                object={history.object(0)}
-                                setObject={newObject => {
-                                    clearLazyResult();
-                                    setEvaluation(undefined);
+                <div ref={element => (editorContainer = element)}>
+                    <WidthMeasurer class="min-w-0">
+                        {widthBudgetInPixels => (
+                            <ObjectSelectionContext.Provider
+                                value={history.objectSelection}
+                            >
+                                <ObjectView
+                                    indentLeft={false}
+                                    siblingCount={1}
+                                    object={history.object(0)}
+                                    setObject={newObject => {
+                                        clearLazyResult();
+                                        setEvaluation(undefined);
 
-                                    history.pushObject(
-                                        0,
-                                        newObject ?? defaultObject,
-                                    );
-                                }}
-                                path={[]}
-                                widthBudgetInPixels={widthBudgetInPixels()}
-                                replaceParentWithThis={undefined}
-                                parentObjectLayoutMode={LayoutMode.Row}
-                            />
-                        </ObjectSelectionContext.Provider>
-                    )}
-                </WidthMeasurer>
+                                        history.pushObject(
+                                            0,
+                                            newObject ?? defaultObject,
+                                        );
+                                    }}
+                                    path={[]}
+                                    widthBudgetInPixels={widthBudgetInPixels()}
+                                    replaceParentWithThis={undefined}
+                                    parentObjectLayoutMode={LayoutMode.Row}
+                                />
+                            </ObjectSelectionContext.Provider>
+                        )}
+                    </WidthMeasurer>
+                </div>
 
                 <div class="flex items-center gap-2">
                     <Button
@@ -223,7 +232,10 @@ export default () => {
 
                 <Show when={evaluation()} keyed>
                     {evaluation => (
-                        <div class="flex flex-col gap-2 border-t border-line-subtle pt-3">
+                        <div
+                            class="flex flex-col gap-2 border-t border-line-subtle pt-3"
+                            ref={element => (resultContainer = element)}
+                        >
                             <h3 class="font-semibold text-fg-strong">
                                 {preferences.translate(
                                     Phrase.Result,

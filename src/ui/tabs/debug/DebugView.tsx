@@ -1,5 +1,6 @@
 import {defaultObject} from "@/model";
 
+import {createObjectSelectionFocus} from "../../objects/focus";
 import {ObjectHistory} from "../../objects/history";
 import {LayoutMode} from "../../objects/layout";
 import ObjectView from "../../objects/ObjectView";
@@ -12,9 +13,17 @@ import Swatch from "./Swatch";
 export default () => {
     const objectHistory = new ObjectHistory([createInitialObject2()]);
 
+    let focusContainer: HTMLDivElement | undefined;
+
+    createObjectSelectionFocus(
+        objectHistory.objectSelection,
+        () => focusContainer,
+    );
+
     return (
         <div
             class="mx-auto my-2 max-w-3xl min-w-0 grow rounded-4xl border border-line-subtle bg-surface-panel p-4"
+            ref={element => (focusContainer = element)}
             tabIndex={0}
             onKeyDown={event => handleHistoryKeyDown(event, objectHistory)}
         >

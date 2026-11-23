@@ -79,10 +79,6 @@ other items stay valid.
   v2-forward, so the migration should mostly remove the v1 write-backs instead
   of rewriting them.
 
-- (40) SolidJS skill: see `.agents/skills/solidjs.md`. Remaining work is the
-  effect-based state synchronization listed in its "Known deviations" section
-  (the per-node focus request).
-
 ## Secondary
 
 - (100) When editing objects, add a sidebar displaying the behaviour of the

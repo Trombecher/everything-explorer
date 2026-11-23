@@ -9,6 +9,7 @@ import {Phrase} from "@/i18n/phrases";
 import {defaultObject} from "@/model";
 import type {Atom} from "@/model/atoms";
 import {createAtomName} from "@/ui/objects/createAtomName";
+import {createObjectSelectionFocus} from "@/ui/objects/focus";
 import {ObjectSelectionContext} from "@/ui/objects/selection";
 import {handleHistoryKeyDown} from "@/ui/objects/undoRedoKeys";
 import Button from "@/ui/reuse/Button";
@@ -30,6 +31,10 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
     const name = createAtomName(() => props.selectedAtom);
     const {history, values} = createPropertySync(() => props.selectedAtom);
 
+    let focusContainer: HTMLDivElement | undefined;
+
+    createObjectSelectionFocus(history.objectSelection, () => focusContainer);
+
     const addProperty = () => {
         if (!connections.connectionClient()) return;
 
@@ -44,6 +49,7 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
     return (
         <div
             class="relative flex size-full flex-col gap-2 rounded-4xl border border-line-subtle bg-surface-panel p-2"
+            ref={element => (focusContainer = element)}
             tabIndex={0}
             onKeyDown={event => {
                 handleHistoryKeyDown(event, history);

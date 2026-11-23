@@ -1,4 +1,4 @@
-import {createEffect, createMemo} from "solid-js";
+import {createMemo} from "solid-js";
 
 import {useAppState, useClipboard} from "@/context";
 import type {EverythingObject} from "@/model";
@@ -8,6 +8,7 @@ import {objectToBlock} from "./blocks";
 import ObjectViewContent from "./blocks/ObjectViewContent";
 import {handleClipboardKeyDown} from "./editing/clipboardShortcuts";
 import {handleKeyDown} from "./editing/keyboardShortcuts";
+import {objectPathKey} from "./focus";
 import {calculateLayoutModeOfBlock, LayoutMode} from "./layout";
 import {
     blockInColumnModeIsItemsCenter,
@@ -109,32 +110,6 @@ export const ObjectView = (props: {
                     leftArrowSiblingIndex: props.leftArrowSiblingIndex,
                 });
             }}
-            ref={div => {
-                createEffect(() => {
-                    const request = objectSelection.focusRequest();
-                    if (
-                        request === undefined
-                        || request.length !== props.path.length
-                        || request.some(
-                            (position, i) => position !== props.path[i],
-                        )
-                    )
-                        return;
-
-                    objectSelection.clearFocusRequest(request);
-
-                    // Focusing a view that contains a focused input would steal
-                    // focus from that input. A focused descendant object view,
-                    // on the other hand, must lose focus when the cursor moves
-                    // to this ancestor.
-                    const active = document.activeElement;
-                    const activeIsView =
-                        active instanceof Element
-                        && active.matches("[data-object-view]");
-
-                    if (activeIsView || !div.contains(active)) div.focus();
-                });
-            }}
             onFocusIn={event => {
                 // `focusin` bubbles, so only the innermost object view of the
                 // focused element updates the cursor.
@@ -146,6 +121,7 @@ export const ObjectView = (props: {
                 }
             }}
             data-object-view=""
+            data-object-path={objectPathKey(props.path)}
             tabIndex={objectSelection.isCursor(props.path) ? 0 : -1}
             style={{
                 "margin-left": `${props.indentLeft ? blockOptions().setElementIndentInPixels : 0}px`,
