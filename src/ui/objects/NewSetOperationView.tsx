@@ -92,8 +92,15 @@ export default (props: {
 
     return (
         <>
-            <HammerIcon />
-            <BraceIcon side="left" />
+            <div
+                class="flex items-center"
+                style={{
+                    gap: `${appState.layoutOptions().block.itemGapInPixels}px`,
+                }}
+            >
+                <HammerIcon />
+                <BraceIcon side="left" />
+            </div>
             <Index each={props.block.values}>
                 {(value, i) => (
                     <span class="flex items-center">

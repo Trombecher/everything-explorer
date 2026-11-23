@@ -478,8 +478,9 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
         case NodeType.NewSet:
             return rowLayoutWidth(
                 [
-                    blockIconWidthInPixels.hammer,
-                    blockIconWidthInPixels.brace,
+                    blockIconWidthInPixels.hammer
+                        + options.block.itemGapInPixels
+                        + blockIconWidthInPixels.brace,
                     ...block.values.map(
                         (value, index) =>
                             calculateRowLayoutWidthOfBlock(

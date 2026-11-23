@@ -1,3 +1,5 @@
+import {NodeType} from "@/model/nodes";
+
 import type {Block} from "../blocks";
 import {childCountOfBlock} from "./childCount";
 import type {LayoutOptions} from "./options";
@@ -35,11 +37,14 @@ export const calculateLayoutModeOfBlock = (
     }
 
     if (
-        childCountOfBlock(block) >= 2
+        // A new-set node with a single value still has three visual parts
+        // (hammer, braces and value), so column mode can reduce its width.
+        (childCountOfBlock(block) >= 2 || block.type === NodeType.NewSet)
         && calculateRowLayoutWidthOfBlock(block, layoutOptions)
             > widthBudgetInPixels
     ) {
-        // Block has two or more children and exceeds width budget.
+        // The block cannot fit its row layout, and column mode can reduce
+        // its width.
         return LayoutMode.Column;
     } else {
         return LayoutMode.Row;
