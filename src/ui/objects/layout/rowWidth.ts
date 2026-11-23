@@ -22,6 +22,24 @@ const rowLayoutWidth = (
     + options.block.blockPaddingRightInPixels
     + options.block.blockBorderWidthInPixels;
 
+/**
+ * The atom names that the currently computed width cache entry depends on.
+ */
+let nameRecorder: Map<bigint, string | undefined> | undefined;
+
+/**
+ * Reads an atom name and records it for the enclosing width cache entry.
+ */
+const atomNameOf = (
+    options: LayoutOptions,
+    value: bigint,
+): string | undefined => {
+    const name = options.atomName(value);
+    nameRecorder?.set(value, name);
+
+    return name;
+};
+
 const calculateRowLayoutWidthOfBlockWithoutCache = (
     block: Block,
     options: LayoutOptions,
@@ -536,7 +554,7 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                 options,
             );
         case ObjectType.Atom:
-            const atomName = options.atomNames.get(block.value);
+            const atomName = atomNameOf(options, block.value);
 
             return rowLayoutWidth(
                 [
@@ -583,13 +601,34 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
     }
 };
 
+type RowLayoutWidthCacheEntry = {
+    readonly width: number;
+
+    /**
+     * The atom names this width depends on, including the names of nested
+     * blocks that were served from the cache.
+     */
+    readonly names: ReadonlyMap<bigint, string | undefined>;
+};
+
 /**
  * (Very important) cache of block widths in row mode.
  */
 const rowLayoutWidthCache = new WeakMap<
     LayoutOptions,
-    WeakMap<Block, number>
+    WeakMap<Block, RowLayoutWidthCacheEntry>
 >();
+
+const namesAreCurrent = (
+    names: ReadonlyMap<bigint, string | undefined>,
+    layoutOptions: LayoutOptions,
+): boolean => {
+    for (const [value, name] of names) {
+        if (atomNameOf(layoutOptions, value) !== name) return false;
+    }
+
+    return true;
+};
 
 export const calculateRowLayoutWidthOfBlock = (
     block: Block,
@@ -602,13 +641,36 @@ export const calculateRowLayoutWidthOfBlock = (
         rowLayoutWidthCache.set(layoutOptions, layoutWidthsCache);
     }
 
-    const cachedWidth = layoutWidthsCache.get(block);
-    if (cachedWidth !== undefined) return cachedWidth;
+    const cachedEntry = layoutWidthsCache.get(block);
 
-    const width = calculateRowLayoutWidthOfBlockWithoutCache(
-        block,
-        layoutOptions,
-    );
-    layoutWidthsCache.set(block, width);
-    return width;
+    if (
+        cachedEntry !== undefined
+        && namesAreCurrent(cachedEntry.names, layoutOptions)
+    ) {
+        return cachedEntry.width;
+    }
+
+    const outerRecorder = nameRecorder;
+    const names = new Map<bigint, string | undefined>();
+    nameRecorder = names;
+
+    try {
+        const width = calculateRowLayoutWidthOfBlockWithoutCache(
+            block,
+            layoutOptions,
+        );
+
+        layoutWidthsCache.set(block, {width, names});
+
+        return width;
+    } finally {
+        nameRecorder = outerRecorder;
+
+        // A parent entry depends on every name its subtree read. Nested cache
+        // hits record their names directly into this map; a nested
+        // recomputation records into its own map and merges it here.
+        if (outerRecorder !== undefined) {
+            for (const [value, name] of names) outerRecorder.set(value, name);
+        }
+    }
 };

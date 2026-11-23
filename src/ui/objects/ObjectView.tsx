@@ -1,9 +1,10 @@
 import {createMemo} from "solid-js";
 
-import {useAppState, useClipboard} from "@/context";
+import {useClipboard} from "@/context";
 import type {EverythingObject} from "@/model";
 import type {DeepReadonly} from "@/util";
 
+import {useLayoutOptions} from "./atomNames";
 import {objectToBlock} from "./blocks";
 import ObjectViewContent from "./blocks/ObjectViewContent";
 import {handleClipboardKeyDown} from "./editing/clipboardShortcuts";
@@ -57,20 +58,16 @@ export const ObjectView = (props: {
     indentLeft: boolean;
 }) => {
     const objectSelection = useObjectSelection();
-    const appState = useAppState();
+    const layoutOptions = useLayoutOptions();
     const clipboard = useClipboard();
 
     const block = () => objectToBlock(props.object);
-    const blockOptions = () => appState.layoutOptions().block;
+    const blockOptions = () => layoutOptions.block;
 
     const widthBudget = createMemo(() => props.widthBudgetInPixels);
 
     const layoutMode = () =>
-        calculateLayoutModeOfBlock(
-            block(),
-            widthBudget(),
-            appState.layoutOptions(),
-        );
+        calculateLayoutModeOfBlock(block(), widthBudget(), layoutOptions);
 
     return (
         <div

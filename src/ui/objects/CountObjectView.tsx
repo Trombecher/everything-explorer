@@ -1,7 +1,7 @@
-import {useAppState} from "@/context";
 import type {EverythingObject} from "@/model";
 import {nodeToObject, type CountNode} from "@/model/nodes";
 
+import {useLayoutOptions} from "./atomNames";
 import {
     calculateCountNodeOperandWidthBudgetInPixels,
     calculateLayoutModeOfBlock,
@@ -17,13 +17,13 @@ export default (props: {
     setObject?: ((newObject: EverythingObject | undefined) => void) | undefined;
 }) => {
     const objectSelection = useObjectSelection();
-    const appState = useAppState();
+    const layoutOptions = useLayoutOptions();
 
     const layoutMode = () =>
         calculateLayoutModeOfBlock(
             props.block,
             props.wholeWidthBudgetInPixels,
-            appState.layoutOptions(),
+            layoutOptions,
         );
 
     const removeNode = () => {
@@ -72,7 +72,7 @@ export default (props: {
                 path={[...props.path, 0]}
                 widthBudgetInPixels={calculateCountNodeOperandWidthBudgetInPixels(
                     props.wholeWidthBudgetInPixels,
-                    appState.layoutOptions(),
+                    layoutOptions,
                 )}
             />
             <div

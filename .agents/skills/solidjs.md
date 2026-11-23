@@ -37,6 +37,10 @@ state and does not need an effect.
    that is set and immediately cleared again is an event bus in disguise.
 7. **Async data is read where it is rendered.** `createResource` already returns
    a reactive value; do not copy it into a signal from an effect.
+8. **Knowledge-base state is scoped to the connection.** Shared caches that
+   depend on the active knowledge base live in a context created at the root,
+   not in a module global, and the data records which connection it belongs to.
+   A connection change must make old entries inert without a reset watcher.
 
 ## What to use when
 
@@ -150,12 +154,16 @@ is reported as `EFFECT_RELAY_TEAR` and `createComputed` no longer exists.
   sent back over the network. The adoption is an async boundary and the network
   sync is I/O; both stay effects. Keep the `syncedObjects` diff logic inside the
   sync loop, not in render.
-- **Domain caches** (`src/ui/objects/AtomView.tsx`): atom display names are
-  produced by an async request and consumed by layout
+- **Domain caches** (`src/ui/objects/atomNames.ts`, `AtomView.tsx`): atom
+  display names are produced by an async request and consumed by layout
   (`src/ui/objects/layout/rowWidth.ts`). The write is an observation, not a
-  derivation. If a write-back is unavoidable, use `createComputed`, keep the
-  identity guard, and prefer a per-key cache over replacing a whole `Map` (a
-  global map copy invalidates every object view).
+  derivation; `AtomView` writes it from a `createComputed`. The cache is a
+  context created at `src/Root.tsx`, never a module global or `AppState`, so all
+  views share it without leaking between knowledge bases: entries remember the
+  connection client they were resolved with and are ignored after a change.
+  Names are stored per atom, and the row width cache records the names a width
+  depends on, so resolving one name invalidates only the layouts whose width
+  uses it.
 - **Selection and focus** (`src/ui/objects/selection.ts`,
   `src/ui/objects/ObjectView.tsx`, `src/ui/objects/focus.ts`): selection paths
   are state; a focus request is a command. Each rendered tree installs exactly
@@ -199,6 +207,8 @@ another signal is a regression, not a feature.
   reading their own output?
 - Are `defer` and `on` preserved when converting effect to `createComputed`?
 - Does any reset depend on the order of effects? Move it into an event.
+- Is cache state that depends on the knowledge base scoped to the connection and
+  created at the root instead of in a module global?
 
 ## Common mistakes
 

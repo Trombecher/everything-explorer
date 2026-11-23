@@ -1,10 +1,10 @@
 import CheckIcon from "lucide-solid/icons/check";
 import XIcon from "lucide-solid/icons/x";
 
-import {useAppState} from "@/context";
 import type {EverythingObject} from "@/model";
 import {nodeToObject, type IfNode} from "@/model/nodes";
 
+import {useLayoutOptions} from "./atomNames";
 import {
     calculateIfBranchChildWidthBudgetInPixels,
     calculateIfConditionWidthBudgetInPixels,
@@ -24,9 +24,9 @@ const IfBranchRow = (props: {
     leftArrowSiblingIndex: number | undefined;
 }) => {
     // One row of the stacked branches, with its icon in front of the child.
-    const appState = useAppState();
+    const layoutOptions = useLayoutOptions();
 
-    const itemGap = () => `${appState.layoutOptions().block.itemGapInPixels}px`;
+    const itemGap = () => `${layoutOptions.block.itemGapInPixels}px`;
 
     return (
         <div class="flex items-center" style={{gap: itemGap()}}>
@@ -53,16 +53,16 @@ export default (props: {
     setObject?: ((newObject: EverythingObject | undefined) => void) | undefined;
 }) => {
     const objectSelection = useObjectSelection();
-    const appState = useAppState();
+    const layoutOptions = useLayoutOptions();
 
     const layoutMode = () =>
         calculateLayoutModeOfBlock(
             props.block,
             props.wholeWidthBudgetInPixels,
-            appState.layoutOptions(),
+            layoutOptions,
         );
 
-    const itemGap = () => `${appState.layoutOptions().block.itemGapInPixels}px`;
+    const itemGap = () => `${layoutOptions.block.itemGapInPixels}px`;
 
     const removeNode = () => {
         objectSelection.selectParent();
@@ -109,7 +109,7 @@ export default (props: {
                 widthBudgetInPixels={calculateIfConditionWidthBudgetInPixels(
                     props.wholeWidthBudgetInPixels,
                     layoutMode(),
-                    appState.layoutOptions(),
+                    layoutOptions,
                 )}
             />
             <div class="flex flex-col items-start" style={{gap: itemGap()}}>
@@ -120,7 +120,7 @@ export default (props: {
                     widthBudgetInPixels={calculateIfBranchChildWidthBudgetInPixels(
                         props.wholeWidthBudgetInPixels,
                         layoutMode(),
-                        appState.layoutOptions(),
+                        layoutOptions,
                     )}
                     replaceParentWithThis={
                         props.setObject
@@ -141,7 +141,7 @@ export default (props: {
                     widthBudgetInPixels={calculateIfBranchChildWidthBudgetInPixels(
                         props.wholeWidthBudgetInPixels,
                         layoutMode(),
-                        appState.layoutOptions(),
+                        layoutOptions,
                     )}
                     replaceParentWithThis={
                         props.setObject

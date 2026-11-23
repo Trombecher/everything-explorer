@@ -1,10 +1,10 @@
 import QuoteIcon from "lucide-solid/icons/quote";
 
-import {useAppState} from "@/context";
 import type {EverythingObject} from "@/model";
 import {nodeToObject, type LiteralNode} from "@/model/nodes";
 import type {DeepReadonly} from "@/util";
 
+import {useLayoutOptions} from "../atomNames";
 import {
     calculateLiteralNodeInnerObjectWidthBudgetInPixels,
     LayoutMode,
@@ -20,7 +20,7 @@ export default (props: {
     layoutMode: LayoutMode;
 }) => {
     const objectSelection = useObjectSelection();
-    const appState = useAppState();
+    const layoutOptions = useLayoutOptions();
 
     return (
         <>
@@ -61,7 +61,7 @@ export default (props: {
                 path={[...props.path, 0]}
                 widthBudgetInPixels={calculateLiteralNodeInnerObjectWidthBudgetInPixels(
                     props.widthBudgetInPixels,
-                    appState.layoutOptions(),
+                    layoutOptions,
                 )}
             />
         </>

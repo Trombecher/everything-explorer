@@ -1,11 +1,11 @@
 import {Index} from "solid-js";
 
-import {useAppState} from "@/context";
 import type {EverythingObject} from "@/model";
 import {type EverythingSet, ObjectType} from "@/model";
 import type {DeepReadonly} from "@/util";
 
 import BraceIcon from "../icons/sets/BraceIcon";
+import {useLayoutOptions} from "./atomNames";
 import {
     calculateLayoutModeOfBlock,
     calculateSetElementWidthBudgetInPixels,
@@ -23,13 +23,13 @@ export default (props: {
     widthBudgetInPixels: number;
 }) => {
     const objectSelection = useObjectSelection();
-    const appState = useAppState();
+    const layoutOptions = useLayoutOptions();
 
     const layoutMode = () =>
         calculateLayoutModeOfBlock(
             props.set,
             props.widthBudgetInPixels,
-            appState.layoutOptions(),
+            layoutOptions,
         );
 
     return (
@@ -98,7 +98,7 @@ export default (props: {
                             widthBudgetInPixels={calculateSetElementWidthBudgetInPixels(
                                 props.set,
                                 props.widthBudgetInPixels,
-                                appState.layoutOptions(),
+                                layoutOptions,
                                 i,
                             )}
                         />

@@ -1,6 +1,15 @@
+/**
+ * Resolves the display name of an atom for layout measurement.
+ */
+export type AtomName = (value: bigint) => string | undefined;
+
 export type LayoutOptions = {
     readonly block: BlockLayoutOptions;
-    readonly atomNames: ReadonlyMap<bigint, string>;
+
+    /**
+     * The display name of an atom, or `undefined` if it is not known.
+     */
+    readonly atomName: AtomName;
 };
 
 export type BlockLayoutOptions = {

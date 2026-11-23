@@ -1,6 +1,5 @@
 import {Dynamic} from "solid-js/web";
 
-import {useAppState} from "@/context";
 import type {EverythingObject} from "@/model";
 import {
     nodeToObject,
@@ -31,6 +30,7 @@ import QueryConstructionsIcon from "../icons/query/QueryConstructionsIcon";
 import ValuesOfIcon from "../icons/query/ValuesOfIcon";
 import IsSetIcon from "../icons/sets/IsSetIcon";
 import UnwrapIcon from "../icons/sets/UnwrapIcon";
+import {useLayoutOptions} from "./atomNames";
 import {
     calculateLayoutModeOfBlock,
     calculateConstructionConstructorNodeOperandWidthBudgetInPixels,
@@ -146,7 +146,7 @@ export default (props: {
     setObject?: ((newObject: EverythingObject | undefined) => void) | undefined;
 }) => {
     const objectSelection = useObjectSelection();
-    const appState = useAppState();
+    const layoutOptions = useLayoutOptions();
 
     const operand = () => operandOf(props.block);
 
@@ -154,12 +154,10 @@ export default (props: {
         calculateLayoutModeOfBlock(
             props.block,
             props.wholeWidthBudgetInPixels,
-            appState.layoutOptions(),
+            layoutOptions,
         );
 
     const operandWidthBudgetInPixels = () => {
-        const layoutOptions = appState.layoutOptions();
-
         switch (props.block.type) {
             case NodeType.ConstructionConstructor:
                 return calculateConstructionConstructorNodeOperandWidthBudgetInPixels(

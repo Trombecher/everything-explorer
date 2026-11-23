@@ -1,9 +1,9 @@
 import {Show} from "solid-js";
 import {Dynamic} from "solid-js/web";
 
-import {useAppState} from "@/context";
 import type {EverythingObject} from "@/model";
 
+import {useLayoutOptions} from "./atomNames";
 import {
     BinaryOperationBlock,
     BlockIcon,
@@ -27,7 +27,7 @@ export default (props: {
     setObject?: ((newObject: EverythingObject) => void) | undefined;
 }) => {
     const objectSelection = useObjectSelection();
-    const appState = useAppState();
+    const layoutOptions = useLayoutOptions();
 
     const first = () => getFirst(props.block);
     const second = () => getSecond(props.block);
@@ -36,7 +36,7 @@ export default (props: {
         calculateLayoutModeOfBlock(
             props.block,
             props.wholeWidthBudgetInPixels,
-            appState.layoutOptions(),
+            layoutOptions,
         );
 
     return (
@@ -76,7 +76,7 @@ export default (props: {
                 widthBudgetInPixels={binaryBlockSlotWidthBudgetInPixels(
                     layoutMode(),
                     props.wholeWidthBudgetInPixels,
-                    appState.layoutOptions(),
+                    layoutOptions,
                 )}
             />
             <Dynamic component={BlockIcon[props.block.type]} />
@@ -112,7 +112,7 @@ export default (props: {
                 widthBudgetInPixels={binaryBlockSlotWidthBudgetInPixels(
                     layoutMode(),
                     props.wholeWidthBudgetInPixels,
-                    appState.layoutOptions(),
+                    layoutOptions,
                 )}
             />
         </>

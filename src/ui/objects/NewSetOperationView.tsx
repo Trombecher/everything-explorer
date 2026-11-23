@@ -1,11 +1,11 @@
 import HammerIcon from "lucide-solid/icons/hammer";
 import {Index} from "solid-js";
 
-import {useAppState} from "@/context";
 import type {EverythingObject} from "@/model";
 import {nodeToObject, type NewSetNode} from "@/model/nodes";
 
 import BraceIcon from "../icons/sets/BraceIcon";
+import {useLayoutOptions} from "./atomNames";
 import {
     calculateLayoutModeOfBlock,
     calculateNewSetValueWidthBudgetInPixels,
@@ -21,20 +21,20 @@ export default (props: {
     setObject?: ((newObject: EverythingObject | undefined) => void) | undefined;
 }) => {
     const objectSelection = useObjectSelection();
-    const appState = useAppState();
+    const layoutOptions = useLayoutOptions();
 
     const layoutMode = () =>
         calculateLayoutModeOfBlock(
             props.block,
             props.wholeWidthBudgetInPixels,
-            appState.layoutOptions(),
+            layoutOptions,
         );
 
     const valueWidthBudgetInPixels = (index: number) =>
         calculateNewSetValueWidthBudgetInPixels(
             props.wholeWidthBudgetInPixels,
             layoutMode(),
-            appState.layoutOptions(),
+            layoutOptions,
             index < props.block.values.length - 1,
         );
 
@@ -94,9 +94,7 @@ export default (props: {
         <>
             <div
                 class="flex items-center"
-                style={{
-                    gap: `${appState.layoutOptions().block.itemGapInPixels}px`,
-                }}
+                style={{gap: `${layoutOptions.block.itemGapInPixels}px`}}
             >
                 <HammerIcon />
                 <BraceIcon side="left" />

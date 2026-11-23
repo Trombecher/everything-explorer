@@ -1,10 +1,10 @@
 import SquarePlayIcon from "lucide-solid/icons/square-play";
 
-import {useAppState} from "@/context";
 import type {EverythingObject} from "@/model";
 import {nodeToObject, type FoldNode} from "@/model/nodes";
 
 import FoldIcon from "../icons/query/FoldIcon";
+import {useLayoutOptions} from "./atomNames";
 import {
     binaryBlockSlotWidthBudgetInPixels,
     calculateLayoutModeOfBlock,
@@ -19,13 +19,13 @@ export default (props: {
     setObject?: ((newObject: EverythingObject | undefined) => void) | undefined;
 }) => {
     const objectSelection = useObjectSelection();
-    const appState = useAppState();
+    const layoutOptions = useLayoutOptions();
 
     const layoutMode = () =>
         calculateLayoutModeOfBlock(
             props.block,
             props.wholeWidthBudgetInPixels,
-            appState.layoutOptions(),
+            layoutOptions,
         );
 
     const removeNode = () => {
@@ -58,7 +58,7 @@ export default (props: {
         binaryBlockSlotWidthBudgetInPixels(
             layoutMode(),
             props.wholeWidthBudgetInPixels,
-            appState.layoutOptions(),
+            layoutOptions,
         );
 
     return (

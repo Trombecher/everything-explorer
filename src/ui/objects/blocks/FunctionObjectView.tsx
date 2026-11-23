@@ -1,9 +1,9 @@
-import {useAppState} from "@/context";
 import type {EverythingObject} from "@/model";
 import {nodeToObject, type FunctionNode} from "@/model/nodes";
 import type {DeepReadonly} from "@/util";
 
 import MapsToIcon from "../../icons/math/MapsToIcon";
+import {useLayoutOptions} from "../atomNames";
 import {
     useEnclosingFunctions,
     EnclosingFunctionsContext,
@@ -24,7 +24,7 @@ export default (props: {
     layoutMode: LayoutMode;
 }) => {
     const objectSelection = useObjectSelection();
-    const appState = useAppState();
+    const layoutOptions = useLayoutOptions();
     const outerEnclosingFunctions = useEnclosingFunctions();
 
     const enclosingFunctionsForBody = () => [
@@ -36,9 +36,7 @@ export default (props: {
         <>
             <div
                 class="flex items-center"
-                style={{
-                    gap: `${appState.layoutOptions().block.itemGapInPixels}px`,
-                }}
+                style={{gap: `${layoutOptions.block.itemGapInPixels}px`}}
             >
                 <ParameterNameField
                     name={props.node.parameterName}
@@ -96,7 +94,7 @@ export default (props: {
                     widthBudgetInPixels={calculateFunctionBodyWidthBudgetInPixels(
                         props.widthBudgetInPixels,
                         props.layoutMode,
-                        appState.layoutOptions(),
+                        layoutOptions,
                     )}
                 />
             </EnclosingFunctionsContext.Provider>

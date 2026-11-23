@@ -4,10 +4,6 @@ import {type SetStoreFunction, createStore, produce} from "solid-js/store";
 
 import {Tab} from "@/state/common";
 import type {ObjectHistory} from "@/ui/objects/history";
-import {
-    defaultBlockLayoutOptions,
-    type LayoutOptions,
-} from "@/ui/objects/layout";
 import type {DeepReadonly} from "@/util";
 
 import {type ClipboardState, createClipboardState} from "./clipboard";
@@ -54,14 +50,6 @@ export class AppState {
      * The current tab and sidebar state.
      */
     public readonly navigation: NavigationState;
-
-    /**
-     * Layout options of all object views.
-     *
-     * This is runtime state, not part of the persisted app state.
-     */
-    public readonly layoutOptions: Accessor<LayoutOptions>;
-    public readonly setLayoutOptions: Setter<LayoutOptions>;
 
     /**
      * Object, undo/redo history and selection of the evaluate tab.
@@ -123,15 +111,6 @@ export class AppState {
 
         this.clipboard = createClipboardState(store);
 
-        // Layout options
-        const [layoutOptions, setLayoutOptions] = createSignal<LayoutOptions>({
-            atomNames: new Map(),
-            block: defaultBlockLayoutOptions,
-        });
-
-        this.layoutOptions = layoutOptions;
-        this.setLayoutOptions = setLayoutOptions;
-
         // Atom search text
         const [atomsSearchText, setAtomsSearchText] = createSignal("");
 
@@ -140,14 +119,8 @@ export class AppState {
 
         this.connections = createConnectionState(store, {
             onConnectionChanged: client => {
-                // Atom names and the atom search belong to a specific
-                // knowledge base, so drop them when the client changes.
-                setLayoutOptions(previous =>
-                    previous.atomNames.size === 0
-                        ? previous
-                        : {...previous, atomNames: new Map()},
-                );
-
+                // The atom search belongs to a specific knowledge base, so
+                // drop it when the client changes.
                 setAtomsSearchText("");
 
                 // Tabs that show knowledge base contents do not make sense
