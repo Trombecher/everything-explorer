@@ -1,6 +1,6 @@
 import QuoteIcon from "lucide-solid/icons/quote";
 
-import type {EverythingObject} from "@/model";
+import {defaultObject, type EverythingObject} from "@/model";
 import {nodeToObject, type LiteralNode} from "@/model/nodes";
 import type {DeepReadonly} from "@/util";
 
@@ -42,20 +42,14 @@ export default (props: {
                 setObject={
                     props.setObject
                     && (newObject => {
-                        if (newObject === undefined) {
-                            // A literal without an object is meaningless, so
-                            // remove the whole literal.
-                            objectSelection.selectParent();
-
-                            props.setObject?.(undefined);
-                        } else {
-                            props.setObject?.(
-                                nodeToObject({
-                                    ...props.node,
-                                    object: newObject,
-                                }),
-                            );
-                        }
+                        // Deleting the inner object replaces it with the empty
+                        // object instead of removing the literal.
+                        props.setObject?.(
+                            nodeToObject({
+                                ...props.node,
+                                object: newObject ?? defaultObject,
+                            }),
+                        );
                     })
                 }
                 path={[...props.path, 0]}

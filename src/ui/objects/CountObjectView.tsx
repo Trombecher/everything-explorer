@@ -1,4 +1,4 @@
-import type {EverythingObject} from "@/model";
+import {defaultObject, type EverythingObject} from "@/model";
 import {nodeToObject, type CountNode} from "@/model/nodes";
 
 import {useLayoutOptions} from "./atomNames";
@@ -26,12 +26,6 @@ export default (props: {
             layoutOptions,
         );
 
-    const removeNode = () => {
-        objectSelection.selectParent();
-
-        props.setObject?.(undefined);
-    };
-
     const replaceWith = (object: EverythingObject) => {
         if (!props.setObject) return;
 
@@ -40,13 +34,11 @@ export default (props: {
     };
 
     const changeInner = (newObject: EverythingObject | undefined) => {
-        if (newObject === undefined) {
-            // A count node without its inner object is meaningless,
-            // so remove the whole node.
-            removeNode();
-        } else {
-            props.setObject?.(nodeToObject({...props.block, inner: newObject}));
-        }
+        // Deleting the inner object replaces it with the empty object instead
+        // of removing the count node.
+        props.setObject?.(
+            nodeToObject({...props.block, inner: newObject ?? defaultObject}),
+        );
     };
 
     const barStyle = {width: `${blockIconWidthInPixels.countBar}px`};

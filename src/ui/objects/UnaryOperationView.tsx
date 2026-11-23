@@ -1,6 +1,6 @@
 import {Dynamic} from "solid-js/web";
 
-import type {EverythingObject} from "@/model";
+import {defaultObject, type EverythingObject} from "@/model";
 import {
     nodeToObject,
     NodeType,
@@ -242,17 +242,15 @@ export default (props: {
                 setObject={
                     props.setObject
                     && (newOperand => {
-                        if (newOperand === undefined) {
-                            // A unary node without an operand is meaningless,
-                            // so remove the whole node.
-                            objectSelection.selectParent();
-
-                            props.setObject?.(undefined);
-                        } else {
-                            props.setObject?.(
-                                withOperand(props.block, newOperand),
-                            );
-                        }
+                        // Deleting the operand replaces it with the empty
+                        // object instead of removing the unary node, so the
+                        // surrounding chain stays intact.
+                        props.setObject?.(
+                            withOperand(
+                                props.block,
+                                newOperand ?? defaultObject,
+                            ),
+                        );
                     })
                 }
                 path={[...props.path, 0]}

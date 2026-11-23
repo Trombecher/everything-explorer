@@ -1,7 +1,7 @@
 import {Show} from "solid-js";
 import {Dynamic} from "solid-js/web";
 
-import type {EverythingObject} from "@/model";
+import {defaultObject, type EverythingObject} from "@/model";
 
 import {useLayoutOptions} from "./atomNames";
 import {
@@ -61,15 +61,14 @@ export default (props: {
                 setObject={
                     props.setObject
                     && (newFirst => {
-                        if (newFirst === undefined) {
-                            objectSelection.selectParent();
-
-                            props.setObject?.(second());
-                        } else {
-                            props.setObject?.(
-                                changeBlockFirst(props.block, newFirst),
-                            );
-                        }
+                        // Deleting the operand replaces it with the empty
+                        // object instead of removing the binary node.
+                        props.setObject?.(
+                            changeBlockFirst(
+                                props.block,
+                                newFirst ?? defaultObject,
+                            ),
+                        );
                     })
                 }
                 path={[...props.path, 0]}
@@ -97,15 +96,14 @@ export default (props: {
                 setObject={
                     props.setObject
                     && (newSecond => {
-                        if (newSecond === undefined) {
-                            objectSelection.selectParent();
-
-                            props.setObject?.(first());
-                        } else {
-                            props.setObject?.(
-                                changeBlockSecond(props.block, newSecond),
-                            );
-                        }
+                        // Deleting the operand replaces it with the empty
+                        // object instead of removing the binary node.
+                        props.setObject?.(
+                            changeBlockSecond(
+                                props.block,
+                                newSecond ?? defaultObject,
+                            ),
+                        );
                     })
                 }
                 path={[...props.path, 1]}

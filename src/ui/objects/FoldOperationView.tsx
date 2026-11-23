@@ -1,6 +1,6 @@
 import SquarePlayIcon from "lucide-solid/icons/square-play";
 
-import type {EverythingObject} from "@/model";
+import {defaultObject, type EverythingObject} from "@/model";
 import {nodeToObject, type FoldNode} from "@/model/nodes";
 
 import FoldIcon from "../icons/query/FoldIcon";
@@ -28,12 +28,6 @@ export default (props: {
             layoutOptions,
         );
 
-    const removeNode = () => {
-        objectSelection.selectParent();
-
-        props.setObject?.(undefined);
-    };
-
     const replaceWith = (object: EverythingObject) => {
         if (!props.setObject) return;
 
@@ -45,13 +39,11 @@ export default (props: {
         key: "set" | "folder" | "initial",
         newObject: EverythingObject | undefined,
     ) => {
-        if (newObject === undefined) {
-            // A fold node without all of its children is meaningless,
-            // so remove the whole node.
-            removeNode();
-        } else {
-            props.setObject?.(nodeToObject({...props.block, [key]: newObject}));
-        }
+        // Deleting a child replaces it with the empty object instead of
+        // removing the fold node.
+        props.setObject?.(
+            nodeToObject({...props.block, [key]: newObject ?? defaultObject}),
+        );
     };
 
     const childWidthBudgetInPixels = () =>

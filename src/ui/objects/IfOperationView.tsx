@@ -1,7 +1,7 @@
 import CheckIcon from "lucide-solid/icons/check";
 import XIcon from "lucide-solid/icons/x";
 
-import type {EverythingObject} from "@/model";
+import {defaultObject, type EverythingObject} from "@/model";
 import {nodeToObject, type IfNode} from "@/model/nodes";
 
 import {useLayoutOptions} from "./atomNames";
@@ -64,12 +64,6 @@ export default (props: {
 
     const itemGap = () => `${layoutOptions.block.itemGapInPixels}px`;
 
-    const removeNode = () => {
-        objectSelection.selectParent();
-
-        props.setObject?.(undefined);
-    };
-
     const replaceWith = (object: EverythingObject) => {
         if (!props.setObject) return;
 
@@ -81,13 +75,11 @@ export default (props: {
         key: "condition" | "thenBranch" | "otherwiseBranch",
         newObject: EverythingObject | undefined,
     ) => {
-        if (newObject === undefined) {
-            // An if node without all of its children is meaningless,
-            // so remove the whole node.
-            removeNode();
-        } else {
-            props.setObject?.(nodeToObject({...props.block, [key]: newObject}));
-        }
+        // Deleting a child replaces it with the empty object instead of
+        // removing the if node.
+        props.setObject?.(
+            nodeToObject({...props.block, [key]: newObject ?? defaultObject}),
+        );
     };
 
     return (

@@ -1,4 +1,4 @@
-import type {EverythingObject} from "@/model";
+import {defaultObject, type EverythingObject} from "@/model";
 import {nodeToObject, type FunctionNode} from "@/model/nodes";
 import type {DeepReadonly} from "@/util";
 
@@ -74,20 +74,14 @@ export default (props: {
                     setObject={
                         props.setObject
                         && (newBody => {
-                            if (newBody === undefined) {
-                                // A function without a body is meaningless,
-                                // so remove the whole function.
-                                objectSelection.selectParent();
-
-                                props.setObject?.(undefined);
-                            } else {
-                                props.setObject?.(
-                                    nodeToObject({
-                                        ...props.node,
-                                        body: newBody,
-                                    }),
-                                );
-                            }
+                            // Deleting the body replaces it with the empty
+                            // object instead of removing the function.
+                            props.setObject?.(
+                                nodeToObject({
+                                    ...props.node,
+                                    body: newBody ?? defaultObject,
+                                }),
+                            );
                         })
                     }
                     path={[...props.path, 0]}
