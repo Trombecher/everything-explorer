@@ -214,6 +214,15 @@ export const createInitialObject2 = (): EverythingObject => ({
             initial: defaultObject,
             rest: [],
         }),
+        nodeToObject({
+            type: NodeType.NewSet,
+            values: [
+                {type: ObjectType.Integer, value: 1n},
+                {type: ObjectType.Integer, value: 2n},
+                {type: ObjectType.Integer, value: 3n},
+            ],
+            rest: [],
+        }),
         nodeToObject({type: NodeType.Unwrap, set: defaultObject, rest: []}),
         nodeToObject({
             type: NodeType.Literal,

@@ -319,3 +319,21 @@ export const calculateLiteralNodeInnerObjectWidthBudgetInPixels = (
             - blockIconWidthInPixels.quote
             - layoutOptions.block.itemGapInPixels,
     );
+
+export const calculateNewSetValueWidthBudgetInPixels = (
+    widthBudgetInPixels: number,
+    layoutModeOfNewSet: LayoutMode,
+    layoutOptions: LayoutOptions,
+    isNotLastValue: boolean,
+): number =>
+    layoutModeOfNewSet === LayoutMode.Row
+        ? Infinity
+        : Math.max(
+              0,
+              widthBudgetInPixels
+                  - layoutOptions.block.blockBorderWidthInPixels * 2
+                  - layoutOptions.block.blockPaddingLeftInPixels
+                  - layoutOptions.block.blockPaddingRightInPixels
+                  - layoutOptions.block.setElementIndentInPixels
+                  - (isNotLastValue ? measureStaticText(",") : 0),
+          );

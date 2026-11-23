@@ -345,6 +345,19 @@ const objectToNodeWithoutCache = (
         }
     }
 
+    const values = setAtomValues(object, Atom.NodeNewSetValue.value);
+    if (values.length > 0) {
+        if (finalNode) return NotANode;
+
+        finalNode = {
+            type: NodeType.NewSet,
+            values,
+            rest: withoutAtomConstructors(object.elements, [
+                Atom.NodeNewSetValue.value,
+            ]),
+        };
+    }
+
     some = singleSetAtomValue(object, Atom.NodeAtomsWithProperty.value);
     if (some) {
         if (finalNode) return NotANode;
@@ -678,4 +691,27 @@ const singleSetAtomValue = (
     }
 
     return found;
+};
+
+/**
+ * Collects every value of a property that may occur multiple times. The set
+ * element order is preserved. Zero matches yield an empty array.
+ */
+const setAtomValues = (
+    set: EverythingSet,
+    atomValue: bigint,
+): EverythingObject[] => {
+    const values: EverythingObject[] = [];
+
+    for (const element of set.elements) {
+        if (
+            element.type === ObjectType.Construction
+            && element.constructor.type === ObjectType.Atom
+            && element.constructor.value === atomValue
+        ) {
+            values.push(element.value);
+        }
+    }
+
+    return values;
 };

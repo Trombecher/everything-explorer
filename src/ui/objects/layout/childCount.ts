@@ -50,6 +50,8 @@ export const childCountOfBlock = (block: Block): number => {
         case NodeType.Fold:
         case NodeType.If:
             return 3;
+        case NodeType.NewSet:
+            return block.values.length;
         case ObjectType.Set:
             return block.elements.length;
     }

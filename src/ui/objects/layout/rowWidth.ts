@@ -475,6 +475,25 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                 ],
                 options,
             );
+        case NodeType.NewSet:
+            return rowLayoutWidth(
+                [
+                    blockIconWidthInPixels.hammer,
+                    blockIconWidthInPixels.brace,
+                    ...block.values.map(
+                        (value, index) =>
+                            calculateRowLayoutWidthOfBlock(
+                                objectToBlock(value),
+                                options,
+                            )
+                            + (index < block.values.length - 1
+                                ? measureStaticText(",")
+                                : 0),
+                    ),
+                    blockIconWidthInPixels.brace,
+                ],
+                options,
+            );
         case NodeType.Parameter:
             return rowLayoutWidth(
                 [blockIconWidthInPixels.x, 192 + options.block.itemGapInPixels],

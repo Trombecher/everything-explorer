@@ -180,6 +180,16 @@ export const nodeToObject = (node: Node): EverythingObject => {
                     ...node.rest,
                 ],
             };
+        case NodeType.NewSet:
+            return {
+                type: ObjectType.Set,
+                elements: [
+                    ...node.values.map(value =>
+                        construction(Atom.NodeNewSetValue, value),
+                    ),
+                    ...node.rest,
+                ],
+            };
         case NodeType.QueryAtomsWithProperty:
             return {
                 type: ObjectType.Set,

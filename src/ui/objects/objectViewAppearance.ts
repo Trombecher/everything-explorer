@@ -89,6 +89,7 @@ export const objectViewColorCategory = (
         case NodeType.Every:
         case NodeType.Any:
         case NodeType.Fold:
+        case NodeType.NewSet:
         case ObjectType.Set:
             return ObjectViewColorCategory.Set;
 
@@ -145,6 +146,7 @@ export const blockInColumnModeIsItemsCenter = (blockType: Block["type"]) => {
         case NodeType.Every:
         case NodeType.Any:
         case NodeType.Fold:
+        case NodeType.NewSet:
         case NodeType.QueryConstructionValues:
         case NodeType.Call:
         case ObjectType.Construction:

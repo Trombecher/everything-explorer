@@ -43,6 +43,7 @@ const isHandledKey = (key: string): boolean =>
     || key === "|"
     || key === "u"
     || key === "n"
+    || key === "N"
     || key === "i"
     || key === "!"
     || key === "q"
@@ -132,7 +133,18 @@ export const handleKeyDown = (props: {
 
         // Try to add new empty set to object.
 
-        if (props.object.type === ObjectType.Set) {
+        const node = objectToNode(props.object);
+
+        if (node !== NotANode && node.type === NodeType.NewSet) {
+            props.setObject(
+                nodeToObject({
+                    ...node,
+                    values: [...node.values, defaultObject],
+                }),
+            );
+
+            props.objectSelection.selectChild(node.values.length);
+        } else if (props.object.type === ObjectType.Set) {
             props.setObject({
                 type: ObjectType.Set,
                 elements: [
@@ -327,6 +339,12 @@ export const handleKeyDown = (props: {
                     props.setObject(node.set);
                     break;
                 }
+                case NodeType.NewSet: {
+                    // Retain first value.
+
+                    props.setObject(node.values[0] ?? defaultObject);
+                    break;
+                }
                 case NodeType.If: {
                     // Retain condition.
 
@@ -455,6 +473,20 @@ export const handleKeyDown = (props: {
         );
 
         props.objectSelection.selectChild(1);
+    } else if (props.event.key === "N") {
+        if (!props.setObject) {
+            return;
+        }
+
+        props.setObject(
+            nodeToObject({
+                type: NodeType.NewSet,
+                values: [props.object],
+                rest: [],
+            }),
+        );
+
+        props.objectSelection.selectChild(0);
     } else if (props.event.key === "!") {
         if (!props.setObject) return;
 

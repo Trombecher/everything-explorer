@@ -39,6 +39,7 @@ export const blockIconWidthInPixels = {
     check: 24,
     lessThan: 24,
     functionSelf: 24,
+    hammer: 24,
 } as const satisfies Record<string, number>;
 
 /**

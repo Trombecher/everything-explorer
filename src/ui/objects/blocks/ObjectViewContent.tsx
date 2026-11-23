@@ -16,6 +16,7 @@ import FoldOperationView from "../FoldOperationView";
 import IfOperationView from "../IfOperationView";
 import IntegerView from "../IntegerView";
 import type {LayoutMode} from "../layout";
+import NewSetOperationView from "../NewSetOperationView";
 import type {ObjectSelectionPath} from "../selection";
 import SetObjectView from "../SetObjectView";
 import TextView from "../TextView";
@@ -239,6 +240,16 @@ export default (props: {
                 {anyNode => (
                     <BinaryOperationView
                         block={anyNode()}
+                        path={props.path}
+                        wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                        setObject={props.setObject}
+                    />
+                )}
+            </Match>
+            <Match when={variant(props.block, NodeType.NewSet)}>
+                {newSetNode => (
+                    <NewSetOperationView
+                        block={newSetNode()}
                         path={props.path}
                         wholeWidthBudgetInPixels={props.widthBudgetInPixels}
                         setObject={props.setObject}
