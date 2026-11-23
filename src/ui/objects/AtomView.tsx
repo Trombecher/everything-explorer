@@ -1,5 +1,5 @@
 import AtomIcon from "lucide-solid/icons/atom";
-import {createEffect} from "solid-js";
+import {createComputed} from "solid-js";
 
 import {useAppState} from "@/context";
 import {ObjectType} from "@/model";
@@ -19,7 +19,7 @@ export default (props: {
 
     const label = () => name() ?? String(props.atom.value);
 
-    createEffect(() => {
+    createComputed(() => {
         const text = name();
         if (text === undefined) return;
 

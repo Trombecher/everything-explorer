@@ -1,4 +1,4 @@
-import {createEffect, createMemo, createSignal, For, on, Show} from "solid-js";
+import {createMemo, createSignal, For, Show} from "solid-js";
 
 import {useAppState, useConnections, usePreferences} from "@/context";
 import {Phrase} from "@/i18n/phrases";
@@ -22,19 +22,18 @@ export default () => {
 
     const {setContainer, maximumPropertiesPanelWidth} =
         createPropertiesPanelResize();
-    const {atoms, displayedAtoms, isNew} = createAtomList();
+    const {atoms, displayedAtoms} = createAtomList();
 
     /**
      * The search field is the single source of truth for the selected atom: an
      * id in the field selects that atom, anything else selects nothing. This
      * keeps typing an id and clicking an atom in sync.
      *
-     * The selected atom id is elevated into the app state so it survives tab
-     * changes and other tabs can preselect an atom before opening this tab.
+     * The text lives in the app state so it survives tab changes and other tabs
+     * can preselect an atom before opening this tab.
      */
-    const [searchValue, setSearchValue] = createSignal(
-        appState.selectedAtomId()?.toString() ?? "",
-    );
+    const searchValue = appState.atomsSearchText;
+    const setSearchValue = appState.setAtomsSearchText;
 
     const selectedAtom = createMemo<Atom | undefined>(previous => {
         const atom = parseAtomId(searchValue());
@@ -45,25 +44,6 @@ export default () => {
 
         return atom;
     });
-
-    createEffect(
-        on(selectedAtom, atom => {
-            appState.setSelectedAtomId(atom?.value);
-        }),
-    );
-
-    // Another tab can select an atom while this view is already mounted.
-    createEffect(
-        on(
-            () => appState.selectedAtomId(),
-            id => {
-                if (id !== selectedAtom()?.value) {
-                    setSearchValue(id?.toString() ?? "");
-                }
-            },
-            {defer: true},
-        ),
-    );
 
     const selectAtom = (atom: Atom | undefined) =>
         setSearchValue(atom ? atom.value.toString() : "");
@@ -104,7 +84,6 @@ export default () => {
                             {atom => (
                                 <AtomCard
                                     atom={atom}
-                                    isNew={isNew(atom)}
                                     selectedAtom={selectedAtom()}
                                     setSelectedAtom={selectAtom}
                                 />

@@ -51,10 +51,15 @@ export type ConnectionState = {
 
 export type ConnectionStateOptions = {
     /**
-     * Called after the app disconnected from a knowledge base. The app uses
-     * this to leave tabs that only make sense while connected.
+     * Called after the active connection client changed.
+     *
+     * Receives `undefined` when the app disconnected. The app uses this to drop
+     * state that belongs to the previous knowledge base and to leave tabs that
+     * only make sense while connected.
      */
-    readonly onDisconnected: () => void;
+    readonly onConnectionChanged: (
+        client: ConnectionClient | undefined,
+    ) => void;
 };
 
 const prependConnection = (draft: InternalAppState, connection: Connection) => {
@@ -76,9 +81,18 @@ export const createConnectionState = (
     store: AppStateStore,
     options: ConnectionStateOptions,
 ): ConnectionState => {
-    const [connectionClient, setConnectionClient] = createSignal<
+    const [connectionClient, setConnectionClientSignal] = createSignal<
         ConnectionClient | undefined
     >(undefined);
+
+    /**
+     * The only way the active client changes. Notifies the app so that it can
+     * drop state belonging to the previous knowledge base.
+     */
+    const updateConnectionClient = (client: ConnectionClient | undefined) => {
+        setConnectionClientSignal(client);
+        options.onConnectionChanged(client);
+    };
 
     const connection = (connectionIndex: number): DeepReadonly<Connection> => {
         const value = store.state.connections[connectionIndex];
@@ -106,8 +120,7 @@ export const createConnectionState = (
     const disconnect = async () => {
         if (backend.isApp()) await backend.stopServer();
 
-        setConnectionClient(undefined);
-        options.onDisconnected();
+        updateConnectionClient(undefined);
     };
 
     const connect = async (connectionIndex: number) => {
@@ -124,12 +137,12 @@ export const createConnectionState = (
             // Spin up the server.
             const port = await backend.servePath(selected.filePath);
 
-            setConnectionClient(
+            updateConnectionClient(
                 new ConnectionClient(`http://localhost:${port}`),
             );
         } else {
             // Remote connection -> just connect directly.
-            setConnectionClient(new ConnectionClient(selected.url));
+            updateConnectionClient(new ConnectionClient(selected.url));
         }
 
         store.commit(draft => {
@@ -180,7 +193,7 @@ export const createConnectionState = (
             });
         }
 
-        setConnectionClient(client);
+        updateConnectionClient(client);
     };
 
     const addConnection = (value: Connection): number => {

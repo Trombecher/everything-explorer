@@ -1,5 +1,5 @@
 import type {Accessor, Setter} from "solid-js";
-import {createEffect, createSignal, on} from "solid-js";
+import {createSignal} from "solid-js";
 import {type SetStoreFunction, createStore, produce} from "solid-js/store";
 
 import {Tab} from "@/state/common";
@@ -88,14 +88,14 @@ export class AppState {
     public readonly setClipboardPanelWidth: Setter<number>;
 
     /**
-     * Id of the atom whose properties are open in the things tab.
+     * The text of the atom search field in the things tab.
      *
      * This is runtime state, not part of the persisted app state. It lives here
-     * (and not in the things tab) so that it survives tab changes and other
-     * tabs can preselect an atom before switching to the things tab.
+     * (and not in the things tab) so that the search survives tab changes, and
+     * so that other tabs can preselect an atom by setting its id as the text.
      */
-    public readonly selectedAtomId: Accessor<bigint | undefined>;
-    public readonly setSelectedAtomId: Setter<bigint | undefined>;
+    public readonly atomsSearchText: Accessor<string>;
+    public readonly setAtomsSearchText: Setter<string>;
 
     constructor(initial: InternalAppState) {
         enforceInvariants(initial);
@@ -123,20 +123,6 @@ export class AppState {
 
         this.clipboard = createClipboardState(store);
 
-        this.connections = createConnectionState(store, {
-            onDisconnected: () => {
-                const currentTab = navigation.currentTab();
-
-                if (
-                    currentTab === Tab.InstanceProperties
-                    || currentTab === Tab.Things
-                    || currentTab === Tab.Evaluate
-                ) {
-                    navigation.setCurrentTab(Tab.Home);
-                }
-            },
-        });
-
         // Layout options
         const [layoutOptions, setLayoutOptions] = createSignal<LayoutOptions>({
             atomNames: new Map(),
@@ -145,6 +131,40 @@ export class AppState {
 
         this.layoutOptions = layoutOptions;
         this.setLayoutOptions = setLayoutOptions;
+
+        // Atom search text
+        const [atomsSearchText, setAtomsSearchText] = createSignal("");
+
+        this.atomsSearchText = atomsSearchText;
+        this.setAtomsSearchText = setAtomsSearchText;
+
+        this.connections = createConnectionState(store, {
+            onConnectionChanged: client => {
+                // Atom names and the atom search belong to a specific
+                // knowledge base, so drop them when the client changes.
+                setLayoutOptions(previous =>
+                    previous.atomNames.size === 0
+                        ? previous
+                        : {...previous, atomNames: new Map()},
+                );
+
+                setAtomsSearchText("");
+
+                // Tabs that show knowledge base contents do not make sense
+                // while disconnected.
+                if (client === undefined) {
+                    const currentTab = navigation.currentTab();
+
+                    if (
+                        currentTab === Tab.InstanceProperties
+                        || currentTab === Tab.Things
+                        || currentTab === Tab.Evaluate
+                    ) {
+                        navigation.setCurrentTab(Tab.Home);
+                    }
+                }
+            },
+        });
 
         // Evaluate history
         this.evaluateHistory = createEvaluateHistory();
@@ -161,33 +181,6 @@ export class AppState {
 
         this.clipboardPanelWidth = clipboardPanelWidth;
         this.setClipboardPanelWidth = setClipboardPanelWidth;
-
-        // Selected atom id
-        const [selectedAtomId, setSelectedAtomId] = createSignal<
-            bigint | undefined
-        >(undefined);
-
-        this.selectedAtomId = selectedAtomId;
-        this.setSelectedAtomId = setSelectedAtomId;
-
-        // Atom names belong to a specific knowledge base, so drop them when
-        // reconnecting. The selected atom belongs to the knowledge base as
-        // well, so drop it too.
-        createEffect(
-            on(
-                this.connections.connectionClient,
-                () => {
-                    setLayoutOptions(previous =>
-                        previous.atomNames.size === 0
-                            ? previous
-                            : {...previous, atomNames: new Map()},
-                    );
-
-                    setSelectedAtomId(undefined);
-                },
-                {defer: true},
-            ),
-        );
     }
 
     public reset() {

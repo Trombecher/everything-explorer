@@ -91,12 +91,11 @@ state and does not need an effect.
 Resetting state when something happens is not a synchronization problem. Put the
 reset where the event is already handled:
 
-- The connection lifecycle has exactly one mutation point per direction:
-  `connect`, `disconnect`, and `tryReconnectToLocalServer` in
-  `src/state/app/connectionState.ts` are the only setters of `connectionClient`.
-  State that depends on the active knowledge base (atom name caches, selected
-  atom, added atoms) should be reset through an option callback such as the
-  existing `onDisconnected`, not by watching `connectionClient`.
+- The connection lifecycle has a single mutation point: `updateConnectionClient`
+  in `src/state/app/connectionState.ts` is the only setter of `connectionClient`
+  and fires `onConnectionChanged`. State that depends on the active knowledge
+  base (atom name caches, atom search text) resets in that callback, not by
+  watching `connectionClient`.
 - Dialog fields reset in the dialog's `onOpenChange`, not in an effect that
   watches `props.open`.
 - A search field and its parsed selection are one piece of state. Store the raw
@@ -139,7 +138,7 @@ is reported as `EFFECT_RELAY_TEAR` and `createComputed` no longer exists.
 
 - **`AppState` composition** (`src/state/app`): each feature module exposes
   accessors and guarded setters. Persisted fields go through `store.commit`;
-  runtime signals (panel widths, layout options, selected atom) stay in
+  runtime signals (panel widths, layout options, atom search text) stay in
   `AppState` so they survive tab changes. Derived members (for example
   `preferences.language()`) are plain functions, not signals.
 - **Persistence** (`src/Root.tsx`, `src/ui/App.tsx`): writing the app state to
@@ -171,22 +170,16 @@ is reported as `EFFECT_RELAY_TEAR` and `createComputed` no longer exists.
 Delete an entry when it is fixed. These are the remaining effect-based
 synchronizations found in the audit:
 
-- `src/state/app/AppState.ts:176` — clears the atom-name cache and the selected
-  atom when `connectionClient` changes. Move the reset into the connection
-  lifecycle.
 - `src/ui/tabs/connections/AddRemoteConnectionDialog.tsx:64` — resets the text
   fields when `props.open` becomes true. Reset in `onOpenChange`.
-- `src/ui/objects/AtomView.tsx:22` — writes the resolved atom name into
-  `appState.layoutOptions.atomNames`. Use `createComputed` or a per-key cache.
 - `src/ui/objects/ObjectView.tsx:113` — one effect per object view consumes
   `objectSelection.focusRequest()`. Replace with a single focus consumer or a
   callback registry.
-- `src/ui/tabs/things/createAtomList.ts:52` — clears locally added atoms when
-  `connectionClient` changes. Likely unreachable because the things tab
-  unmounts; either delete it or key the added atoms by client.
-- `src/ui/tabs/things/ThingsView.tsx:49` and `:56` — two-way mirror between the
-  search text and `appState.selectedAtomId`. Keep the search text in `AppState`
-  and derive the parsed atom.
+
+The other audited sites are fixed: the connection resets live in
+`connectionState`, the atom search text lives in `AppState`, the atom-name cache
+is written from a `createComputed`, and the dead locally-added-atom list is
+gone.
 
 Legitimate effects that should stay: `src/Root.tsx:25` and `:31`,
 `src/ui/App.tsx:63` and `:70`, and

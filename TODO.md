@@ -81,8 +81,7 @@ other items stay valid.
 
 - (40) SolidJS skill: see `.agents/skills/solidjs.md`. Remaining work is the
   effect-based state synchronization listed in its "Known deviations" section
-  (connection resets, dialog reset, atom-name cache, focus requests, atom list
-  and search mirror).
+  (dialog field reset and the per-node focus request).
 
 ## Secondary
 
