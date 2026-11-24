@@ -5,7 +5,7 @@ import type {EverythingObject} from "@/model";
 import type {DeepReadonly} from "@/util";
 
 import {useLayoutOptions} from "./atomNames";
-import {objectToBlock} from "./blocks";
+import {canonicalizeForDisplay, objectToBlock} from "./blocks";
 import ObjectViewContent from "./blocks/ObjectViewContent";
 import {handleClipboardKeyDown} from "./editing/clipboardShortcuts";
 import {handleKeyDown} from "./editing/keyboardShortcuts";
@@ -61,7 +61,15 @@ export const ObjectView = (props: {
     const layoutOptions = useLayoutOptions();
     const clipboard = useClipboard();
 
-    const block = () => objectToBlock(props.object);
+    /**
+     * The object in its canonical display representation. Keyboard actions use
+     * this object as well so that they operate on what the user sees instead of
+     * on a raw representation that happens to be displayed as a
+     * specialization.
+     */
+    const object = createMemo(() => canonicalizeForDisplay(props.object));
+
+    const block = () => objectToBlock(object());
     const blockOptions = () => layoutOptions.block;
 
     const widthBudget = createMemo(() => props.widthBudgetInPixels);
@@ -89,7 +97,7 @@ export const ObjectView = (props: {
                 if (
                     handleClipboardKeyDown({
                         event,
-                        object: props.object,
+                        object: object(),
                         setObject: props.setObject,
                         clipboard,
                     })
@@ -98,7 +106,7 @@ export const ObjectView = (props: {
 
                 handleKeyDown({
                     event,
-                    object: props.object,
+                    object: object(),
                     siblingCount: props.siblingCount,
                     objectSelection: objectSelection,
                     replaceParentWithThis: props.replaceParentWithThis,

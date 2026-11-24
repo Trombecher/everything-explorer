@@ -21,6 +21,11 @@ import WidthMeasurer from "@/ui/reuse/WidthMeasurer";
 
 /**
  * The number of values to request from a lazy evaluation result per page.
+ *
+ * This is larger than the largest canonical set specialization (a byte has
+ * eight values), so a canonicalizable result always arrives complete in one
+ * exhausted page. Otherwise the display could normalize a partial set and then
+ * have to undo that when the remaining values arrive.
  */
 const LAZY_PAGE_SIZE = 100;
 

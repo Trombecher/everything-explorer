@@ -28,6 +28,134 @@ export const generateAtomId = (): bigint => {
 };
 
 export namespace Atom {
+    /**
+     * The atom 0 (zero).
+     */
+    export const Zero = {
+        type: ObjectType.Atom,
+        value: 2148623498527692884679683682469014909n,
+    } as const satisfies Atom;
+
+    /**
+     * The property constructor for the next integer.
+     */
+    export const SuccessorOf = {
+        type: ObjectType.Atom,
+        value: 2148623541928107461725235547620677496n,
+    } as const satisfies Atom;
+
+    /**
+     * The property constructor for the previous integer.
+     */
+    export const PredecessorOf = {
+        type: ObjectType.Atom,
+        value: 2150448436013648618415526635010123333n,
+    } as const satisfies Atom;
+
+    /**
+     * The list slot for the first element.
+     */
+    export const ListItem = {
+        type: ObjectType.Atom,
+        value: 2148623561006058368074852138222840554n,
+    } as const satisfies Atom;
+
+    /**
+     * The list slot for the rest of the list.
+     */
+    export const ListTail = {
+        type: ObjectType.Atom,
+        value: 2148623576528286069034804554905263388n,
+    } as const satisfies Atom;
+
+    /**
+     * The property constructor for the code point of a character.
+     */
+    export const CodePoint = {
+        type: ObjectType.Atom,
+        value: 2148623592788974381730175331142334217n,
+    } as const satisfies Atom;
+
+    /**
+     * The atom denoting a bit that is off.
+     */
+    export const BitOff = {
+        type: ObjectType.Atom,
+        value: 2148623606609578531456976446246481504n,
+    } as const satisfies Atom;
+
+    /**
+     * The atom denoting a bit that is on.
+     */
+    export const BitOn = {
+        type: ObjectType.Atom,
+        value: 2148623648901638714578593280489697845n,
+    } as const satisfies Atom;
+
+    /**
+     * The bit slot with index 0 (the least significant bit).
+     */
+    export const BitSlot0 = {
+        type: ObjectType.Atom,
+        value: 2148623657764931307024391951942698252n,
+    } as const satisfies Atom;
+
+    /**
+     * The bit slot with index 1.
+     */
+    export const BitSlot1 = {
+        type: ObjectType.Atom,
+        value: 2148623779289647569021414352435474390n,
+    } as const satisfies Atom;
+
+    /**
+     * The bit slot with index 2.
+     */
+    export const BitSlot2 = {
+        type: ObjectType.Atom,
+        value: 2148623793297509473303838197251962004n,
+    } as const satisfies Atom;
+
+    /**
+     * The bit slot with index 3.
+     */
+    export const BitSlot3 = {
+        type: ObjectType.Atom,
+        value: 2148623803164736660711697141897226232n,
+    } as const satisfies Atom;
+
+    /**
+     * The bit slot with index 4.
+     */
+    export const BitSlot4 = {
+        type: ObjectType.Atom,
+        value: 2148623819303808917979289470225598602n,
+    } as const satisfies Atom;
+
+    /**
+     * The bit slot with index 5.
+     */
+    export const BitSlot5 = {
+        type: ObjectType.Atom,
+        value: 2148623826522742854507738117057019657n,
+    } as const satisfies Atom;
+
+    /**
+     * The bit slot with index 6.
+     */
+    export const BitSlot6 = {
+        type: ObjectType.Atom,
+        value: 2148623834321554672547365012703956257n,
+    } as const satisfies Atom;
+
+    /**
+     * The bit slot with index 7 (the most significant bit).
+     */
+    export const BitSlot7 = {
+        type: ObjectType.Atom,
+        value: 2148623841265101367555509279336886325n,
+    } as const satisfies Atom;
+
     export const NodeFunction = {
         type: ObjectType.Atom,
         value: 2148623901005465698003044719488417081n,
