@@ -1,4 +1,9 @@
-import {type EverythingObject, type EverythingSet, ObjectType} from "@/model";
+import {
+    compositePropertiesToSetItems,
+    type EverythingComposite,
+    type EverythingObject,
+    ObjectType,
+} from "@/model";
 import {Atom} from "@/model/atoms";
 
 const canonicalObjectCache = new WeakMap<EverythingObject, EverythingObject>();
@@ -8,9 +13,11 @@ const canonicalObjectCache = new WeakMap<EverythingObject, EverythingObject>();
  *
  * The internal object model is structural and deliberately allows multiple
  * representations of the same value. The display layer picks the representation
- * that is easiest to read, mirroring the specializations of the backend's `Set`
- * model: integers, characters, bytes and text are represented by their
- * corresponding object variants instead of by their expanded sets.
+ * that is easiest to read, mirroring the specializations of the backend's
+ * `Composite` model: integers, characters, bytes and text are represented by
+ * their corresponding object variants instead of by their expanded composites.
+ * A composite whose properties are all `contains` properties is shown as a
+ * canonical set.
  *
  * The result is cached, so this is cheap when called repeatedly for the same
  * object.
@@ -30,46 +37,74 @@ export const canonicalizeForDisplay = (
 const canonicalizeWithoutCache = (
     object: EverythingObject,
 ): EverythingObject => {
-    if (object.type !== ObjectType.Set) return object;
+    if (object.type !== ObjectType.Composite) return object;
 
-    return canonicalizeSet(object);
+    return canonicalizeComposite(object);
 };
 
-const canonicalizeSet = (set: EverythingSet): EverythingObject => {
-    switch (set.elements.length) {
+const canonicalizeComposite = (
+    composite: EverythingComposite,
+): EverythingObject => {
+    switch (composite.properties.length) {
         case 1:
-            return singleElementOfSet(set) ?? set;
+            return (
+                singlePropertyOfComposite(composite)
+                ?? canonicalSetOfComposite(composite)
+                ?? composite
+            );
         case 2:
-            return textOfSet(set) ?? set;
+            return (
+                textOfComposite(composite)
+                ?? canonicalSetOfComposite(composite)
+                ?? composite
+            );
         case 8:
-            return byteOfSet(set) ?? set;
+            return (
+                byteOfComposite(composite)
+                ?? canonicalSetOfComposite(composite)
+                ?? composite
+            );
         default:
-            return set;
+            return canonicalSetOfComposite(composite) ?? composite;
     }
 };
 
 /**
- * Recognizes a set with a single integer or character element.
+ * Recognizes a composite whose properties are all `contains` properties.
+ *
+ * The empty composite is the canonical empty set. A composite with any other
+ * property remains a composite so that those properties are not hidden.
  */
-const singleElementOfSet = (
-    set: EverythingSet,
+const canonicalSetOfComposite = (
+    composite: EverythingComposite,
 ): EverythingObject | undefined => {
-    const element = set.elements[0];
-    if (element?.type !== ObjectType.Construction) return undefined;
-    if (element.constructor.type !== ObjectType.Atom) return undefined;
+    const items = compositePropertiesToSetItems(composite.properties);
 
-    if (element.constructor.value === Atom.SuccessorOf.value) {
-        const value = parseInteger(element.value);
+    return items === undefined ? undefined : {type: ObjectType.Set, items};
+};
+
+/**
+ * Recognizes a composite with a single integer or character property.
+ */
+const singlePropertyOfComposite = (
+    composite: EverythingComposite,
+): EverythingObject | undefined => {
+    const property = composite.properties[0];
+    if (property?.type !== ObjectType.Construction) return undefined;
+    if (property.constructor.type !== ObjectType.Atom) return undefined;
+
+    if (property.constructor.value === Atom.SuccessorOf.value) {
+        const value = parseInteger(property.value);
         if (value !== undefined && value >= 0n) {
             return {type: ObjectType.Integer, value: value + 1n};
         }
-    } else if (element.constructor.value === Atom.PredecessorOf.value) {
-        const value = parseInteger(element.value);
+    } else if (property.constructor.value === Atom.PredecessorOf.value) {
+        const value = parseInteger(property.value);
         if (value !== undefined && value <= 0n) {
             return {type: ObjectType.Integer, value: value - 1n};
         }
-    } else if (element.constructor.value === Atom.CodePoint.value) {
-        const codePoint = parseInteger(element.value);
+    } else if (property.constructor.value === Atom.CodePoint.value) {
+        const codePoint = parseInteger(property.value);
         const character =
             codePoint === undefined
                 ? undefined
@@ -84,10 +119,12 @@ const singleElementOfSet = (
 };
 
 /**
- * Recognizes a text set of the form `{list_item, list_tail}`.
+ * Recognizes a text composite of the form `⟨list_item, list_tail⟩`.
  */
-const textOfSet = (set: EverythingSet): EverythingObject | undefined => {
-    const parts = textSetParts(set);
+const textOfComposite = (
+    composite: EverythingComposite,
+): EverythingObject | undefined => {
+    const parts = textCompositeParts(composite);
     if (parts === undefined) return undefined;
 
     const tail = textTailOf(parts.tail);
@@ -97,27 +134,27 @@ const textOfSet = (set: EverythingSet): EverythingObject | undefined => {
 };
 
 /**
- * Parses the two slots of a text set. The item is returned as a character
+ * Parses the two slots of a text composite. The item is returned as a character
  * string.
  */
-const textSetParts = (
-    set: EverythingSet,
+const textCompositeParts = (
+    composite: EverythingComposite,
 ): {readonly item: string; readonly tail: EverythingObject} | undefined => {
-    if (set.elements.length !== 2) return undefined;
+    if (composite.properties.length !== 2) return undefined;
 
     let item: EverythingObject | undefined;
     let tail: EverythingObject | undefined;
 
-    for (const element of set.elements) {
-        if (element.type !== ObjectType.Construction) return undefined;
-        if (element.constructor.type !== ObjectType.Atom) return undefined;
+    for (const property of composite.properties) {
+        if (property.type !== ObjectType.Construction) return undefined;
+        if (property.constructor.type !== ObjectType.Atom) return undefined;
 
-        if (element.constructor.value === Atom.ListItem.value) {
+        if (property.constructor.value === Atom.ListItem.value) {
             if (item !== undefined) return undefined;
-            item = element.value;
-        } else if (element.constructor.value === Atom.ListTail.value) {
+            item = property.value;
+        } else if (property.constructor.value === Atom.ListTail.value) {
             if (tail !== undefined) return undefined;
-            tail = element.value;
+            tail = property.value;
         } else {
             return undefined;
         }
@@ -152,7 +189,7 @@ const isSingleCharacter = (value: string): boolean => {
 };
 
 /**
- * Returns the text of a list tail. Raw nested lists are followed so that
+ * Returns the text of a list tail. Raw nested composites are followed so that
  * non-canonical text is recognized as well.
  */
 const textTailOf = (tail: EverythingObject): string | undefined => {
@@ -164,10 +201,14 @@ const textTailOf = (tail: EverythingObject): string | undefined => {
             return items.join("") + current.text;
         }
 
-        if (current.type !== ObjectType.Set) return undefined;
-        if (current.elements.length === 0) return items.join("");
+        if (current.type === ObjectType.Set) {
+            return current.items.length === 0 ? items.join("") : undefined;
+        }
 
-        const parts = textSetParts(current);
+        if (current.type !== ObjectType.Composite) return undefined;
+        if (current.properties.length === 0) return items.join("");
+
+        const parts = textCompositeParts(current);
         if (parts === undefined) return undefined;
 
         items.push(parts.item);
@@ -176,23 +217,25 @@ const textTailOf = (tail: EverythingObject): string | undefined => {
 };
 
 /**
- * Recognizes a byte set with all eight bit slots.
+ * Recognizes a byte composite with all eight bit slots.
  */
-const byteOfSet = (set: EverythingSet): EverythingObject | undefined => {
-    if (set.elements.length !== 8) return undefined;
+const byteOfComposite = (
+    composite: EverythingComposite,
+): EverythingObject | undefined => {
+    if (composite.properties.length !== 8) return undefined;
 
     let value = 0;
     let seenSlots = 0;
 
-    for (const element of set.elements) {
-        if (element.type !== ObjectType.Construction) return undefined;
-        if (element.constructor.type !== ObjectType.Atom) return undefined;
-        if (element.value.type !== ObjectType.Atom) return undefined;
+    for (const property of composite.properties) {
+        if (property.type !== ObjectType.Construction) return undefined;
+        if (property.constructor.type !== ObjectType.Atom) return undefined;
+        if (property.value.type !== ObjectType.Atom) return undefined;
 
-        const slot = bitSlotIndexByAtomValue.get(element.constructor.value);
+        const slot = bitSlotIndexByAtomValue.get(property.constructor.value);
         if (slot === undefined) return undefined;
 
-        const bit = bitOfAtomValue(element.value.value);
+        const bit = bitOfAtomValue(property.value.value);
         if (bit === undefined) return undefined;
 
         const slotMask = 1 << slot;
@@ -226,8 +269,8 @@ const bitOfAtomValue = (atomValue: bigint): number | undefined => {
 
 /**
  * Parses the canonical integer representation. This intentionally looks through
- * raw nested sets so that locally authored or remotely served non-canonical
- * integers are recognized as well.
+ * raw nested composites so that locally authored or remotely served
+ * non-canonical integers are recognized as well.
  */
 const parseInteger = (object: EverythingObject): bigint | undefined => {
     switch (object.type) {
@@ -235,23 +278,23 @@ const parseInteger = (object: EverythingObject): bigint | undefined => {
             return object.value === Atom.Zero.value ? 0n : undefined;
         case ObjectType.Integer:
             return object.value;
-        case ObjectType.Set: {
-            if (object.elements.length !== 1) return undefined;
+        case ObjectType.Composite: {
+            if (object.properties.length !== 1) return undefined;
 
-            const element = object.elements[0];
-            if (element?.type !== ObjectType.Construction) return undefined;
-            if (element.constructor.type !== ObjectType.Atom) return undefined;
+            const property = object.properties[0];
+            if (property?.type !== ObjectType.Construction) return undefined;
+            if (property.constructor.type !== ObjectType.Atom) return undefined;
 
-            if (element.constructor.value === Atom.SuccessorOf.value) {
-                const value = parseInteger(element.value);
+            if (property.constructor.value === Atom.SuccessorOf.value) {
+                const value = parseInteger(property.value);
 
                 return value !== undefined && value >= 0n
                     ? value + 1n
                     : undefined;
             }
 
-            if (element.constructor.value === Atom.PredecessorOf.value) {
-                const value = parseInteger(element.value);
+            if (property.constructor.value === Atom.PredecessorOf.value) {
+                const value = parseInteger(property.value);
 
                 return value !== undefined && value <= 0n
                     ? value - 1n

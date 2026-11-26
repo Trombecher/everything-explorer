@@ -28,7 +28,7 @@ import NotIcon from "../icons/math/NotIcon";
 import HasValueIcon from "../icons/query/HasValueIcon";
 import QueryConstructionsIcon from "../icons/query/QueryConstructionsIcon";
 import SearchValuesIcon from "../icons/query/SearchValuesIcon";
-import IsSetIcon from "../icons/sets/IsSetIcon";
+import IsCompositeIcon from "../icons/sets/IsCompositeIcon";
 import UnwrapIcon from "../icons/sets/UnwrapIcon";
 import {useLayoutOptions} from "./atomNames";
 import {
@@ -69,7 +69,7 @@ const BlockIcon = {
     [NodeType.HasValue]: HasValueIcon,
     [NodeType.IsAtom]: IsAtomIcon,
     [NodeType.IsConstruction]: IsConstructionIcon,
-    [NodeType.IsSet]: IsSetIcon,
+    [NodeType.IsSet]: IsCompositeIcon,
     [NodeType.Not]: NotIcon,
     [NodeType.QueryAtomsWithConstructor]: AtomsWithConstructorIcon,
     [NodeType.QueryAtomsWithProperty]: AtomsWithPropertyIcon,

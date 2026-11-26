@@ -311,8 +311,7 @@ export default () => {
                                                         siblingCount={1}
                                                         object={{
                                                             type: ObjectType.Set,
-                                                            elements:
-                                                                lazyObjects(),
+                                                            items: lazyObjects(),
                                                         }}
                                                         setObject={undefined}
                                                         path={[0]}

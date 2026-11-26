@@ -115,9 +115,9 @@ export class ConnectionClient {
     }
 
     /**
-     * Returns the values of the given object in the knowledge base.
+     * Returns the properties of the given object in the knowledge base.
      */
-    public async valuesOfObject(
+    public async propertiesOfObject(
         object: EverythingObject,
     ): Promise<EverythingObject[]> {
         const response = await fetch(`${this.url}/api/v1/valuesOf`, {
@@ -128,7 +128,7 @@ export class ConnectionClient {
 
         if (!response.ok) {
             throw new Error(
-                `failed to query values of object (${response.status}): ${await response.text()}`,
+                `failed to query properties of object (${response.status}): ${await response.text()}`,
             );
         }
 

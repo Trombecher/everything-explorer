@@ -519,21 +519,31 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                 [blockIconWidthInPixels.x, 192 + options.block.itemGapInPixels],
                 options,
             );
+        case ObjectType.Composite:
         case ObjectType.Set: {
+            const collection =
+                block.type === ObjectType.Composite
+                    ? block.properties
+                    : block.items;
+            const delimiterWidthInPixels =
+                block.type === ObjectType.Composite
+                    ? blockIconWidthInPixels.angleBracket
+                    : blockIconWidthInPixels.brace;
+
             return rowLayoutWidth(
                 [
-                    blockIconWidthInPixels.brace,
-                    ...block.elements.map(
-                        (element, index) =>
+                    delimiterWidthInPixels,
+                    ...collection.map(
+                        (child, index) =>
                             calculateRowLayoutWidthOfBlock(
-                                objectToBlock(element),
+                                objectToBlock(child),
                                 options,
                             )
-                            + (index < block.elements.length - 1
+                            + (index < collection.length - 1
                                 ? measureStaticText(",")
                                 : 0),
                     ),
-                    blockIconWidthInPixels.brace,
+                    delimiterWidthInPixels,
                 ],
                 options,
             );

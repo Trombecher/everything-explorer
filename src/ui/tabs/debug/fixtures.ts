@@ -3,8 +3,8 @@ import {defaultObject, ObjectType} from "@/model";
 import {nodeToObject, NodeType} from "@/model/nodes";
 
 export const createInitialObject2 = (): EverythingObject => ({
-    type: ObjectType.Set,
-    elements: [
+    type: ObjectType.Composite,
+    properties: [
         nodeToObject({
             type: NodeType.Function,
             body: nodeToObject({
@@ -74,7 +74,7 @@ export const createInitialObject2 = (): EverythingObject => ({
             type: NodeType.Count,
             inner: {
                 type: ObjectType.Set,
-                elements: [
+                items: [
                     {type: ObjectType.Atom, value: 1n},
                     {type: ObjectType.Atom, value: 2n},
                     {type: ObjectType.Atom, value: 3n},
@@ -117,7 +117,7 @@ export const createInitialObject2 = (): EverythingObject => ({
             element: {type: ObjectType.Atom, value: 2n},
             set: {
                 type: ObjectType.Set,
-                elements: [{type: ObjectType.Atom, value: 2n}],
+                items: [{type: ObjectType.Atom, value: 2n}],
             },
             rest: [],
         }),

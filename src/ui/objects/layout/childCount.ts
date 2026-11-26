@@ -52,7 +52,9 @@ export const childCountOfBlock = (block: Block): number => {
             return 3;
         case NodeType.NewSet:
             return block.values.length;
+        case ObjectType.Composite:
+            return block.properties.length;
         case ObjectType.Set:
-            return block.elements.length;
+            return block.items.length;
     }
 };

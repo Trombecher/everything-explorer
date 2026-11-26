@@ -90,6 +90,7 @@ export const objectViewColorCategory = (
         case NodeType.Any:
         case NodeType.Fold:
         case NodeType.NewSet:
+        case ObjectType.Composite:
         case ObjectType.Set:
             return ObjectViewColorCategory.Set;
 

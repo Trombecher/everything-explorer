@@ -11,6 +11,7 @@ import AtomView from "../AtomView";
 import BinaryOperationView from "../BinaryOperationView";
 import ByteView from "../ByteView";
 import CharacterView from "../CharacterView";
+import CompositeObjectView from "../CompositeObjectView";
 import CountObjectView from "../CountObjectView";
 import FoldOperationView from "../FoldOperationView";
 import IfOperationView from "../IfOperationView";
@@ -427,6 +428,16 @@ export default (props: {
             </Match>
             <Match when={variant(props.block, ObjectType.Byte)}>
                 {byte => <ByteView byte={byte()} setByte={props.setObject} />}
+            </Match>
+            <Match when={variant(props.block, ObjectType.Composite)}>
+                {composite => (
+                    <CompositeObjectView
+                        composite={composite()}
+                        setComposite={props.setObject}
+                        path={props.path}
+                        widthBudgetInPixels={props.widthBudgetInPixels}
+                    />
+                )}
             </Match>
             <Match when={variant(props.block, ObjectType.Set)}>
                 {set => (

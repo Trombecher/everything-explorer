@@ -22,12 +22,14 @@ export type StoredObject =
           readonly constructor: StoredObject;
           readonly value: StoredObject;
       }
+    | {readonly type: "composite"; readonly properties: readonly StoredObject[]}
+    | {readonly type: "set"; readonly items: readonly StoredObject[]}
     | {readonly type: "set"; readonly elements: readonly StoredObject[]};
 
 const decimalIntegerStringSchema = z.string().regex(/^[+-]?[0-9]+$/);
 
 export const storedObjectSchema: z.ZodType<StoredObject> = z.lazy(() =>
-    z.discriminatedUnion("type", [
+    z.union([
         z.object({type: z.literal("atom"), value: decimalIntegerStringSchema}),
         z.object({
             type: z.literal("integer"),
@@ -44,6 +46,13 @@ export const storedObjectSchema: z.ZodType<StoredObject> = z.lazy(() =>
             constructor: storedObjectSchema,
             value: storedObjectSchema,
         }),
+        z.object({
+            type: z.literal("composite"),
+            properties: z.array(storedObjectSchema),
+        }),
+        z.object({type: z.literal("set"), items: z.array(storedObjectSchema)}),
+        // Legacy stored sets were raw structural collections. They are decoded
+        // as composites below, not as canonical sets.
         z.object({
             type: z.literal("set"),
             elements: z.array(storedObjectSchema),
@@ -74,10 +83,24 @@ export const storedObjectToObject = (
                 constructor: storedObjectToObject(stored.constructor),
                 value: storedObjectToObject(stored.value),
             };
-        case "set":
+        case "composite":
             return {
-                type: ObjectType.Set,
-                elements: stored.elements.map(storedObjectToObject),
+                type: ObjectType.Composite,
+                properties: stored.properties.map(storedObjectToObject),
+            };
+        case "set":
+            if ("items" in stored) {
+                return {
+                    type: ObjectType.Set,
+                    items: stored.items.map(storedObjectToObject),
+                };
+            }
+
+            // Legacy v1 clipboards stored an arbitrary structural collection
+            // under `"set"`. That is a composite in the current model.
+            return {
+                type: ObjectType.Composite,
+                properties: stored.elements.map(storedObjectToObject),
             };
     }
 };
@@ -105,10 +128,12 @@ export const objectToStoredObject = (
                 constructor: objectToStoredObject(object.constructor),
                 value: objectToStoredObject(object.value),
             };
-        case ObjectType.Set:
+        case ObjectType.Composite:
             return {
-                type: "set",
-                elements: object.elements.map(objectToStoredObject),
+                type: "composite",
+                properties: object.properties.map(objectToStoredObject),
             };
+        case ObjectType.Set:
+            return {type: "set", items: object.items.map(objectToStoredObject)};
     }
 };

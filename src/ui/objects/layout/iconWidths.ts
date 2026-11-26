@@ -32,6 +32,7 @@ export const blockIconWidthInPixels = {
     x: 24,
     xor: 24,
     brace: 12,
+    angleBracket: 12,
     blackboardZ: 24,
     mapsTo: 32,
     call: 40,

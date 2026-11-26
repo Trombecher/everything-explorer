@@ -29,7 +29,7 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
     const connections = useConnections();
     const preferences = usePreferences();
     const name = createAtomName(() => props.selectedAtom);
-    const {history, values} = createPropertySync(() => props.selectedAtom);
+    const {history, properties} = createPropertySync(() => props.selectedAtom);
 
     let focusContainer: HTMLDivElement | undefined;
 
@@ -105,7 +105,7 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
             <div class="flex flex-wrap items-center gap-2 px-2">
                 <Button
                     class="flex w-fit gap-0.5"
-                    disabled={values() === undefined}
+                    disabled={properties() === undefined}
                     onClick={addProperty}
                 >
                     <PlusIcon />
@@ -122,7 +122,7 @@ export default (props: {selectedAtom: Atom; close: () => void}) => {
                         value={history.objectSelection}
                     >
                         <Show
-                            when={values()}
+                            when={properties()}
                             fallback={
                                 <>
                                     {preferences.translate(

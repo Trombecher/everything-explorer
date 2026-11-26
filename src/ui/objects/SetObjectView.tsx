@@ -1,19 +1,8 @@
-import {Index} from "solid-js";
-
-import type {EverythingObject} from "@/model";
-import {type EverythingSet, ObjectType} from "@/model";
+import type {EverythingObject, EverythingSet} from "@/model";
 import type {DeepReadonly} from "@/util";
 
-import BraceIcon from "../icons/sets/BraceIcon";
-import {useLayoutOptions} from "./atomNames";
-import {
-    calculateLayoutModeOfBlock,
-    calculateSetElementWidthBudgetInPixels,
-    LayoutMode,
-} from "./layout";
-import ObjectView from "./ObjectView";
+import CollectionObjectView from "./CollectionObjectView";
 import type {ObjectSelectionPath} from "./selection";
-import {useObjectSelection} from "./selection";
 
 export default (props: {
     set: EverythingSet;
@@ -21,92 +10,11 @@ export default (props: {
     path: DeepReadonly<ObjectSelectionPath>;
 
     widthBudgetInPixels: number;
-}) => {
-    const objectSelection = useObjectSelection();
-    const layoutOptions = useLayoutOptions();
-
-    const layoutMode = () =>
-        calculateLayoutModeOfBlock(
-            props.set,
-            props.widthBudgetInPixels,
-            layoutOptions,
-        );
-
-    return (
-        <>
-            <BraceIcon side="left" />
-            <Index each={props.set.elements}>
-                {(element, i) => (
-                    <span class="flex items-center">
-                        <ObjectView
-                            indentLeft={layoutMode() === LayoutMode.Column}
-                            parentObjectLayoutMode={layoutMode()}
-                            replaceParentWithThis={
-                                props.setSet
-                                && (() => {
-                                    if (!props.setSet) return;
-
-                                    objectSelection.selectParent();
-                                    props.setSet?.(element());
-                                })
-                            }
-                            object={element()}
-                            siblingCount={props.set.elements.length}
-                            setObject={
-                                props.setSet
-                                && (newElement => {
-                                    if (newElement === undefined) {
-                                        const isOnlyElement =
-                                            props.set.elements.length === 1;
-                                        const isLastElement =
-                                            i === props.set.elements.length - 1;
-
-                                        props.setSet?.({
-                                            type: ObjectType.Set,
-                                            elements: props.set.elements.filter(
-                                                (_, j) => i !== j,
-                                            ),
-                                        });
-
-                                        if (isOnlyElement) {
-                                            // The set becomes empty, so the
-                                            // element selection is invalid.
-                                            objectSelection.selectParent();
-                                        } else if (isLastElement) {
-                                            // The selection would point past
-                                            // the last element.
-                                            objectSelection.selectPreviousSibling();
-                                        }
-                                        // Otherwise the selection keeps its
-                                        // index, which now refers to the next
-                                        // element.
-                                    } else {
-                                        // Change element
-                                        props.setSet?.({
-                                            type: ObjectType.Set,
-                                            elements: props.set.elements.map(
-                                                (element, j) =>
-                                                    i !== j
-                                                        ? element
-                                                        : newElement,
-                                            ),
-                                        });
-                                    }
-                                })
-                            }
-                            path={[...props.path, i]}
-                            widthBudgetInPixels={calculateSetElementWidthBudgetInPixels(
-                                props.set,
-                                props.widthBudgetInPixels,
-                                layoutOptions,
-                                i,
-                            )}
-                        />
-                        {i < props.set.elements.length - 1 ? "," : ""}
-                    </span>
-                )}
-            </Index>
-            <BraceIcon side="right" />
-        </>
-    );
-};
+}) => (
+    <CollectionObjectView
+        collection={props.set}
+        setCollection={props.setSet}
+        path={props.path}
+        widthBudgetInPixels={props.widthBudgetInPixels}
+    />
+);

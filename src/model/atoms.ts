@@ -1,4 +1,5 @@
 import {ObjectType} from ".";
+import {CONTAINS_ATOM_VALUE} from "./atomValues";
 
 export type Atom = {
     readonly type: typeof ObjectType.Atom;
@@ -154,6 +155,14 @@ export namespace Atom {
     export const BitSlot7 = {
         type: ObjectType.Atom,
         value: 2148623841265101367555509279336886325n,
+    } as const satisfies Atom;
+
+    /**
+     * The property constructor for set membership.
+     */
+    export const Contains = {
+        type: ObjectType.Atom,
+        value: CONTAINS_ATOM_VALUE,
     } as const satisfies Atom;
 
     export const NodeFunction = {

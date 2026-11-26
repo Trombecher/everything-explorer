@@ -15,10 +15,10 @@ export const createPropertySync = (selectedAtom: () => Atom) => {
         );
     };
 
-    const [values] = createResource(
+    const [properties] = createResource(
         clientAndAtom,
         ({connectionClient, selectedAtom}) =>
-            connectionClient.valuesOfObject(selectedAtom),
+            connectionClient.propertiesOfObject(selectedAtom),
     );
 
     /**
@@ -113,12 +113,12 @@ export const createPropertySync = (selectedAtom: () => Atom) => {
     };
 
     createEffect(() => {
-        const loadedValues = values();
+        const loadedProperties = properties();
 
-        if (!loadedValues) return;
+        if (!loadedProperties) return;
 
-        syncedObjects = loadedValues;
-        history.reset(loadedValues);
+        syncedObjects = loadedProperties;
+        history.reset(loadedProperties);
     });
 
     createEffect(
@@ -128,5 +128,5 @@ export const createPropertySync = (selectedAtom: () => Atom) => {
         }),
     );
 
-    return {history, values};
+    return {history, properties};
 };

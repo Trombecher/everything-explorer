@@ -20,7 +20,8 @@ export type JsonObject =
           readonly constructor: JsonObject;
           readonly value: JsonObject;
       }
-    | {readonly type: "set"; readonly elements: readonly JsonObject[]};
+    | {readonly type: "composite"; readonly properties: readonly JsonObject[]}
+    | {readonly type: "set"; readonly items: readonly JsonObject[]};
 
 export const jsonObjectSchema: z.ZodType<JsonObject> = z.lazy(() =>
     z.discriminatedUnion("type", [
@@ -37,7 +38,11 @@ export const jsonObjectSchema: z.ZodType<JsonObject> = z.lazy(() =>
             constructor: jsonObjectSchema,
             value: jsonObjectSchema,
         }),
-        z.object({type: z.literal("set"), elements: z.array(jsonObjectSchema)}),
+        z.object({
+            type: z.literal("composite"),
+            properties: z.array(jsonObjectSchema),
+        }),
+        z.object({type: z.literal("set"), items: z.array(jsonObjectSchema)}),
     ]),
 );
 
@@ -115,10 +120,15 @@ export const jsonObjectToObject = (json: JsonObject): KnowledgeObject => {
                 constructor: jsonObjectToObject(json.constructor),
                 value: jsonObjectToObject(json.value),
             };
+        case "composite":
+            return {
+                type: ObjectType.Composite,
+                properties: json.properties.map(jsonObjectToObject),
+            };
         case "set":
             return {
                 type: ObjectType.Set,
-                elements: json.elements.map(jsonObjectToObject),
+                items: json.items.map(jsonObjectToObject),
             };
     }
 };
@@ -144,10 +154,12 @@ export const objectToJsonObject = (object: KnowledgeObject): JsonObject => {
                 constructor: objectToJsonObject(object.constructor),
                 value: objectToJsonObject(object.value),
             };
-        case ObjectType.Set:
+        case ObjectType.Composite:
             return {
-                type: "set",
-                elements: object.elements.map(objectToJsonObject),
+                type: "composite",
+                properties: object.properties.map(objectToJsonObject),
             };
+        case ObjectType.Set:
+            return {type: "set", items: object.items.map(objectToJsonObject)};
     }
 };

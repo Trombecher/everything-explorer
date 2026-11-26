@@ -144,18 +144,27 @@ export const handleKeyDown = (props: {
             );
 
             props.objectSelection.selectChild(node.values.length);
-        } else if (props.object.type === ObjectType.Set) {
-            props.setObject({
-                type: ObjectType.Set,
-                elements: [
-                    ...props.object.elements,
-                    {type: ObjectType.Set, elements: []},
-                ],
-            });
+        } else if (
+            props.object.type === ObjectType.Composite
+            || props.object.type === ObjectType.Set
+        ) {
+            if (props.object.type === ObjectType.Composite) {
+                props.setObject({
+                    type: ObjectType.Composite,
+                    properties: [...props.object.properties, defaultObject],
+                });
 
-            props.objectSelection.selectChild(
-                Math.max(0, props.object.elements.length - 1),
-            );
+                props.objectSelection.selectChild(
+                    props.object.properties.length,
+                );
+            } else {
+                props.setObject({
+                    type: ObjectType.Set,
+                    items: [...props.object.items, defaultObject],
+                });
+
+                props.objectSelection.selectChild(props.object.items.length);
+            }
         } else if (
             props.object.type === ObjectType.Atom
             || props.object.type === ObjectType.Integer

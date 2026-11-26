@@ -1,4 +1,8 @@
-import type {EverythingSet} from "@/model";
+import {
+    type EverythingComposite,
+    type EverythingSet,
+    ObjectType,
+} from "@/model";
 
 import {
     blockIconWidthInPixels,
@@ -9,26 +13,30 @@ import {calculateLayoutModeOfBlock, LayoutMode} from "./layoutMode";
 import type {LayoutOptions} from "./options";
 import {measureStaticText} from "./textMeasurement";
 
-export const calculateSetElementWidthBudgetInPixels = (
-    set: EverythingSet,
-    widthBudgetInPixelsForSet: number,
+export const calculateCollectionElementWidthBudgetInPixels = (
+    collection: EverythingComposite | EverythingSet,
+    widthBudgetInPixelsForCollection: number,
     layoutOptions: LayoutOptions,
     elementIndex: number,
 ): number => {
     switch (
         calculateLayoutModeOfBlock(
-            set,
-            widthBudgetInPixelsForSet,
+            collection,
+            widthBudgetInPixelsForCollection,
             layoutOptions,
         )
     ) {
         case LayoutMode.Column: {
-            // {
-            //   element,
+            // ⟨
+            //   property,
             //   ...
-            // }
+            // ⟩
 
-            const isNotLastElement = elementIndex < set.elements.length - 1;
+            const elementCount =
+                collection.type === ObjectType.Composite
+                    ? collection.properties.length
+                    : collection.items.length;
+            const isNotLastElement = elementIndex < elementCount - 1;
 
             const chrome =
                 layoutOptions.block.blockBorderWidthInPixels * 2
@@ -37,17 +45,17 @@ export const calculateSetElementWidthBudgetInPixels = (
                 + layoutOptions.block.setElementIndentInPixels
                 + (isNotLastElement ? measureStaticText(",") : 0);
 
-            return Math.max(0, widthBudgetInPixelsForSet - chrome);
+            return Math.max(0, widthBudgetInPixelsForCollection - chrome);
         }
         case LayoutMode.Row: {
-            // { element, ... }
+            // ⟨ property, ... ⟩
 
-            // The layout algorithm has determined that this set can be
+            // The layout algorithm has determined that this collection can be
             // layed out in row mode within the available width budget.
             //
-            // Under the second rule of block layout, this means that all descendants
-            // must be in row mode and everything fits. Therefore, we can
-            // tell each child, it has infinite space because it can't
+            // Under the second rule of block layout, this means that all
+            // descendants must be in row mode and everything fits. Therefore,
+            // we can tell each child, it has infinite space because it can't
             // exceed this space.
             return Infinity;
         }
@@ -100,7 +108,7 @@ export const binaryBlockSlotWidthBudgetInPixels = (
                     - layoutOptions.block.blockPaddingRightInPixels,
             );
         case LayoutMode.Row:
-            // See `calculateSetElementWidthBudgetInPixels`
+            // See `calculateCollectionElementWidthBudgetInPixels`
             // for why this is chosen.
             return Infinity;
     }
