@@ -1,14 +1,16 @@
-use everything::model::{Atom, ByteSet, CharacterSet, Construction, Object, Set, TextSet};
+use everything::model::{
+    Atom, ByteComposite, CharacterComposite, Composite, Construction, Object, TextComposite,
+};
 use serde::{Deserialize, Serialize};
 
 use super::{JsonAtom, JsonInteger};
 
 /// The JSON representation of an [`Object`].
 ///
-/// This mirrors the specialized variants of [`Set`] rather than expanding
-/// every set into its values. In particular, a text set is a virtual set:
-/// expanding it would nest one set per character and make the payload grow
-/// with the square of the text length.
+/// This mirrors the specialized variants of [`Composite`] rather than expanding
+/// every composite into its properties. In particular, a text composite is a
+/// virtual composite: expanding it would nest one composite per character and
+/// make the payload grow with the square of the text length.
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum JsonObject {
@@ -31,9 +33,15 @@ pub enum JsonObject {
         constructor: Box<JsonObject>,
         value: Box<JsonObject>,
     },
-    /// A set that has no more specific representation.
+    /// A composite that is not a canonical set or has no more specific
+    /// representation.
+    Composite {
+        properties: Vec<JsonObject>,
+    },
+    /// A canonical set, i.e. a composite whose properties are all
+    /// `contains ·· %item%` members.
     Set {
-        elements: Vec<JsonObject>,
+        items: Vec<JsonObject>,
     },
 }
 
@@ -52,18 +60,23 @@ impl From<JsonObject> for Object {
             JsonObject::Integer { value } => Self::new_integer(value.0),
             JsonObject::Character {
                 value: representing,
-            } => Self::Set(Set::Character(CharacterSet { representing })),
-            JsonObject::Byte { value } => Self::Set(Set::Byte(ByteSet(value))),
-            JsonObject::Text { text } => {
-                Self::Set(TextSet::new(text.into()).map_or_else(Set::empty, Set::Text))
-            }
+            } => Self::Composite(Composite::Character(CharacterComposite { representing })),
+            JsonObject::Byte { value } => Self::Composite(Composite::Byte(ByteComposite(value))),
+            JsonObject::Text { text } => Self::Composite(
+                TextComposite::new(text.into()).map_or_else(Composite::empty, Composite::Text),
+            ),
             JsonObject::Construction { constructor, value } => {
                 Self::Construction(Construction::new((*constructor).into(), (*value).into()))
             }
-            JsonObject::Set { elements } => {
-                let mut objects = elements.into_iter().map(Self::from).collect::<Vec<_>>();
+            JsonObject::Composite { properties } => {
+                let mut objects = properties.into_iter().map(Self::from).collect::<Vec<_>>();
 
-                Self::Set(Set::from(objects.as_mut_slice()))
+                Self::Composite(Composite::from(objects.as_mut_slice()))
+            }
+            JsonObject::Set { items } => {
+                let objects = items.into_iter().map(Self::from).collect::<Vec<_>>();
+
+                Self::Composite(Composite::from_set_items(&objects))
             }
         }
     }
@@ -79,29 +92,55 @@ impl From<Object> for JsonObject {
                 constructor: Box::new(Self::from(*construction.constructor)),
                 value: Box::new(Self::from(*construction.value)),
             },
-            Object::Set(set) => Self::from(set),
+            Object::Composite(composite) => Self::from(composite),
         }
     }
 }
 
-impl From<Set> for JsonObject {
-    fn from(value: Set) -> Self {
+impl From<Composite> for JsonObject {
+    fn from(value: Composite) -> Self {
         match value {
-            Set::Integer(integer) => Self::Integer {
+            Composite::Integer(integer) => Self::Integer {
                 value: JsonInteger(integer.representing.get()),
             },
-            Set::Character(character) => Self::Character {
+            Composite::Character(character) => Self::Character {
                 value: character.representing,
             },
-            Set::Byte(byte) => Self::Byte { value: byte.0 },
-            Set::Text(text) => Self::Text {
+            Composite::Byte(byte) => Self::Byte { value: byte.0 },
+            Composite::Text(text) => Self::Text {
                 text: text.as_str().to_owned(),
             },
-            Set::OneConstruction(one_construction) => Self::Set {
-                elements: one_construction.into_iter().map(Self::from).collect(),
-            },
-            Set::Any(any) => Self::Set {
-                elements: any.into_iter().map(Self::from).collect(),
+            Composite::OneConstruction(one_construction) => {
+                let properties = one_construction.into_iter().collect::<Vec<_>>();
+
+                match properties.as_slice() {
+                    [Object::Construction(Construction { constructor, value })]
+                        if matches!(constructor.as_ref(), Object::Atom(Atom::CONTAINS)) =>
+                    {
+                        Self::Set {
+                            items: vec![Self::from(value.as_ref().clone())],
+                        }
+                    }
+                    _ => Self::Composite {
+                        properties: properties.into_iter().map(Self::from).collect(),
+                    },
+                }
+            }
+            Composite::Set(set) => {
+                if set.rest().is_empty() {
+                    Self::Set {
+                        items: set.items().iter().cloned().map(Self::from).collect(),
+                    }
+                } else {
+                    // An open set also has members that are not items. Only
+                    // the full property iteration preserves them.
+                    Self::Composite {
+                        properties: set.into_iter().map(Self::from).collect(),
+                    }
+                }
+            }
+            Composite::Any(any) => Self::Composite {
+                properties: any.into_iter().map(Self::from).collect(),
             },
         }
     }

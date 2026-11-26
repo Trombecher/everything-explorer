@@ -1,28 +1,32 @@
 use everything::{
-    knowledge::{Statement, Values},
-    model::{Atom, Object, Set},
+    knowledge::{Properties, Statement},
+    model::{Atom, Composite, Object},
 };
 
 use super::{pending_statement_changes, wire::JsonObject};
 
 #[test]
-fn empty_text_and_empty_set_are_the_same_statement() {
+fn empty_text_and_empty_composite_are_the_same_statement() {
     let atom = Atom(1);
     let empty_text = Object::from(JsonObject::Text {
         text: String::new(),
     });
-    let empty_set = Object::Set(Set::empty());
+    let empty_composite = Object::Composite(Composite::empty());
 
-    assert_eq!(empty_text, empty_set);
+    assert_eq!(empty_text, empty_composite);
 
-    let (adds, removes) =
-        pending_statement_changes(atom, vec![empty_text], vec![empty_set], &Values::empty());
+    let (adds, removes) = pending_statement_changes(
+        atom,
+        vec![empty_text],
+        vec![empty_composite],
+        &Properties::empty(),
+    );
 
     assert_eq!(
         adds,
         vec![Statement {
             atom,
-            object: Object::Set(Set::empty()),
+            object: Object::Composite(Composite::empty()),
         }]
     );
     assert!(removes.is_empty());
@@ -34,12 +38,12 @@ fn an_alias_of_an_existing_statement_is_not_written() {
     let empty_text = Object::from(JsonObject::Text {
         text: String::new(),
     });
-    let current = Values::from([Object::Set(Set::empty())]);
+    let current = Properties::from([Object::Composite(Composite::empty())]);
 
     let (adds, removes) = pending_statement_changes(
         atom,
         vec![empty_text],
-        vec![Object::Set(Set::empty())],
+        vec![Object::Composite(Composite::empty())],
         &current,
     );
 
@@ -48,11 +52,11 @@ fn an_alias_of_an_existing_statement_is_not_written() {
 }
 
 #[test]
-fn changes_are_deduplicated_and_filtered_by_the_current_values() {
+fn changes_are_deduplicated_and_filtered_by_the_current_properties() {
     let atom = Atom(1);
     let existing = Object::Atom(Atom(1));
     let added = Object::Atom(Atom(2));
-    let current = Values::from([existing.clone()]);
+    let current = Properties::from([existing.clone()]);
 
     let (adds, removes) = pending_statement_changes(
         atom,

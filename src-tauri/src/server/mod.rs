@@ -14,8 +14,8 @@ use axum::{
 };
 use cors::cors_layer;
 use everything::{
-    compute::LazySetIterator,
-    knowledge::{Knowledge, Statement, Values},
+    compute::LazySetItems,
+    knowledge::{Knowledge, Properties, Statement},
     model::{Atom, Object},
 };
 use everything_db::{PersistentKnowledge, StatementChange};
@@ -57,7 +57,7 @@ impl WebServerState {
     }
 
     /// Stores a lazy set iterator and returns its token.
-    pub async fn insert_lazy_iterator(&self, iterator: LazySetIterator) -> u64 {
+    pub async fn insert_lazy_iterator(&self, iterator: LazySetItems) -> u64 {
         self.lazy_iterators.lock().await.insert(iterator)
     }
 
@@ -100,7 +100,7 @@ impl WebServerState {
         remove: Vec<Object>,
     ) -> Result<(), everything_db::Error> {
         let mut persistant_knowledge = self.persistant_knowledge.lock().await;
-        let current = persistant_knowledge.knowledge().values_of_atom(&atom);
+        let current = persistant_knowledge.knowledge().properties_of_atom(&atom);
         let (adds, removes) = pending_statement_changes(atom, add, remove, &current);
 
         if adds.is_empty() && removes.is_empty() {
@@ -133,7 +133,7 @@ fn pending_statement_changes(
     atom: Atom,
     add: Vec<Object>,
     remove: Vec<Object>,
-    current: &Values,
+    current: &Properties,
 ) -> (Vec<Statement>, Vec<Statement>) {
     let add = add.into_iter().collect::<BTreeSet<_>>();
     let mut remove = remove.into_iter().collect::<BTreeSet<_>>();
@@ -175,7 +175,7 @@ impl PrivateKnowledgeServer {
             .route("/api/v1/evaluate", post(routes_v1::evaluate_object))
             .route("/api/v1/iteratorValues", post(routes_v1::iterator_values))
             .route("/api/v1/deleteIterator", post(routes_v1::delete_iterator))
-            .route("/api/v1/valuesOf", post(routes_v1::values_of_object))
+            .route("/api/v1/valuesOf", post(routes_v1::properties_of_object))
             .route(
                 "/api/v1/constructionValues",
                 post(routes_v1::construction_values_of_object),

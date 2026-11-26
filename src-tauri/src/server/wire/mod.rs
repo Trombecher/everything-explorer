@@ -8,7 +8,7 @@ mod tests;
 
 #[cfg(test)]
 use everything::{
-    model::{ByteSet, CharacterSet, Construction, Set, TextSet},
+    model::{ByteComposite, CharacterComposite, Composite, Construction, TextComposite},
     num_bigint::BigInt,
 };
 #[cfg(test)]

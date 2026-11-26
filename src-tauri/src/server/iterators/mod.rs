@@ -1,6 +1,6 @@
 use std::{collections::HashMap, iter::Peekable};
 
-use everything::{compute::LazySetIterator, model::Object};
+use everything::{compute::LazySetItems, model::Object};
 
 #[cfg(test)]
 mod tests;
@@ -20,12 +20,12 @@ pub(crate) struct LazyIteratorPage {
 #[derive(Default)]
 pub(crate) struct LazyIterators {
     next_token: u64,
-    iterators: HashMap<u64, Peekable<LazySetIterator>>,
+    iterators: HashMap<u64, Peekable<LazySetItems>>,
 }
 
 impl LazyIterators {
     /// Stores the iterator and returns the token used to address it.
-    pub fn insert(&mut self, iterator: LazySetIterator) -> u64 {
+    pub fn insert(&mut self, iterator: LazySetItems) -> u64 {
         self.next_token = self
             .next_token
             .checked_add(1)

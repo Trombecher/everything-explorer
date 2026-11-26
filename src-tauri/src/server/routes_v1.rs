@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use axum::{Json, extract::State, http::StatusCode, response::IntoResponse};
-use everything::model::{Atom, Object};
+use everything::model::{Atom, AtomOrComposite, Object};
 
 use crate::server::{
     WebServerState,
@@ -22,30 +22,42 @@ pub async fn serving_knowledge_base_path(
         .expect("cannot convert pathbuf to string")
 }
 
-pub async fn values_of_object(
+pub async fn properties_of_object(
     State(state): State<Arc<WebServerState>>,
     Json(json): Json<JsonObject>,
-) -> Json<Vec<JsonObject>> {
+) -> Result<Json<Vec<JsonObject>>, (StatusCode, String)> {
     let object = Object::from(json);
+    let object = AtomOrComposite::try_from(object).map_err(|_| {
+        (
+            StatusCode::BAD_REQUEST,
+            "cannot query the properties of a construction".to_owned(),
+        )
+    })?;
     let knowledge = state.knowledge().await;
-    let values = knowledge.values_of(&object).map(From::from).collect();
+    let properties = knowledge.properties_of(&object).map(From::from).collect();
 
-    Json(values)
+    Ok(Json(properties))
 }
 
 pub async fn construction_values_of_object(
     State(state): State<Arc<WebServerState>>,
     Json(request): Json<JsonConstructionValuesRequest>,
-) -> Json<Vec<JsonObject>> {
+) -> Result<Json<Vec<JsonObject>>, (StatusCode, String)> {
     let object = Object::from(request.object);
     let constructor = Object::from(request.constructor);
     let knowledge = state.knowledge().await;
     let values = knowledge
         .query_construction_values(&object, constructor)
+        .ok_or_else(|| {
+            (
+                StatusCode::BAD_REQUEST,
+                "cannot query the construction values of a construction".to_owned(),
+            )
+        })?
         .map(From::from)
         .collect();
 
-    Json(values)
+    Ok(Json(values))
 }
 
 /// Evaluates the given object in the knowledge base and returns the result.

@@ -1,6 +1,14 @@
 use super::*;
 use everything::model::{Atom, Object};
 
+fn integer(value: i32) -> Object {
+    Object::new_integer(BigInt::from(value))
+}
+
+fn contains(item: Object) -> Object {
+    Construction::new(Atom::CONTAINS.into(), item).into()
+}
+
 fn assert_round_trips(object: Object) {
     let json = JsonObject::from(object.clone());
     let encoded = serde_json::to_string(&json).expect("the object serializes");
@@ -61,8 +69,8 @@ fn atoms_round_trip() {
 
 #[test]
 fn integers_round_trip_and_zero_is_normalized() {
-    assert_round_trips(Object::new_integer(BigInt::from(-1)));
-    assert_round_trips(Object::new_integer(BigInt::from(1)));
+    assert_round_trips(integer(-1));
+    assert_round_trips(integer(1));
     assert_round_trips(Object::new_integer(
         BigInt::from_str("1234567890123456789012345678901234567890").expect("the integer is valid"),
     ));
@@ -75,32 +83,36 @@ fn integers_round_trip_and_zero_is_normalized() {
 }
 
 #[test]
-fn character_sets_round_trip() {
-    assert_round_trips(Object::Set(Set::Character(CharacterSet {
-        representing: 'a',
-    })));
-    assert_round_trips(Object::Set(Set::Character(CharacterSet {
-        representing: '🦀',
-    })));
+fn character_composites_round_trip() {
+    assert_round_trips(Object::Composite(Composite::Character(
+        CharacterComposite { representing: 'a' },
+    )));
+    assert_round_trips(Object::Composite(Composite::Character(
+        CharacterComposite {
+            representing: '🦀'
+        },
+    )));
 }
 
 #[test]
-fn byte_sets_round_trip() {
-    assert_round_trips(Object::Set(Set::Byte(ByteSet(0))));
-    assert_round_trips(Object::Set(Set::Byte(ByteSet(0b1010_1010))));
-    assert_round_trips(Object::Set(Set::Byte(ByteSet(u8::MAX))));
+fn byte_composites_round_trip() {
+    assert_round_trips(Object::Composite(Composite::Byte(ByteComposite(0))));
+    assert_round_trips(Object::Composite(Composite::Byte(ByteComposite(
+        0b1010_1010,
+    ))));
+    assert_round_trips(Object::Composite(Composite::Byte(ByteComposite(u8::MAX))));
 }
 
 #[test]
-fn text_sets_round_trip_without_expanding_the_list_structure() {
+fn text_composites_round_trip_without_expanding_the_list_structure() {
     let text = "a".repeat(256);
 
-    assert_round_trips(Object::Set(Set::Text(
-        TextSet::new(text.into()).expect("the text is not empty"),
+    assert_round_trips(Object::Composite(Composite::Text(
+        TextComposite::new(text.into()).expect("the text is not empty"),
     )));
 
-    let json = JsonObject::from(Object::Set(Set::Text(
-        TextSet::new("hello 🦀".into()).expect("the text is not empty"),
+    let json = JsonObject::from(Object::Composite(Composite::Text(
+        TextComposite::new("hello 🦀".into()).expect("the text is not empty"),
     )));
 
     assert_eq!(
@@ -112,12 +124,12 @@ fn text_sets_round_trip_without_expanding_the_list_structure() {
 }
 
 #[test]
-fn empty_text_is_the_empty_set() {
+fn empty_text_is_the_empty_composite() {
     assert_eq!(
         Object::from(JsonObject::Text {
             text: String::new()
         }),
-        Object::Set(Set::empty())
+        Object::Composite(Composite::empty())
     );
 }
 
@@ -130,17 +142,93 @@ fn constructions_round_trip() {
 }
 
 #[test]
-fn sets_round_trip() {
-    let empty = Set::empty();
-    let any = Set::from([Object::Atom(Atom(1)), Object::Atom(Atom(2))]);
-    let one_construction = Set::from([Object::Construction(Construction::new(
+fn arbitrary_composites_round_trip_as_composites() {
+    let composite = Composite::from([
         Object::Atom(Atom(1)),
         Object::Atom(Atom(2)),
-    ))]);
+        Construction::new(Atom(3).into(), Object::Atom(Atom(4))).into(),
+    ]);
 
-    assert_round_trips(Object::Set(empty));
-    assert_round_trips(Object::Set(any));
-    assert_round_trips(Object::Set(one_construction));
+    let json = JsonObject::from(Object::Composite(composite.clone()));
+
+    assert!(matches!(json, JsonObject::Composite { .. }));
+    assert_round_trips(Object::Composite(composite));
+}
+
+#[test]
+fn canonical_sets_round_trip_as_sets() {
+    let empty = Composite::from_set_items(&[]);
+    let singleton = Composite::from_set_items(&[integer(1)]);
+    let set = Composite::from_set_items(&[integer(1), integer(2), integer(3)]);
+
+    assert_eq!(
+        JsonObject::from(Object::Composite(empty.clone())),
+        JsonObject::Set { items: vec![] }
+    );
+    assert_eq!(
+        JsonObject::from(Object::Composite(singleton.clone())),
+        JsonObject::Set {
+            items: vec![JsonObject::from(integer(1))]
+        }
+    );
+    assert_eq!(
+        JsonObject::from(Object::Composite(set.clone())),
+        JsonObject::Set {
+            items: vec![
+                JsonObject::from(integer(1)),
+                JsonObject::from(integer(2)),
+                JsonObject::from(integer(3)),
+            ]
+        }
+    );
+
+    assert_round_trips(Object::Composite(empty));
+    assert_round_trips(Object::Composite(singleton));
+    assert_round_trips(Object::Composite(set));
+}
+
+#[test]
+fn singleton_contains_composites_serialize_as_sets() {
+    let composite = Composite::from([contains(integer(1))]);
+
+    assert_eq!(
+        JsonObject::from(Object::Composite(composite.clone())),
+        JsonObject::Set {
+            items: vec![JsonObject::from(integer(1))]
+        }
+    );
+    assert_round_trips(Object::Composite(composite));
+}
+
+#[test]
+fn one_construction_composites_serialize_as_composites() {
+    let construction = Construction::new(Atom(1).into(), Object::Atom(Atom(2)));
+    let composite = Composite::from([construction.clone().into()]);
+
+    assert_eq!(
+        JsonObject::from(Object::Composite(composite.clone())),
+        JsonObject::Composite {
+            properties: vec![JsonObject::from(Object::Construction(construction))]
+        }
+    );
+    assert_round_trips(Object::Composite(composite));
+}
+
+#[test]
+fn open_sets_serialize_as_composites_with_all_properties() {
+    let items = [contains(integer(1)), contains(integer(2))];
+    let rest = Object::Atom(Atom(5));
+    let composite = Composite::from([items[0].clone(), items[1].clone(), rest.clone()]);
+
+    let json = JsonObject::from(Object::Composite(composite.clone()));
+    let JsonObject::Composite { properties } = &json else {
+        panic!("an open set must serialize as a composite");
+    };
+
+    assert!(properties.contains(&JsonObject::from(items[0].clone())));
+    assert!(properties.contains(&JsonObject::from(items[1].clone())));
+    assert!(properties.contains(&JsonObject::from(rest)));
+    assert_round_trips(Object::Composite(composite));
 }
 
 #[test]
@@ -163,6 +251,33 @@ fn construction_values_requests_deserialize() {
             },
         }
     );
+}
+
+#[test]
+fn composite_and_set_requests_deserialize() {
+    let composite: JsonObject = serde_json::from_str(
+        r#"{"type": "composite", "properties": [
+            {"type": "atom", "value": "1"},
+            {"type": "construction", "constructor": {"type": "atom", "value": "2"}, "value": {"type": "atom", "value": "3"}}
+        ]}"#,
+    )
+    .expect("the composite deserializes");
+
+    let JsonObject::Composite { properties } = composite else {
+        panic!("the object must be a composite");
+    };
+
+    assert_eq!(properties.len(), 2);
+
+    let set: JsonObject = serde_json::from_str(
+        r#"{"type": "set", "items": [
+            {"type": "atom", "value": "1"},
+            {"type": "atom", "value": "2"}
+        ]}"#,
+    )
+    .expect("the set deserializes");
+
+    assert!(matches!(set, JsonObject::Set { items } if items.len() == 2));
 }
 
 #[test]

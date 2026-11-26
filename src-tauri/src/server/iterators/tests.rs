@@ -1,7 +1,7 @@
 use everything::{
-    compute::{LazyObject, LazySetIterator},
+    compute::{LazyObject, LazySetItems},
     knowledge::Knowledge,
-    model::{Object, Set},
+    model::{Composite, Object},
     num_bigint::BigInt,
 };
 
@@ -11,11 +11,13 @@ fn integer(value: i32) -> Object {
     Object::new_integer(BigInt::from(value))
 }
 
-fn iterator(values: Vec<Object>) -> LazySetIterator {
-    let mut values = values;
+fn iterator(values: Vec<Object>) -> LazySetItems {
+    let set = Composite::from_set_items(&values);
 
-    LazyObject::Eager(Object::Set(Set::from(values.as_mut_slice())))
-        .into_set_iter(&Knowledge::empty())
+    LazyObject::Eager(set.into())
+        .into_set()
+        .expect("a composite is a set")
+        .into_items(&Knowledge::empty())
 }
 
 #[test]
