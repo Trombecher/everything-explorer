@@ -70,14 +70,19 @@ const canonicalizeComposite = (
 };
 
 /**
- * Recognizes a composite whose properties are all `contains` properties.
+ * Recognizes a non-empty composite whose properties are all `contains`
+ * properties.
  *
- * The empty composite is the canonical empty set. A composite with any other
- * property remains a composite so that those properties are not hidden.
+ * An empty generic composite is left unchanged so the default object and
+ * deletion placeholders remain composites. An explicitly specialized empty set
+ * still remains a set. A composite with any non-`contains` property also
+ * remains a composite so that those properties are not hidden.
  */
 const canonicalSetOfComposite = (
     composite: EverythingComposite,
 ): EverythingObject | undefined => {
+    if (composite.properties.length === 0) return undefined;
+
     const items = compositePropertiesToSetItems(composite.properties);
 
     return items === undefined ? undefined : {type: ObjectType.Set, items};

@@ -131,7 +131,7 @@ export const handleKeyDown = (props: {
     } else if (props.event.key === "Enter") {
         if (!props.setObject) return;
 
-        // Try to add new empty set to object.
+        // Try to add a new default object to a collection.
 
         const node = objectToNode(props.object);
 
@@ -176,9 +176,9 @@ export const handleKeyDown = (props: {
 
         props.replaceParentWithThis?.();
     } else if (props.event.key === "Delete") {
-        // Delete only the selected object. A set drops the element and every
-        // other parent replaces the object with the empty set, so deleting
-        // never removes the surrounding chain of nodes.
+        // Delete only the selected object. A collection drops the child and
+        // every other parent replaces the object with the empty composite, so
+        // deleting never removes the surrounding chain of nodes.
 
         props.setObject?.(undefined);
     } else if (props.event.key === "Backspace") {
