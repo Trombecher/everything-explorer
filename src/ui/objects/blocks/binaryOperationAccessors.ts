@@ -8,20 +8,20 @@ import {
     nodeToObject,
     NodeType,
     type AndNode,
-    type AnyNode,
+    type SetAnyNode,
     type CallNode,
-    type ContainsNode,
+    type SetContainsNode,
     type EqualNode,
-    type EveryNode,
-    type FilterNode,
-    type IntersectionNode,
+    type SetEveryNode,
+    type SetFilterNode,
+    type SetIntersectionNode,
     type LessNode,
-    type MapNode,
+    type SetMapNode,
     type OrNode,
     type PlusNode,
     type QueryConstructionValuesNode,
     type TimesNode,
-    type UnionNode,
+    type SetUnionNode,
     type XorNode,
 } from "@/model/nodes";
 
@@ -46,16 +46,16 @@ export type BinaryOperationBlock =
     | PlusNode
     | EqualNode
     | LessNode
-    | ContainsNode
+    | SetContainsNode
     | AndNode
     | OrNode
     | XorNode
-    | UnionNode
-    | IntersectionNode
-    | FilterNode
-    | MapNode
-    | EveryNode
-    | AnyNode
+    | SetUnionNode
+    | SetIntersectionNode
+    | SetFilterNode
+    | SetMapNode
+    | SetEveryNode
+    | SetAnyNode
     | QueryConstructionValuesNode
     | CallNode
     | Construction;
@@ -65,16 +65,16 @@ export const BlockIcon = {
     [NodeType.Plus]: PlusIcon,
     [NodeType.Equal]: EqualIcon,
     [NodeType.Less]: LessThanIcon,
-    [NodeType.Contains]: ElementOfIcon,
+    [NodeType.SetContains]: ElementOfIcon,
     [NodeType.And]: WedgeIcon,
     [NodeType.Or]: VeeIcon,
     [NodeType.Xor]: XorIcon,
-    [NodeType.Union]: UnionIcon,
-    [NodeType.Intersection]: IntersectionIcon,
-    [NodeType.Filter]: FilterIcon,
-    [NodeType.Map]: SetMapIcon,
-    [NodeType.Every]: ColonIcon,
-    [NodeType.Any]: ColonIcon,
+    [NodeType.SetUnion]: UnionIcon,
+    [NodeType.SetIntersection]: IntersectionIcon,
+    [NodeType.SetFilter]: FilterIcon,
+    [NodeType.SetMap]: SetMapIcon,
+    [NodeType.SetEvery]: ColonIcon,
+    [NodeType.SetAny]: ColonIcon,
     [NodeType.QueryConstructionValues]: QueryConstructionValuesIcon,
     [NodeType.Call]: CallIcon,
     [ObjectType.Construction]: ConstructionIcon,
@@ -88,7 +88,7 @@ export const BlockIcon = {
  */
 const BlockPrefixIcon: Partial<
     Record<BinaryOperationBlock["type"], Component<{class?: string}>>
-> = {[NodeType.Every]: ForAllIcon, [NodeType.Any]: ExistsIcon};
+> = {[NodeType.SetEvery]: ForAllIcon, [NodeType.SetAny]: ExistsIcon};
 
 export const prefixIconOf = (block: BinaryOperationBlock) =>
     BlockPrefixIcon[block.type];
@@ -102,17 +102,18 @@ export const getFirst = (block: BinaryOperationBlock) => {
         case NodeType.And:
         case NodeType.Or:
         case NodeType.Xor:
-        case NodeType.Union:
-        case NodeType.Intersection:
+        case NodeType.SetUnion:
+        case NodeType.SetIntersection:
             return block.first;
-        case NodeType.Contains:
+        case NodeType.SetContains:
             return block.element;
-        case NodeType.Filter:
-        case NodeType.Map:
-        case NodeType.Every:
-        case NodeType.Any:
-        case NodeType.QueryConstructionValues:
+        case NodeType.SetFilter:
+        case NodeType.SetMap:
+        case NodeType.SetEvery:
+        case NodeType.SetAny:
             return block.set;
+        case NodeType.QueryConstructionValues:
+            return block.object;
         case NodeType.Call:
             return block.callee;
         case ObjectType.Construction:
@@ -129,18 +130,18 @@ export const getSecond = (block: BinaryOperationBlock) => {
         case NodeType.And:
         case NodeType.Or:
         case NodeType.Xor:
-        case NodeType.Union:
-        case NodeType.Intersection:
+        case NodeType.SetUnion:
+        case NodeType.SetIntersection:
             return block.second;
-        case NodeType.Contains:
+        case NodeType.SetContains:
             return block.set;
-        case NodeType.Filter:
+        case NodeType.SetFilter:
             return block.filterFunction;
-        case NodeType.Map:
+        case NodeType.SetMap:
             return block.mapperFunction;
-        case NodeType.Every:
+        case NodeType.SetEvery:
             return block.predicate;
-        case NodeType.Any:
+        case NodeType.SetAny:
             return block.predicate;
         case NodeType.QueryConstructionValues:
             return block.propertyConstructor;
@@ -163,17 +164,18 @@ export const changeBlockFirst = (
         case NodeType.And:
         case NodeType.Or:
         case NodeType.Xor:
-        case NodeType.Union:
-        case NodeType.Intersection:
+        case NodeType.SetUnion:
+        case NodeType.SetIntersection:
             return nodeToObject({...block, first: newFirst});
-        case NodeType.Contains:
+        case NodeType.SetContains:
             return nodeToObject({...block, element: newFirst});
-        case NodeType.Filter:
-        case NodeType.Map:
-        case NodeType.Every:
-        case NodeType.Any:
-        case NodeType.QueryConstructionValues:
+        case NodeType.SetFilter:
+        case NodeType.SetMap:
+        case NodeType.SetEvery:
+        case NodeType.SetAny:
             return nodeToObject({...block, set: newFirst});
+        case NodeType.QueryConstructionValues:
+            return nodeToObject({...block, object: newFirst});
         case NodeType.Call:
             return nodeToObject({...block, callee: newFirst});
         case ObjectType.Construction:
@@ -193,18 +195,18 @@ export const changeBlockSecond = (
         case NodeType.And:
         case NodeType.Or:
         case NodeType.Xor:
-        case NodeType.Union:
-        case NodeType.Intersection:
+        case NodeType.SetUnion:
+        case NodeType.SetIntersection:
             return nodeToObject({...block, second: newSecond});
-        case NodeType.Contains:
+        case NodeType.SetContains:
             return nodeToObject({...block, set: newSecond});
-        case NodeType.Filter:
+        case NodeType.SetFilter:
             return nodeToObject({...block, filterFunction: newSecond});
-        case NodeType.Map:
+        case NodeType.SetMap:
             return nodeToObject({...block, mapperFunction: newSecond});
-        case NodeType.Every:
+        case NodeType.SetEvery:
             return nodeToObject({...block, predicate: newSecond});
-        case NodeType.Any:
+        case NodeType.SetAny:
             return nodeToObject({...block, predicate: newSecond});
         case NodeType.QueryConstructionValues:
             return nodeToObject({...block, propertyConstructor: newSecond});

@@ -15,17 +15,17 @@ export const childCountOfBlock = (block: Block): number => {
             return 0;
         case NodeType.Function:
         case NodeType.Literal:
-        case NodeType.Count:
+        case NodeType.SetCount:
         case NodeType.HasValue:
         case NodeType.Not:
         case NodeType.QueryAtomsWithConstructor:
         case NodeType.QueryAtomsWithProperty:
         case NodeType.QueryConstructions:
-        case NodeType.ValuesOf:
-        case NodeType.Unwrap:
+        case NodeType.PropertiesOf:
+        case NodeType.SetUnwrap:
         case NodeType.IsAtom:
         case NodeType.IsConstruction:
-        case NodeType.IsSet:
+        case NodeType.IsComposite:
         case NodeType.ConstructionConstructor:
         case NodeType.ConstructionValue:
             return 1;
@@ -34,24 +34,24 @@ export const childCountOfBlock = (block: Block): number => {
         case NodeType.Times:
         case NodeType.Equal:
         case NodeType.Less:
-        case NodeType.Contains:
+        case NodeType.SetContains:
         case NodeType.And:
         case NodeType.Or:
         case NodeType.Xor:
-        case NodeType.Union:
-        case NodeType.Intersection:
-        case NodeType.Filter:
-        case NodeType.Map:
-        case NodeType.Every:
-        case NodeType.Any:
+        case NodeType.SetUnion:
+        case NodeType.SetIntersection:
+        case NodeType.SetFilter:
+        case NodeType.SetMap:
+        case NodeType.SetEvery:
+        case NodeType.SetAny:
         case NodeType.QueryConstructionValues:
         case NodeType.Call:
             return 2;
-        case NodeType.Fold:
+        case NodeType.SetFold:
         case NodeType.If:
             return 3;
         case NodeType.NewSet:
-            return block.values.length;
+            return block.items.length;
         case ObjectType.Composite:
             return block.properties.length;
         case ObjectType.Set:

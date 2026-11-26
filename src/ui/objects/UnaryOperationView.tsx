@@ -9,13 +9,13 @@ import {
     type HasValueNode,
     type IsAtomNode,
     type IsConstructionNode,
-    type IsSetNode,
+    type IsCompositeNode,
     type NotNode,
     type QueryAtomsWithConstructorNode,
     type QueryAtomsWithPropertyNode,
     type QueryConstructionsNode,
-    type UnwrapNode,
-    type ValuesOfNode,
+    type SetUnwrapNode,
+    type PropertiesOfNode,
 } from "@/model/nodes";
 
 import AtomsWithConstructorIcon from "../icons/atoms/AtomsWithConstructorIcon";
@@ -38,13 +38,13 @@ import {
     calculateHasValueNodeOperandWidthBudgetInPixels,
     calculateIsAtomNodeOperandWidthBudgetInPixels,
     calculateIsConstructionNodeOperandWidthBudgetInPixels,
-    calculateIsSetNodeOperandWidthBudgetInPixels,
+    calculateIsCompositeNodeOperandWidthBudgetInPixels,
     calculateNotNodeOperandWidthBudgetInPixels,
     calculateQueryAtomsWithConstructorNodeOperandWidthBudgetInPixels,
     calculateQueryAtomsWithPropertyNodeOperandWidthBudgetInPixels,
     calculateQueryConstructionsNodeOperandWidthBudgetInPixels,
-    calculateUnwrapNodeOperandWidthBudgetInPixels,
-    calculateValuesOfNodeOperandWidthBudgetInPixels,
+    calculateSetUnwrapNodeOperandWidthBudgetInPixels,
+    calculatePropertiesOfNodeOperandWidthBudgetInPixels,
 } from "./layout";
 import ObjectView from "./ObjectView";
 import {useObjectSelection, type ObjectSelectionPath} from "./selection";
@@ -55,13 +55,13 @@ export type UnaryOperationBlock =
     | HasValueNode
     | IsAtomNode
     | IsConstructionNode
-    | IsSetNode
+    | IsCompositeNode
     | NotNode
     | QueryAtomsWithConstructorNode
     | QueryAtomsWithPropertyNode
     | QueryConstructionsNode
-    | ValuesOfNode
-    | UnwrapNode;
+    | PropertiesOfNode
+    | SetUnwrapNode;
 
 const BlockIcon = {
     [NodeType.ConstructionConstructor]: ConstructionConstructorIcon,
@@ -69,13 +69,13 @@ const BlockIcon = {
     [NodeType.HasValue]: HasValueIcon,
     [NodeType.IsAtom]: IsAtomIcon,
     [NodeType.IsConstruction]: IsConstructionIcon,
-    [NodeType.IsSet]: IsCompositeIcon,
+    [NodeType.IsComposite]: IsCompositeIcon,
     [NodeType.Not]: NotIcon,
     [NodeType.QueryAtomsWithConstructor]: AtomsWithConstructorIcon,
     [NodeType.QueryAtomsWithProperty]: AtomsWithPropertyIcon,
     [NodeType.QueryConstructions]: QueryConstructionsIcon,
-    [NodeType.ValuesOf]: SearchValuesIcon,
-    [NodeType.Unwrap]: UnwrapIcon,
+    [NodeType.PropertiesOf]: SearchValuesIcon,
+    [NodeType.SetUnwrap]: UnwrapIcon,
 };
 
 const operandOf = (block: UnaryOperationBlock): EverythingObject => {
@@ -90,7 +90,7 @@ const operandOf = (block: UnaryOperationBlock): EverythingObject => {
             return block.inner;
         case NodeType.IsConstruction:
             return block.inner;
-        case NodeType.IsSet:
+        case NodeType.IsComposite:
             return block.inner;
         case NodeType.Not:
             return block.operand;
@@ -100,9 +100,9 @@ const operandOf = (block: UnaryOperationBlock): EverythingObject => {
             return block.property;
         case NodeType.QueryConstructions:
             return block.constructor;
-        case NodeType.ValuesOf:
+        case NodeType.PropertiesOf:
             return block.inner;
-        case NodeType.Unwrap:
+        case NodeType.SetUnwrap:
             return block.set;
     }
 };
@@ -122,7 +122,7 @@ const withOperand = (
             return nodeToObject({...block, inner: operand});
         case NodeType.IsConstruction:
             return nodeToObject({...block, inner: operand});
-        case NodeType.IsSet:
+        case NodeType.IsComposite:
             return nodeToObject({...block, inner: operand});
         case NodeType.Not:
             return nodeToObject({...block, operand});
@@ -132,9 +132,9 @@ const withOperand = (
             return nodeToObject({...block, property: operand});
         case NodeType.QueryConstructions:
             return nodeToObject({...block, constructor: operand});
-        case NodeType.ValuesOf:
+        case NodeType.PropertiesOf:
             return nodeToObject({...block, inner: operand});
-        case NodeType.Unwrap:
+        case NodeType.SetUnwrap:
             return nodeToObject({...block, set: operand});
     }
 };
@@ -184,8 +184,8 @@ export default (props: {
                     props.wholeWidthBudgetInPixels,
                     layoutOptions,
                 );
-            case NodeType.IsSet:
-                return calculateIsSetNodeOperandWidthBudgetInPixels(
+            case NodeType.IsComposite:
+                return calculateIsCompositeNodeOperandWidthBudgetInPixels(
                     props.wholeWidthBudgetInPixels,
                     layoutOptions,
                 );
@@ -209,13 +209,13 @@ export default (props: {
                     props.wholeWidthBudgetInPixels,
                     layoutOptions,
                 );
-            case NodeType.ValuesOf:
-                return calculateValuesOfNodeOperandWidthBudgetInPixels(
+            case NodeType.PropertiesOf:
+                return calculatePropertiesOfNodeOperandWidthBudgetInPixels(
                     props.wholeWidthBudgetInPixels,
                     layoutOptions,
                 );
-            case NodeType.Unwrap:
-                return calculateUnwrapNodeOperandWidthBudgetInPixels(
+            case NodeType.SetUnwrap:
+                return calculateSetUnwrapNodeOperandWidthBudgetInPixels(
                     props.wholeWidthBudgetInPixels,
                     layoutOptions,
                 );

@@ -235,82 +235,82 @@ export namespace Atom {
         value: 2148624004488096373987985726200830300n,
     } as const satisfies Atom;
 
-    export const NodeCount = {
+    export const NodeSetCount = {
         type: ObjectType.Atom,
         value: 2148623971839749022702961541901456532n,
     } as const satisfies Atom;
 
-    export const NodeUnionFirst = {
+    export const NodeSetUnionFirst = {
         type: ObjectType.Atom,
         value: 2150602665196451232518504136866676495n,
     } as const satisfies Atom;
 
-    export const NodeUnionSecond = {
+    export const NodeSetUnionSecond = {
         type: ObjectType.Atom,
         value: 2150602676477464422271577313769115263n,
     } as const satisfies Atom;
 
-    export const NodeIntersectionFirst = {
+    export const NodeSetIntersectionFirst = {
         type: ObjectType.Atom,
         value: 6105450065514020261664789753451078433n,
     } as const satisfies Atom;
 
-    export const NodeIntersectionSecond = {
+    export const NodeSetIntersectionSecond = {
         type: ObjectType.Atom,
         value: 294371887698077017665747245360098400935n,
     } as const satisfies Atom;
 
-    export const NodeFilterSet = {
+    export const NodeSetFilterSet = {
         type: ObjectType.Atom,
         value: 2150755714608308122129968313720999578n,
     } as const satisfies Atom;
 
-    export const NodeFilterFilter = {
+    export const NodeSetFilterFilter = {
         type: ObjectType.Atom,
         value: 2150755715328094057860222292607728283n,
     } as const satisfies Atom;
 
-    export const NodeMapSet = {
+    export const NodeSetMapSet = {
         type: ObjectType.Atom,
         value: 2150755705084816915741037497738372617n,
     } as const satisfies Atom;
 
-    export const NodeMapMapper = {
+    export const NodeSetMapMapper = {
         type: ObjectType.Atom,
         value: 2150755713297709286586583523030939076n,
     } as const satisfies Atom;
 
-    export const NodeFoldSet = {
+    export const NodeSetFoldSet = {
         type: ObjectType.Atom,
         value: 2166944102906103538111212580396221266n,
     } as const satisfies Atom;
 
-    export const NodeFoldFolder = {
+    export const NodeSetFoldFolder = {
         type: ObjectType.Atom,
         value: 2166944102906948913400158817641233982n,
     } as const satisfies Atom;
 
-    export const NodeFoldInitial = {
+    export const NodeSetFoldInitial = {
         type: ObjectType.Atom,
         value: 2166944102906490208705196484796567529n,
     } as const satisfies Atom;
 
-    export const NodeEverySet = {
+    export const NodeSetEverySet = {
         type: ObjectType.Atom,
         value: 2166698849805704507867628297969608633n,
     } as const satisfies Atom;
 
-    export const NodeEveryPredicate = {
+    export const NodeSetEveryPredicate = {
         type: ObjectType.Atom,
         value: 2166698849806407199650439702292185631n,
     } as const satisfies Atom;
 
-    export const NodeAnySet = {
+    export const NodeSetAnySet = {
         type: ObjectType.Atom,
         value: 2166698849805453912896075884999506648n,
     } as const satisfies Atom;
 
-    export const NodeAnyPredicate = {
+    export const NodeSetAnyPredicate = {
         type: ObjectType.Atom,
         value: 2166698849805816631718884425726665751n,
     } as const satisfies Atom;
@@ -340,12 +340,12 @@ export namespace Atom {
         value: 2150755809462832010701281576784730955n,
     } as const satisfies Atom;
 
-    export const NodeContainsElement = {
+    export const NodeSetContainsElement = {
         type: ObjectType.Atom,
         value: 2166943953075778840020869770686077619n,
     } as const satisfies Atom;
 
-    export const NodeContainsSet = {
+    export const NodeSetContainsSet = {
         type: ObjectType.Atom,
         value: 2166943953076260545247311619503999088n,
     } as const satisfies Atom;
@@ -355,7 +355,7 @@ export namespace Atom {
         value: 2166943953075978973796333008418190812n,
     } as const satisfies Atom;
 
-    export const NodeValuesOf = {
+    export const NodePropertiesOf = {
         type: ObjectType.Atom,
         value: 2169866792562131836262938477060325203n,
     } as const satisfies Atom;
@@ -365,7 +365,7 @@ export namespace Atom {
         value: 2169868497815503720673833180838489269n,
     } as const satisfies Atom;
 
-    export const NodeUnwrapSet = {
+    export const NodeSetUnwrapSet = {
         type: ObjectType.Atom,
         value: 2150860435707265317782695126754608091n,
     } as const satisfies Atom;
@@ -380,7 +380,7 @@ export namespace Atom {
         value: 2166943953076020814661790508015684296n,
     } as const satisfies Atom;
 
-    export const NodeIsSet = {
+    export const NodeIsComposite = {
         type: ObjectType.Atom,
         value: 2166944102907011869965838540132997515n,
     } as const satisfies Atom;
@@ -395,12 +395,12 @@ export namespace Atom {
         value: 2166944102906650686418158228301455892n,
     } as const satisfies Atom;
 
-    export const NodeNewSetValue = {
+    export const NodeNewSetItem = {
         type: ObjectType.Atom,
         value: 199021041172814012682334153578244309615n,
     } as const satisfies Atom;
 
-    export const NodeConstructionValuesSet = {
+    export const NodeConstructionValuesObject = {
         type: ObjectType.Atom,
         value: 2166943953076489335344956167016992222n,
     } as const satisfies Atom;

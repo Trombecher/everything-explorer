@@ -117,7 +117,7 @@ export default (props: {
                     />
                 )}
             </Match>
-            <Match when={variant(props.block, NodeType.Contains)}>
+            <Match when={variant(props.block, NodeType.SetContains)}>
                 {containsNode => (
                     <BinaryOperationView
                         block={containsNode()}
@@ -167,17 +167,17 @@ export default (props: {
                     />
                 )}
             </Match>
-            <Match when={variant(props.block, NodeType.Count)}>
-                {countNode => (
+            <Match when={variant(props.block, NodeType.SetCount)}>
+                {setCountNode => (
                     <CountObjectView
-                        block={countNode()}
+                        block={setCountNode()}
                         path={props.path}
                         wholeWidthBudgetInPixels={props.widthBudgetInPixels}
                         setObject={props.setObject}
                     />
                 )}
             </Match>
-            <Match when={variant(props.block, NodeType.Union)}>
+            <Match when={variant(props.block, NodeType.SetUnion)}>
                 {unionNode => (
                     <BinaryOperationView
                         block={unionNode()}
@@ -187,7 +187,7 @@ export default (props: {
                     />
                 )}
             </Match>
-            <Match when={variant(props.block, NodeType.Intersection)}>
+            <Match when={variant(props.block, NodeType.SetIntersection)}>
                 {intersectionNode => (
                     <BinaryOperationView
                         block={intersectionNode()}
@@ -197,7 +197,7 @@ export default (props: {
                     />
                 )}
             </Match>
-            <Match when={variant(props.block, NodeType.Filter)}>
+            <Match when={variant(props.block, NodeType.SetFilter)}>
                 {filterNode => (
                     <BinaryOperationView
                         block={filterNode()}
@@ -207,7 +207,7 @@ export default (props: {
                     />
                 )}
             </Match>
-            <Match when={variant(props.block, NodeType.Map)}>
+            <Match when={variant(props.block, NodeType.SetMap)}>
                 {mapNode => (
                     <BinaryOperationView
                         block={mapNode()}
@@ -217,7 +217,7 @@ export default (props: {
                     />
                 )}
             </Match>
-            <Match when={variant(props.block, NodeType.Fold)}>
+            <Match when={variant(props.block, NodeType.SetFold)}>
                 {foldNode => (
                     <FoldOperationView
                         block={foldNode()}
@@ -227,7 +227,7 @@ export default (props: {
                     />
                 )}
             </Match>
-            <Match when={variant(props.block, NodeType.Every)}>
+            <Match when={variant(props.block, NodeType.SetEvery)}>
                 {everyNode => (
                     <BinaryOperationView
                         block={everyNode()}
@@ -237,7 +237,7 @@ export default (props: {
                     />
                 )}
             </Match>
-            <Match when={variant(props.block, NodeType.Any)}>
+            <Match when={variant(props.block, NodeType.SetAny)}>
                 {anyNode => (
                     <BinaryOperationView
                         block={anyNode()}
@@ -279,10 +279,10 @@ export default (props: {
                     />
                 )}
             </Match>
-            <Match when={variant(props.block, NodeType.ValuesOf)}>
-                {valuesOfNode => (
+            <Match when={variant(props.block, NodeType.PropertiesOf)}>
+                {propertiesOfNode => (
                     <UnaryOperationView
-                        block={valuesOfNode()}
+                        block={propertiesOfNode()}
                         path={props.path}
                         wholeWidthBudgetInPixels={props.widthBudgetInPixels}
                         setObject={props.setObject}
@@ -299,7 +299,7 @@ export default (props: {
                     />
                 )}
             </Match>
-            <Match when={variant(props.block, NodeType.Unwrap)}>
+            <Match when={variant(props.block, NodeType.SetUnwrap)}>
                 {unwrapNode => (
                     <UnaryOperationView
                         block={unwrapNode()}
@@ -329,10 +329,10 @@ export default (props: {
                     />
                 )}
             </Match>
-            <Match when={variant(props.block, NodeType.IsSet)}>
-                {isSetNode => (
+            <Match when={variant(props.block, NodeType.IsComposite)}>
+                {isCompositeNode => (
                     <UnaryOperationView
-                        block={isSetNode()}
+                        block={isCompositeNode()}
                         path={props.path}
                         wholeWidthBudgetInPixels={props.widthBudgetInPixels}
                         setObject={props.setObject}

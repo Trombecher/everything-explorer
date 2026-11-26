@@ -137,13 +137,10 @@ export const handleKeyDown = (props: {
 
         if (node !== NotANode && node.type === NodeType.NewSet) {
             props.setObject(
-                nodeToObject({
-                    ...node,
-                    values: [...node.values, defaultObject],
-                }),
+                nodeToObject({...node, items: [...node.items, defaultObject]}),
             );
 
-            props.objectSelection.selectChild(node.values.length);
+            props.objectSelection.selectChild(node.items.length);
         } else if (
             props.object.type === ObjectType.Composite
             || props.object.type === ObjectType.Set
@@ -247,7 +244,7 @@ export const handleKeyDown = (props: {
                     props.setObject(node.operand);
                     break;
                 }
-                case NodeType.Count: {
+                case NodeType.SetCount: {
                     // Retain inner object.
 
                     props.setObject(node.inner);
@@ -271,7 +268,7 @@ export const handleKeyDown = (props: {
                     props.setObject(node.constructor);
                     break;
                 }
-                case NodeType.ValuesOf: {
+                case NodeType.PropertiesOf: {
                     // Retain inner object.
 
                     props.setObject(node.inner);
@@ -283,7 +280,7 @@ export const handleKeyDown = (props: {
                     props.setObject(node.inner);
                     break;
                 }
-                case NodeType.Unwrap: {
+                case NodeType.SetUnwrap: {
                     // Retain set.
 
                     props.setObject(node.set);
@@ -301,7 +298,7 @@ export const handleKeyDown = (props: {
                     props.setObject(node.inner);
                     break;
                 }
-                case NodeType.IsSet: {
+                case NodeType.IsComposite: {
                     // Retain inner object.
 
                     props.setObject(node.inner);
@@ -319,38 +316,43 @@ export const handleKeyDown = (props: {
                     props.setObject(node.construction);
                     break;
                 }
-                case NodeType.Union: {
+                case NodeType.SetUnion: {
                     // Retain first operand.
 
                     props.setObject(node.first);
                     break;
                 }
-                case NodeType.Intersection: {
+                case NodeType.SetIntersection: {
                     // Retain first operand.
 
                     props.setObject(node.first);
                     break;
                 }
-                case NodeType.Filter:
-                case NodeType.Map:
-                case NodeType.Every:
-                case NodeType.Any:
-                case NodeType.QueryConstructionValues: {
+                case NodeType.SetFilter:
+                case NodeType.SetMap:
+                case NodeType.SetEvery:
+                case NodeType.SetAny: {
                     // Retain set.
 
                     props.setObject(node.set);
                     break;
                 }
-                case NodeType.Fold: {
+                case NodeType.QueryConstructionValues: {
+                    // Retain the queried object.
+
+                    props.setObject(node.object);
+                    break;
+                }
+                case NodeType.SetFold: {
                     // Retain set.
 
                     props.setObject(node.set);
                     break;
                 }
                 case NodeType.NewSet: {
-                    // Retain first value.
+                    // Retain first item.
 
-                    props.setObject(node.values[0] ?? defaultObject);
+                    props.setObject(node.items[0] ?? defaultObject);
                     break;
                 }
                 case NodeType.If: {
@@ -359,7 +361,7 @@ export const handleKeyDown = (props: {
                     props.setObject(node.condition);
                     break;
                 }
-                case NodeType.Contains: {
+                case NodeType.SetContains: {
                     // Retain element.
 
                     props.setObject(node.element);
@@ -460,7 +462,7 @@ export const handleKeyDown = (props: {
 
         props.setObject(
             nodeToObject({
-                type: NodeType.Union,
+                type: NodeType.SetUnion,
                 first: props.object,
                 second: defaultObject,
                 rest: [],
@@ -473,7 +475,7 @@ export const handleKeyDown = (props: {
 
         props.setObject(
             nodeToObject({
-                type: NodeType.Intersection,
+                type: NodeType.SetIntersection,
                 first: props.object,
                 second: defaultObject,
                 rest: [],
@@ -489,7 +491,7 @@ export const handleKeyDown = (props: {
         props.setObject(
             nodeToObject({
                 type: NodeType.NewSet,
-                values: [props.object],
+                items: [props.object],
                 rest: [],
             }),
         );
@@ -507,7 +509,11 @@ export const handleKeyDown = (props: {
         if (!props.setObject) return;
 
         props.setObject(
-            nodeToObject({type: NodeType.Count, inner: props.object, rest: []}),
+            nodeToObject({
+                type: NodeType.SetCount,
+                inner: props.object,
+                rest: [],
+            }),
         );
 
         props.objectSelection.selectChild(0);
@@ -540,7 +546,7 @@ export const handleKeyDown = (props: {
 
         props.setObject(
             nodeToObject({
-                type: NodeType.ValuesOf,
+                type: NodeType.PropertiesOf,
                 inner: props.object,
                 rest: [],
             }),
@@ -563,7 +569,11 @@ export const handleKeyDown = (props: {
         if (!props.setObject) return;
 
         props.setObject(
-            nodeToObject({type: NodeType.Unwrap, set: props.object, rest: []}),
+            nodeToObject({
+                type: NodeType.SetUnwrap,
+                set: props.object,
+                rest: [],
+            }),
         );
 
         props.objectSelection.selectChild(0);
@@ -571,7 +581,11 @@ export const handleKeyDown = (props: {
         if (!props.setObject) return;
 
         props.setObject(
-            nodeToObject({type: NodeType.IsSet, inner: props.object, rest: []}),
+            nodeToObject({
+                type: NodeType.IsComposite,
+                inner: props.object,
+                rest: [],
+            }),
         );
 
         props.objectSelection.selectChild(0);
@@ -642,7 +656,7 @@ export const handleKeyDown = (props: {
 
         props.setObject(
             nodeToObject({
-                type: NodeType.Filter,
+                type: NodeType.SetFilter,
                 set: props.object,
                 filterFunction: defaultObject,
                 rest: [],
@@ -655,7 +669,7 @@ export const handleKeyDown = (props: {
 
         props.setObject(
             nodeToObject({
-                type: NodeType.Every,
+                type: NodeType.SetEvery,
                 set: props.object,
                 predicate: defaultObject,
                 rest: [],
@@ -668,7 +682,7 @@ export const handleKeyDown = (props: {
 
         props.setObject(
             nodeToObject({
-                type: NodeType.Any,
+                type: NodeType.SetAny,
                 set: props.object,
                 predicate: defaultObject,
                 rest: [],
@@ -681,7 +695,7 @@ export const handleKeyDown = (props: {
 
         props.setObject(
             nodeToObject({
-                type: NodeType.Map,
+                type: NodeType.SetMap,
                 set: props.object,
                 mapperFunction: defaultObject,
                 rest: [],
@@ -694,7 +708,7 @@ export const handleKeyDown = (props: {
 
         props.setObject(
             nodeToObject({
-                type: NodeType.Fold,
+                type: NodeType.SetFold,
                 set: props.object,
                 folder: defaultObject,
                 initial: defaultObject,
@@ -755,7 +769,7 @@ export const handleKeyDown = (props: {
 
         props.setObject(
             nodeToObject({
-                type: NodeType.Contains,
+                type: NodeType.SetContains,
                 element: props.object,
                 set: defaultObject,
                 rest: [],

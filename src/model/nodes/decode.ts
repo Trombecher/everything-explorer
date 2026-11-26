@@ -190,188 +190,188 @@ const objectToNodeWithoutCache = (
         };
     }
 
-    some = singleAtomPropertyValue(object, Atom.NodeCount.value);
+    some = singleAtomPropertyValue(object, Atom.NodeSetCount.value);
     if (some) {
         if (finalNode) return NotANode;
 
         finalNode = {
-            type: NodeType.Count,
+            type: NodeType.SetCount,
             inner: some,
             rest: withoutAtomConstructors(object.properties, [
-                Atom.NodeCount.value,
+                Atom.NodeSetCount.value,
             ]),
         };
     }
 
-    some = singleAtomPropertyValue(object, Atom.NodeUnionFirst.value);
+    some = singleAtomPropertyValue(object, Atom.NodeSetUnionFirst.value);
     if (some) {
         const second = singleAtomPropertyValue(
             object,
-            Atom.NodeUnionSecond.value,
+            Atom.NodeSetUnionSecond.value,
         );
 
         if (second) {
             if (finalNode) return NotANode;
 
             finalNode = {
-                type: NodeType.Union,
+                type: NodeType.SetUnion,
                 first: some,
                 second,
                 rest: withoutAtomConstructors(object.properties, [
-                    Atom.NodeUnionFirst.value,
-                    Atom.NodeUnionSecond.value,
+                    Atom.NodeSetUnionFirst.value,
+                    Atom.NodeSetUnionSecond.value,
                 ]),
             };
         }
     }
 
-    some = singleAtomPropertyValue(object, Atom.NodeIntersectionFirst.value);
+    some = singleAtomPropertyValue(object, Atom.NodeSetIntersectionFirst.value);
     if (some) {
         const second = singleAtomPropertyValue(
             object,
-            Atom.NodeIntersectionSecond.value,
+            Atom.NodeSetIntersectionSecond.value,
         );
 
         if (second) {
             if (finalNode) return NotANode;
 
             finalNode = {
-                type: NodeType.Intersection,
+                type: NodeType.SetIntersection,
                 first: some,
                 second,
                 rest: withoutAtomConstructors(object.properties, [
-                    Atom.NodeIntersectionFirst.value,
-                    Atom.NodeIntersectionSecond.value,
+                    Atom.NodeSetIntersectionFirst.value,
+                    Atom.NodeSetIntersectionSecond.value,
                 ]),
             };
         }
     }
 
-    some = singleAtomPropertyValue(object, Atom.NodeFilterSet.value);
+    some = singleAtomPropertyValue(object, Atom.NodeSetFilterSet.value);
     if (some) {
         const filterFunction = singleAtomPropertyValue(
             object,
-            Atom.NodeFilterFilter.value,
+            Atom.NodeSetFilterFilter.value,
         );
 
         if (filterFunction) {
             if (finalNode) return NotANode;
 
             finalNode = {
-                type: NodeType.Filter,
+                type: NodeType.SetFilter,
                 set: some,
                 filterFunction,
                 rest: withoutAtomConstructors(object.properties, [
-                    Atom.NodeFilterSet.value,
-                    Atom.NodeFilterFilter.value,
+                    Atom.NodeSetFilterSet.value,
+                    Atom.NodeSetFilterFilter.value,
                 ]),
             };
         }
     }
 
-    some = singleAtomPropertyValue(object, Atom.NodeMapSet.value);
+    some = singleAtomPropertyValue(object, Atom.NodeSetMapSet.value);
     if (some) {
         const mapperFunction = singleAtomPropertyValue(
             object,
-            Atom.NodeMapMapper.value,
+            Atom.NodeSetMapMapper.value,
         );
 
         if (mapperFunction) {
             if (finalNode) return NotANode;
 
             finalNode = {
-                type: NodeType.Map,
+                type: NodeType.SetMap,
                 set: some,
                 mapperFunction,
                 rest: withoutAtomConstructors(object.properties, [
-                    Atom.NodeMapSet.value,
-                    Atom.NodeMapMapper.value,
+                    Atom.NodeSetMapSet.value,
+                    Atom.NodeSetMapMapper.value,
                 ]),
             };
         }
     }
 
-    some = singleAtomPropertyValue(object, Atom.NodeFoldSet.value);
+    some = singleAtomPropertyValue(object, Atom.NodeSetFoldSet.value);
     if (some) {
         const folder = singleAtomPropertyValue(
             object,
-            Atom.NodeFoldFolder.value,
+            Atom.NodeSetFoldFolder.value,
         );
         const initial = singleAtomPropertyValue(
             object,
-            Atom.NodeFoldInitial.value,
+            Atom.NodeSetFoldInitial.value,
         );
 
         if (folder && initial) {
             if (finalNode) return NotANode;
 
             finalNode = {
-                type: NodeType.Fold,
+                type: NodeType.SetFold,
                 set: some,
                 folder,
                 initial,
                 rest: withoutAtomConstructors(object.properties, [
-                    Atom.NodeFoldSet.value,
-                    Atom.NodeFoldFolder.value,
-                    Atom.NodeFoldInitial.value,
+                    Atom.NodeSetFoldSet.value,
+                    Atom.NodeSetFoldFolder.value,
+                    Atom.NodeSetFoldInitial.value,
                 ]),
             };
         }
     }
 
-    some = singleAtomPropertyValue(object, Atom.NodeEverySet.value);
+    some = singleAtomPropertyValue(object, Atom.NodeSetEverySet.value);
     if (some) {
         const predicate = singleAtomPropertyValue(
             object,
-            Atom.NodeEveryPredicate.value,
+            Atom.NodeSetEveryPredicate.value,
         );
 
         if (predicate) {
             if (finalNode) return NotANode;
 
             finalNode = {
-                type: NodeType.Every,
+                type: NodeType.SetEvery,
                 set: some,
                 predicate,
                 rest: withoutAtomConstructors(object.properties, [
-                    Atom.NodeEverySet.value,
-                    Atom.NodeEveryPredicate.value,
+                    Atom.NodeSetEverySet.value,
+                    Atom.NodeSetEveryPredicate.value,
                 ]),
             };
         }
     }
 
-    some = singleAtomPropertyValue(object, Atom.NodeAnySet.value);
+    some = singleAtomPropertyValue(object, Atom.NodeSetAnySet.value);
     if (some) {
         const predicate = singleAtomPropertyValue(
             object,
-            Atom.NodeAnyPredicate.value,
+            Atom.NodeSetAnyPredicate.value,
         );
 
         if (predicate) {
             if (finalNode) return NotANode;
 
             finalNode = {
-                type: NodeType.Any,
+                type: NodeType.SetAny,
                 set: some,
                 predicate,
                 rest: withoutAtomConstructors(object.properties, [
-                    Atom.NodeAnySet.value,
-                    Atom.NodeAnyPredicate.value,
+                    Atom.NodeSetAnySet.value,
+                    Atom.NodeSetAnyPredicate.value,
                 ]),
             };
         }
     }
 
-    const values = atomPropertyValues(object, Atom.NodeNewSetValue.value);
+    const values = atomPropertyValues(object, Atom.NodeNewSetItem.value);
     if (values.length > 0) {
         if (finalNode) return NotANode;
 
         finalNode = {
             type: NodeType.NewSet,
-            values,
+            items: values,
             rest: withoutAtomConstructors(object.properties, [
-                Atom.NodeNewSetValue.value,
+                Atom.NodeNewSetItem.value,
             ]),
         };
     }
@@ -402,15 +402,15 @@ const objectToNodeWithoutCache = (
         };
     }
 
-    some = singleAtomPropertyValue(object, Atom.NodeValuesOf.value);
+    some = singleAtomPropertyValue(object, Atom.NodePropertiesOf.value);
     if (some) {
         if (finalNode) return NotANode;
 
         finalNode = {
-            type: NodeType.ValuesOf,
+            type: NodeType.PropertiesOf,
             inner: some,
             rest: withoutAtomConstructors(object.properties, [
-                Atom.NodeValuesOf.value,
+                Atom.NodePropertiesOf.value,
             ]),
         };
     }
@@ -428,15 +428,15 @@ const objectToNodeWithoutCache = (
         };
     }
 
-    some = singleAtomPropertyValue(object, Atom.NodeUnwrapSet.value);
+    some = singleAtomPropertyValue(object, Atom.NodeSetUnwrapSet.value);
     if (some) {
         if (finalNode) return NotANode;
 
         finalNode = {
-            type: NodeType.Unwrap,
+            type: NodeType.SetUnwrap,
             set: some,
             rest: withoutAtomConstructors(object.properties, [
-                Atom.NodeUnwrapSet.value,
+                Atom.NodeSetUnwrapSet.value,
             ]),
         };
     }
@@ -467,22 +467,22 @@ const objectToNodeWithoutCache = (
         };
     }
 
-    some = singleAtomPropertyValue(object, Atom.NodeIsSet.value);
+    some = singleAtomPropertyValue(object, Atom.NodeIsComposite.value);
     if (some) {
         if (finalNode) return NotANode;
 
         finalNode = {
-            type: NodeType.IsSet,
+            type: NodeType.IsComposite,
             inner: some,
             rest: withoutAtomConstructors(object.properties, [
-                Atom.NodeIsSet.value,
+                Atom.NodeIsComposite.value,
             ]),
         };
     }
 
     some = singleAtomPropertyValue(
         object,
-        Atom.NodeConstructionValuesSet.value,
+        Atom.NodeConstructionValuesObject.value,
     );
     if (some) {
         const propertyConstructor = singleAtomPropertyValue(
@@ -495,10 +495,10 @@ const objectToNodeWithoutCache = (
 
             finalNode = {
                 type: NodeType.QueryConstructionValues,
-                set: some,
+                object: some,
                 propertyConstructor,
                 rest: withoutAtomConstructors(object.properties, [
-                    Atom.NodeConstructionValuesSet.value,
+                    Atom.NodeConstructionValuesObject.value,
                     Atom.NodeConstructionValuesPropertyConstructor.value,
                 ]),
             };
@@ -641,20 +641,23 @@ const objectToNodeWithoutCache = (
         }
     }
 
-    some = singleAtomPropertyValue(object, Atom.NodeContainsElement.value);
+    some = singleAtomPropertyValue(object, Atom.NodeSetContainsElement.value);
     if (some) {
-        const set = singleAtomPropertyValue(object, Atom.NodeContainsSet.value);
+        const set = singleAtomPropertyValue(
+            object,
+            Atom.NodeSetContainsSet.value,
+        );
 
         if (set) {
             if (finalNode) return NotANode;
 
             finalNode = {
-                type: NodeType.Contains,
+                type: NodeType.SetContains,
                 element: some,
                 set,
                 rest: withoutAtomConstructors(object.properties, [
-                    Atom.NodeContainsElement.value,
-                    Atom.NodeContainsSet.value,
+                    Atom.NodeSetContainsElement.value,
+                    Atom.NodeSetContainsSet.value,
                 ]),
             };
         }

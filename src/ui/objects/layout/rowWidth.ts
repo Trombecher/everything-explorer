@@ -114,7 +114,7 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                 ],
                 options,
             );
-        case NodeType.Contains:
+        case NodeType.SetContains:
             return rowLayoutWidth(
                 [
                     calculateRowLayoutWidthOfBlock(
@@ -185,7 +185,7 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                 ],
                 options,
             );
-        case NodeType.Union:
+        case NodeType.SetUnion:
             return rowLayoutWidth(
                 [
                     calculateRowLayoutWidthOfBlock(
@@ -200,7 +200,7 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                 ],
                 options,
             );
-        case NodeType.Intersection:
+        case NodeType.SetIntersection:
             return rowLayoutWidth(
                 [
                     calculateRowLayoutWidthOfBlock(
@@ -215,7 +215,7 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                 ],
                 options,
             );
-        case NodeType.Filter:
+        case NodeType.SetFilter:
             return rowLayoutWidth(
                 [
                     calculateRowLayoutWidthOfBlock(
@@ -230,7 +230,7 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                 ],
                 options,
             );
-        case NodeType.Map:
+        case NodeType.SetMap:
             return rowLayoutWidth(
                 [
                     calculateRowLayoutWidthOfBlock(
@@ -245,8 +245,8 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                 ],
                 options,
             );
-        case NodeType.Every:
-        case NodeType.Any:
+        case NodeType.SetEvery:
+        case NodeType.SetAny:
             return rowLayoutWidth(
                 [
                     blockIconWidthInPixels.prefix,
@@ -262,7 +262,7 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                 ],
                 options,
             );
-        case NodeType.Fold:
+        case NodeType.SetFold:
             return rowLayoutWidth(
                 [
                     calculateRowLayoutWidthOfBlock(
@@ -304,10 +304,10 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                 ],
                 options,
             );
-        case NodeType.ValuesOf:
+        case NodeType.PropertiesOf:
             return rowLayoutWidth(
                 [
-                    blockIconWidthInPixels.valuesOf,
+                    blockIconWidthInPixels.propertiesOf,
                     calculateRowLayoutWidthOfBlock(
                         objectToBlock(block.inner),
                         options,
@@ -326,7 +326,7 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                 ],
                 options,
             );
-        case NodeType.Unwrap:
+        case NodeType.SetUnwrap:
             return rowLayoutWidth(
                 [
                     blockIconWidthInPixels.unwrap,
@@ -359,10 +359,10 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                 ],
                 options,
             );
-        case NodeType.IsSet:
+        case NodeType.IsComposite:
             return rowLayoutWidth(
                 [
-                    blockIconWidthInPixels.isSet,
+                    blockIconWidthInPixels.isComposite,
                     calculateRowLayoutWidthOfBlock(
                         objectToBlock(block.inner),
                         options,
@@ -370,7 +370,7 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                 ],
                 options,
             );
-        case NodeType.Count:
+        case NodeType.SetCount:
             return rowLayoutWidth(
                 [
                     blockIconWidthInPixels.countBar
@@ -388,7 +388,7 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
             return rowLayoutWidth(
                 [
                     calculateRowLayoutWidthOfBlock(
-                        objectToBlock(block.set),
+                        objectToBlock(block.object),
                         options,
                     ),
                     blockIconWidthInPixels.queryConstructionValues,
@@ -500,13 +500,13 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                     blockIconWidthInPixels.hammer
                         + options.block.itemGapInPixels
                         + blockIconWidthInPixels.brace,
-                    ...block.values.map(
+                    ...block.items.map(
                         (value, index) =>
                             calculateRowLayoutWidthOfBlock(
                                 objectToBlock(value),
                                 options,
                             )
-                            + (index < block.values.length - 1
+                            + (index < block.items.length - 1
                                 ? measureStaticText(",")
                                 : 0),
                     ),

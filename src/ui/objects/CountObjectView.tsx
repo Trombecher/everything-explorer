@@ -1,9 +1,9 @@
 import {defaultObject, type EverythingObject} from "@/model";
-import {nodeToObject, type CountNode} from "@/model/nodes";
+import {nodeToObject, type SetCountNode} from "@/model/nodes";
 
 import {useLayoutOptions} from "./atomNames";
 import {
-    calculateCountNodeOperandWidthBudgetInPixels,
+    calculateSetCountNodeOperandWidthBudgetInPixels,
     calculateLayoutModeOfBlock,
 } from "./layout";
 import {blockIconWidthInPixels} from "./layout/iconWidths";
@@ -11,7 +11,7 @@ import ObjectView from "./ObjectView";
 import {useObjectSelection, type ObjectSelectionPath} from "./selection";
 
 export default (props: {
-    block: CountNode;
+    block: SetCountNode;
     path: ObjectSelectionPath;
     wholeWidthBudgetInPixels: number;
     setObject?: ((newObject: EverythingObject | undefined) => void) | undefined;
@@ -62,7 +62,7 @@ export default (props: {
                     props.setObject && (newObject => changeInner(newObject))
                 }
                 path={[...props.path, 0]}
-                widthBudgetInPixels={calculateCountNodeOperandWidthBudgetInPixels(
+                widthBudgetInPixels={calculateSetCountNodeOperandWidthBudgetInPixels(
                     props.wholeWidthBudgetInPixels,
                     layoutOptions,
                 )}

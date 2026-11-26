@@ -68,7 +68,7 @@ export const objectViewColorCategory = (
         case NodeType.Times:
         case NodeType.Less:
         case NodeType.Equal:
-        case NodeType.Count:
+        case NodeType.SetCount:
             return ObjectViewColorCategory.Computation;
 
         case NodeType.Not:
@@ -77,18 +77,18 @@ export const objectViewColorCategory = (
         case NodeType.Xor:
         case NodeType.IsAtom:
         case NodeType.IsConstruction:
-        case NodeType.IsSet:
+        case NodeType.IsComposite:
             return ObjectViewColorCategory.Boolean;
 
-        case NodeType.Contains:
-        case NodeType.Unwrap:
-        case NodeType.Union:
-        case NodeType.Intersection:
-        case NodeType.Filter:
-        case NodeType.Map:
-        case NodeType.Every:
-        case NodeType.Any:
-        case NodeType.Fold:
+        case NodeType.SetContains:
+        case NodeType.SetUnwrap:
+        case NodeType.SetUnion:
+        case NodeType.SetIntersection:
+        case NodeType.SetFilter:
+        case NodeType.SetMap:
+        case NodeType.SetEvery:
+        case NodeType.SetAny:
+        case NodeType.SetFold:
         case NodeType.NewSet:
         case ObjectType.Composite:
         case ObjectType.Set:
@@ -97,7 +97,7 @@ export const objectViewColorCategory = (
         case NodeType.Literal:
             return ObjectViewColorCategory.Literal;
 
-        case NodeType.ValuesOf:
+        case NodeType.PropertiesOf:
         case NodeType.HasValue:
         case NodeType.QueryAtomsWithProperty:
         case NodeType.QueryAtomsWithConstructor:
@@ -136,17 +136,17 @@ export const blockInColumnModeIsItemsCenter = (blockType: Block["type"]) => {
         case NodeType.Times:
         case NodeType.Equal:
         case NodeType.Less:
-        case NodeType.Contains:
+        case NodeType.SetContains:
         case NodeType.And:
         case NodeType.Or:
         case NodeType.Xor:
-        case NodeType.Union:
-        case NodeType.Intersection:
-        case NodeType.Filter:
-        case NodeType.Map:
-        case NodeType.Every:
-        case NodeType.Any:
-        case NodeType.Fold:
+        case NodeType.SetUnion:
+        case NodeType.SetIntersection:
+        case NodeType.SetFilter:
+        case NodeType.SetMap:
+        case NodeType.SetEvery:
+        case NodeType.SetAny:
+        case NodeType.SetFold:
         case NodeType.QueryConstructionValues:
         case NodeType.Call:
         case ObjectType.Construction:

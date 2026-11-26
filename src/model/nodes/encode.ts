@@ -64,12 +64,12 @@ export const nodeToObject = (node: Node): EverythingObject => {
                     ...node.rest,
                 ],
             };
-        case NodeType.Contains:
+        case NodeType.SetContains:
             return {
                 type: ObjectType.Composite,
                 properties: [
-                    construction(Atom.NodeContainsElement, node.element),
-                    construction(Atom.NodeContainsSet, node.set),
+                    construction(Atom.NodeSetContainsElement, node.element),
+                    construction(Atom.NodeSetContainsSet, node.set),
                     ...node.rest,
                 ],
             };
@@ -108,75 +108,75 @@ export const nodeToObject = (node: Node): EverythingObject => {
                     ...node.rest,
                 ],
             };
-        case NodeType.Count:
+        case NodeType.SetCount:
             return {
                 type: ObjectType.Composite,
                 properties: [
-                    construction(Atom.NodeCount, node.inner),
+                    construction(Atom.NodeSetCount, node.inner),
                     ...node.rest,
                 ],
             };
-        case NodeType.Union:
+        case NodeType.SetUnion:
             return {
                 type: ObjectType.Composite,
                 properties: [
-                    construction(Atom.NodeUnionFirst, node.first),
-                    construction(Atom.NodeUnionSecond, node.second),
+                    construction(Atom.NodeSetUnionFirst, node.first),
+                    construction(Atom.NodeSetUnionSecond, node.second),
                     ...node.rest,
                 ],
             };
-        case NodeType.Intersection:
+        case NodeType.SetIntersection:
             return {
                 type: ObjectType.Composite,
                 properties: [
-                    construction(Atom.NodeIntersectionFirst, node.first),
-                    construction(Atom.NodeIntersectionSecond, node.second),
+                    construction(Atom.NodeSetIntersectionFirst, node.first),
+                    construction(Atom.NodeSetIntersectionSecond, node.second),
                     ...node.rest,
                 ],
             };
-        case NodeType.Filter:
+        case NodeType.SetFilter:
             return {
                 type: ObjectType.Composite,
                 properties: [
-                    construction(Atom.NodeFilterSet, node.set),
-                    construction(Atom.NodeFilterFilter, node.filterFunction),
+                    construction(Atom.NodeSetFilterSet, node.set),
+                    construction(Atom.NodeSetFilterFilter, node.filterFunction),
                     ...node.rest,
                 ],
             };
-        case NodeType.Map:
+        case NodeType.SetMap:
             return {
                 type: ObjectType.Composite,
                 properties: [
-                    construction(Atom.NodeMapSet, node.set),
-                    construction(Atom.NodeMapMapper, node.mapperFunction),
+                    construction(Atom.NodeSetMapSet, node.set),
+                    construction(Atom.NodeSetMapMapper, node.mapperFunction),
                     ...node.rest,
                 ],
             };
-        case NodeType.Fold:
+        case NodeType.SetFold:
             return {
                 type: ObjectType.Composite,
                 properties: [
-                    construction(Atom.NodeFoldSet, node.set),
-                    construction(Atom.NodeFoldFolder, node.folder),
-                    construction(Atom.NodeFoldInitial, node.initial),
+                    construction(Atom.NodeSetFoldSet, node.set),
+                    construction(Atom.NodeSetFoldFolder, node.folder),
+                    construction(Atom.NodeSetFoldInitial, node.initial),
                     ...node.rest,
                 ],
             };
-        case NodeType.Every:
+        case NodeType.SetEvery:
             return {
                 type: ObjectType.Composite,
                 properties: [
-                    construction(Atom.NodeEverySet, node.set),
-                    construction(Atom.NodeEveryPredicate, node.predicate),
+                    construction(Atom.NodeSetEverySet, node.set),
+                    construction(Atom.NodeSetEveryPredicate, node.predicate),
                     ...node.rest,
                 ],
             };
-        case NodeType.Any:
+        case NodeType.SetAny:
             return {
                 type: ObjectType.Composite,
                 properties: [
-                    construction(Atom.NodeAnySet, node.set),
-                    construction(Atom.NodeAnyPredicate, node.predicate),
+                    construction(Atom.NodeSetAnySet, node.set),
+                    construction(Atom.NodeSetAnyPredicate, node.predicate),
                     ...node.rest,
                 ],
             };
@@ -184,8 +184,8 @@ export const nodeToObject = (node: Node): EverythingObject => {
             return {
                 type: ObjectType.Composite,
                 properties: [
-                    ...node.values.map(value =>
-                        construction(Atom.NodeNewSetValue, value),
+                    ...node.items.map(value =>
+                        construction(Atom.NodeNewSetItem, value),
                     ),
                     ...node.rest,
                 ],
@@ -209,11 +209,11 @@ export const nodeToObject = (node: Node): EverythingObject => {
                     ...node.rest,
                 ],
             };
-        case NodeType.ValuesOf:
+        case NodeType.PropertiesOf:
             return {
                 type: ObjectType.Composite,
                 properties: [
-                    construction(Atom.NodeValuesOf, node.inner),
+                    construction(Atom.NodePropertiesOf, node.inner),
                     ...node.rest,
                 ],
             };
@@ -225,11 +225,11 @@ export const nodeToObject = (node: Node): EverythingObject => {
                     ...node.rest,
                 ],
             };
-        case NodeType.Unwrap:
+        case NodeType.SetUnwrap:
             return {
                 type: ObjectType.Composite,
                 properties: [
-                    construction(Atom.NodeUnwrapSet, node.set),
+                    construction(Atom.NodeSetUnwrapSet, node.set),
                     ...node.rest,
                 ],
             };
@@ -249,11 +249,11 @@ export const nodeToObject = (node: Node): EverythingObject => {
                     ...node.rest,
                 ],
             };
-        case NodeType.IsSet:
+        case NodeType.IsComposite:
             return {
                 type: ObjectType.Composite,
                 properties: [
-                    construction(Atom.NodeIsSet, node.inner),
+                    construction(Atom.NodeIsComposite, node.inner),
                     ...node.rest,
                 ],
             };
@@ -261,7 +261,10 @@ export const nodeToObject = (node: Node): EverythingObject => {
             return {
                 type: ObjectType.Composite,
                 properties: [
-                    construction(Atom.NodeConstructionValuesSet, node.set),
+                    construction(
+                        Atom.NodeConstructionValuesObject,
+                        node.object,
+                    ),
                     construction(
                         Atom.NodeConstructionValuesPropertyConstructor,
                         node.propertyConstructor,

@@ -71,7 +71,7 @@ export const createInitialObject2 = (): EverythingObject => ({
             rest: [],
         }),
         nodeToObject({
-            type: NodeType.Count,
+            type: NodeType.SetCount,
             inner: {
                 type: ObjectType.Set,
                 items: [
@@ -111,9 +111,13 @@ export const createInitialObject2 = (): EverythingObject => ({
             inner: defaultObject,
             rest: [],
         }),
-        nodeToObject({type: NodeType.IsSet, inner: defaultObject, rest: []}),
         nodeToObject({
-            type: NodeType.Contains,
+            type: NodeType.IsComposite,
+            inner: defaultObject,
+            rest: [],
+        }),
+        nodeToObject({
+            type: NodeType.SetContains,
             element: {type: ObjectType.Atom, value: 2n},
             set: {
                 type: ObjectType.Set,
@@ -122,19 +126,19 @@ export const createInitialObject2 = (): EverythingObject => ({
             rest: [],
         }),
         nodeToObject({
-            type: NodeType.Union,
+            type: NodeType.SetUnion,
             first: defaultObject,
             second: defaultObject,
             rest: [],
         }),
         nodeToObject({
-            type: NodeType.Intersection,
+            type: NodeType.SetIntersection,
             first: defaultObject,
             second: defaultObject,
             rest: [],
         }),
         nodeToObject({
-            type: NodeType.Filter,
+            type: NodeType.SetFilter,
             set: defaultObject,
             filterFunction: nodeToObject({
                 type: NodeType.Function,
@@ -149,7 +153,7 @@ export const createInitialObject2 = (): EverythingObject => ({
             rest: [],
         }),
         nodeToObject({
-            type: NodeType.Map,
+            type: NodeType.SetMap,
             set: defaultObject,
             mapperFunction: nodeToObject({
                 type: NodeType.Function,
@@ -164,7 +168,7 @@ export const createInitialObject2 = (): EverythingObject => ({
             rest: [],
         }),
         nodeToObject({
-            type: NodeType.Every,
+            type: NodeType.SetEvery,
             set: defaultObject,
             predicate: nodeToObject({
                 type: NodeType.Function,
@@ -179,7 +183,7 @@ export const createInitialObject2 = (): EverythingObject => ({
             rest: [],
         }),
         nodeToObject({
-            type: NodeType.Any,
+            type: NodeType.SetAny,
             set: defaultObject,
             predicate: nodeToObject({
                 type: NodeType.Function,
@@ -194,7 +198,7 @@ export const createInitialObject2 = (): EverythingObject => ({
             rest: [],
         }),
         nodeToObject({
-            type: NodeType.Fold,
+            type: NodeType.SetFold,
             set: defaultObject,
             folder: nodeToObject({
                 type: NodeType.Function,
@@ -216,14 +220,14 @@ export const createInitialObject2 = (): EverythingObject => ({
         }),
         nodeToObject({
             type: NodeType.NewSet,
-            values: [
+            items: [
                 {type: ObjectType.Integer, value: 1n},
                 {type: ObjectType.Integer, value: 2n},
                 {type: ObjectType.Integer, value: 3n},
             ],
             rest: [],
         }),
-        nodeToObject({type: NodeType.Unwrap, set: defaultObject, rest: []}),
+        nodeToObject({type: NodeType.SetUnwrap, set: defaultObject, rest: []}),
         nodeToObject({
             type: NodeType.Literal,
             object: {type: ObjectType.Text, text: "literal"},
@@ -240,7 +244,7 @@ export const createInitialObject2 = (): EverythingObject => ({
             rest: [],
         }),
         nodeToObject({
-            type: NodeType.ValuesOf,
+            type: NodeType.PropertiesOf,
             inner: {type: ObjectType.Atom, value: 1n},
             rest: [],
         }),
@@ -251,7 +255,7 @@ export const createInitialObject2 = (): EverythingObject => ({
         }),
         nodeToObject({
             type: NodeType.QueryConstructionValues,
-            set: defaultObject,
+            object: defaultObject,
             propertyConstructor: defaultObject,
             rest: [],
         }),

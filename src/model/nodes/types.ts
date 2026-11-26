@@ -8,19 +8,19 @@ export namespace NodeType {
     export const Times = Symbol("NodeType.Times");
     export const Equal = Symbol("NodeType.Equal");
     export const Less = Symbol("NodeType.Less");
-    export const Contains = Symbol("NodeType.Contains");
+    export const SetContains = Symbol("NodeType.SetContains");
     export const And = Symbol("NodeType.And");
     export const Or = Symbol("NodeType.Or");
     export const Xor = Symbol("NodeType.Xor");
     export const Not = Symbol("NodeType.Not");
-    export const Count = Symbol("NodeType.Count");
-    export const Union = Symbol("NodeType.Union");
-    export const Intersection = Symbol("NodeType.Intersection");
-    export const Filter = Symbol("NodeType.Filter");
-    export const Map = Symbol("NodeType.Map");
-    export const Fold = Symbol("NodeType.Fold");
-    export const Every = Symbol("NodeType.Every");
-    export const Any = Symbol("NodeType.Any");
+    export const SetCount = Symbol("NodeType.SetCount");
+    export const SetUnion = Symbol("NodeType.SetUnion");
+    export const SetIntersection = Symbol("NodeType.SetIntersection");
+    export const SetFilter = Symbol("NodeType.SetFilter");
+    export const SetMap = Symbol("NodeType.SetMap");
+    export const SetFold = Symbol("NodeType.SetFold");
+    export const SetEvery = Symbol("NodeType.SetEvery");
+    export const SetAny = Symbol("NodeType.SetAny");
     export const NewSet = Symbol("NodeType.NewSet");
     export const QueryAtomsWithProperty = Symbol(
         "NodeType.QueryAtomsWithProperty",
@@ -28,12 +28,12 @@ export namespace NodeType {
     export const QueryAtomsWithConstructor = Symbol(
         "NodeType.QueryAtomsWithConstructor",
     );
-    export const ValuesOf = Symbol("NodeType.ValuesOf");
+    export const PropertiesOf = Symbol("NodeType.PropertiesOf");
     export const HasValue = Symbol("NodeType.HasValue");
-    export const Unwrap = Symbol("NodeType.Unwrap");
+    export const SetUnwrap = Symbol("NodeType.SetUnwrap");
     export const IsAtom = Symbol("NodeType.IsAtom");
     export const IsConstruction = Symbol("NodeType.IsConstruction");
-    export const IsSet = Symbol("NodeType.IsSet");
+    export const IsComposite = Symbol("NodeType.IsComposite");
     export const QueryConstructionValues = Symbol(
         "NodeType.QueryConstructionValues",
     );
@@ -96,8 +96,8 @@ export type LessNode = {
     readonly rest: readonly EverythingObject[];
 };
 
-export type ContainsNode = {
-    readonly type: typeof NodeType.Contains;
+export type SetContainsNode = {
+    readonly type: typeof NodeType.SetContains;
     readonly element: EverythingObject;
     readonly set: EverythingObject;
     readonly rest: readonly EverythingObject[];
@@ -130,57 +130,57 @@ export type NotNode = {
     readonly rest: readonly EverythingObject[];
 };
 
-export type CountNode = {
-    readonly type: typeof NodeType.Count;
+export type SetCountNode = {
+    readonly type: typeof NodeType.SetCount;
     readonly inner: EverythingObject;
     readonly rest: readonly EverythingObject[];
 };
 
-export type UnionNode = {
-    readonly type: typeof NodeType.Union;
+export type SetUnionNode = {
+    readonly type: typeof NodeType.SetUnion;
     readonly first: EverythingObject;
     readonly second: EverythingObject;
     readonly rest: readonly EverythingObject[];
 };
 
-export type IntersectionNode = {
-    readonly type: typeof NodeType.Intersection;
+export type SetIntersectionNode = {
+    readonly type: typeof NodeType.SetIntersection;
     readonly first: EverythingObject;
     readonly second: EverythingObject;
     readonly rest: readonly EverythingObject[];
 };
 
-export type FilterNode = {
-    readonly type: typeof NodeType.Filter;
+export type SetFilterNode = {
+    readonly type: typeof NodeType.SetFilter;
     readonly set: EverythingObject;
     readonly filterFunction: EverythingObject;
     readonly rest: readonly EverythingObject[];
 };
 
-export type MapNode = {
-    readonly type: typeof NodeType.Map;
+export type SetMapNode = {
+    readonly type: typeof NodeType.SetMap;
     readonly set: EverythingObject;
     readonly mapperFunction: EverythingObject;
     readonly rest: readonly EverythingObject[];
 };
 
-export type FoldNode = {
-    readonly type: typeof NodeType.Fold;
+export type SetFoldNode = {
+    readonly type: typeof NodeType.SetFold;
     readonly set: EverythingObject;
     readonly folder: EverythingObject;
     readonly initial: EverythingObject;
     readonly rest: readonly EverythingObject[];
 };
 
-export type EveryNode = {
-    readonly type: typeof NodeType.Every;
+export type SetEveryNode = {
+    readonly type: typeof NodeType.SetEvery;
     readonly set: EverythingObject;
     readonly predicate: EverythingObject;
     readonly rest: readonly EverythingObject[];
 };
 
-export type AnyNode = {
-    readonly type: typeof NodeType.Any;
+export type SetAnyNode = {
+    readonly type: typeof NodeType.SetAny;
     readonly set: EverythingObject;
     readonly predicate: EverythingObject;
     readonly rest: readonly EverythingObject[];
@@ -188,7 +188,7 @@ export type AnyNode = {
 
 export type NewSetNode = {
     readonly type: typeof NodeType.NewSet;
-    readonly values: readonly EverythingObject[];
+    readonly items: readonly EverythingObject[];
     readonly rest: readonly EverythingObject[];
 };
 
@@ -204,8 +204,8 @@ export type QueryAtomsWithConstructorNode = {
     readonly rest: readonly EverythingObject[];
 };
 
-export type ValuesOfNode = {
-    readonly type: typeof NodeType.ValuesOf;
+export type PropertiesOfNode = {
+    readonly type: typeof NodeType.PropertiesOf;
     readonly inner: EverythingObject;
     readonly rest: readonly EverythingObject[];
 };
@@ -216,8 +216,8 @@ export type HasValueNode = {
     readonly rest: readonly EverythingObject[];
 };
 
-export type UnwrapNode = {
-    readonly type: typeof NodeType.Unwrap;
+export type SetUnwrapNode = {
+    readonly type: typeof NodeType.SetUnwrap;
     readonly set: EverythingObject;
     readonly rest: readonly EverythingObject[];
 };
@@ -234,15 +234,15 @@ export type IsConstructionNode = {
     readonly rest: readonly EverythingObject[];
 };
 
-export type IsSetNode = {
-    readonly type: typeof NodeType.IsSet;
+export type IsCompositeNode = {
+    readonly type: typeof NodeType.IsComposite;
     readonly inner: EverythingObject;
     readonly rest: readonly EverythingObject[];
 };
 
 export type QueryConstructionValuesNode = {
     readonly type: typeof NodeType.QueryConstructionValues;
-    readonly set: EverythingObject;
+    readonly object: EverythingObject;
     readonly propertyConstructor: EverythingObject;
     readonly rest: readonly EverythingObject[];
 };
@@ -294,28 +294,28 @@ export type Node =
     | TimesNode
     | EqualNode
     | LessNode
-    | ContainsNode
+    | SetContainsNode
     | AndNode
     | OrNode
     | XorNode
     | NotNode
-    | CountNode
-    | UnionNode
-    | IntersectionNode
-    | FilterNode
-    | MapNode
-    | FoldNode
-    | EveryNode
-    | AnyNode
+    | SetCountNode
+    | SetUnionNode
+    | SetIntersectionNode
+    | SetFilterNode
+    | SetMapNode
+    | SetFoldNode
+    | SetEveryNode
+    | SetAnyNode
     | NewSetNode
     | QueryAtomsWithPropertyNode
     | QueryAtomsWithConstructorNode
-    | ValuesOfNode
+    | PropertiesOfNode
     | HasValueNode
-    | UnwrapNode
+    | SetUnwrapNode
     | IsAtomNode
     | IsConstructionNode
-    | IsSetNode
+    | IsCompositeNode
     | QueryConstructionValuesNode
     | QueryConstructionsNode
     | ConstructionConstructorNode

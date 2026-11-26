@@ -231,7 +231,7 @@ export const calculateQueryAtomsWithConstructorNodeOperandWidthBudgetInPixels =
                 - layoutOptions.block.itemGapInPixels,
         );
 
-export const calculateValuesOfNodeOperandWidthBudgetInPixels = (
+export const calculatePropertiesOfNodeOperandWidthBudgetInPixels = (
     widthBudgetInPixels: number,
     layoutOptions: LayoutOptions,
 ): number =>
@@ -241,7 +241,7 @@ export const calculateValuesOfNodeOperandWidthBudgetInPixels = (
             - layoutOptions.block.blockBorderWidthInPixels * 2
             - layoutOptions.block.blockPaddingLeftInPixels
             - layoutOptions.block.blockPaddingRightInPixels
-            - blockIconWidthInPixels.valuesOf
+            - blockIconWidthInPixels.propertiesOf
             - layoutOptions.block.itemGapInPixels,
     );
 
@@ -259,7 +259,7 @@ export const calculateHasValueNodeOperandWidthBudgetInPixels = (
             - layoutOptions.block.itemGapInPixels,
     );
 
-export const calculateUnwrapNodeOperandWidthBudgetInPixels = (
+export const calculateSetUnwrapNodeOperandWidthBudgetInPixels = (
     widthBudgetInPixels: number,
     layoutOptions: LayoutOptions,
 ): number =>
@@ -301,7 +301,7 @@ export const calculateIsConstructionNodeOperandWidthBudgetInPixels = (
             - layoutOptions.block.itemGapInPixels,
     );
 
-export const calculateIsSetNodeOperandWidthBudgetInPixels = (
+export const calculateIsCompositeNodeOperandWidthBudgetInPixels = (
     widthBudgetInPixels: number,
     layoutOptions: LayoutOptions,
 ): number =>
@@ -311,11 +311,11 @@ export const calculateIsSetNodeOperandWidthBudgetInPixels = (
             - layoutOptions.block.blockBorderWidthInPixels * 2
             - layoutOptions.block.blockPaddingLeftInPixels
             - layoutOptions.block.blockPaddingRightInPixels
-            - blockIconWidthInPixels.isSet
+            - blockIconWidthInPixels.isComposite
             - layoutOptions.block.itemGapInPixels,
     );
 
-export const calculateCountNodeOperandWidthBudgetInPixels = (
+export const calculateSetCountNodeOperandWidthBudgetInPixels = (
     widthBudgetInPixels: number,
     layoutOptions: LayoutOptions,
 ): number =>
@@ -344,11 +344,11 @@ export const calculateLiteralNodeInnerObjectWidthBudgetInPixels = (
             - layoutOptions.block.itemGapInPixels,
     );
 
-export const calculateNewSetValueWidthBudgetInPixels = (
+export const calculateNewSetItemWidthBudgetInPixels = (
     widthBudgetInPixels: number,
     layoutModeOfNewSet: LayoutMode,
     layoutOptions: LayoutOptions,
-    isNotLastValue: boolean,
+    isNotLastItem: boolean,
 ): number =>
     layoutModeOfNewSet === LayoutMode.Row
         ? Infinity
@@ -359,5 +359,5 @@ export const calculateNewSetValueWidthBudgetInPixels = (
                   - layoutOptions.block.blockPaddingLeftInPixels
                   - layoutOptions.block.blockPaddingRightInPixels
                   - layoutOptions.block.setElementIndentInPixels
-                  - (isNotLastValue ? measureStaticText(",") : 0),
+                  - (isNotLastItem ? measureStaticText(",") : 0),
           );

@@ -8,7 +8,7 @@ import BraceIcon from "../icons/sets/BraceIcon";
 import {useLayoutOptions} from "./atomNames";
 import {
     calculateLayoutModeOfBlock,
-    calculateNewSetValueWidthBudgetInPixels,
+    calculateNewSetItemWidthBudgetInPixels,
     LayoutMode,
 } from "./layout";
 import ObjectView from "./ObjectView";
@@ -30,12 +30,12 @@ export default (props: {
             layoutOptions,
         );
 
-    const valueWidthBudgetInPixels = (index: number) =>
-        calculateNewSetValueWidthBudgetInPixels(
+    const itemWidthBudgetInPixels = (index: number) =>
+        calculateNewSetItemWidthBudgetInPixels(
             props.wholeWidthBudgetInPixels,
             layoutMode(),
             layoutOptions,
-            index < props.block.values.length - 1,
+            index < props.block.items.length - 1,
         );
 
     const removeNode = () => {
@@ -51,15 +51,15 @@ export default (props: {
         props.setObject(object);
     };
 
-    const changeValue = (
+    const changeItem = (
         index: number,
         newObject: EverythingObject | undefined,
     ) => {
         if (!props.setObject) return;
 
         if (newObject === undefined) {
-            if (props.block.values.length === 1) {
-                // A new-set node without values is meaningless, so remove the
+            if (props.block.items.length === 1) {
+                // A new-set node without items is meaningless, so remove the
                 // whole node.
                 removeNode();
                 return;
@@ -68,22 +68,22 @@ export default (props: {
             props.setObject(
                 nodeToObject({
                     ...props.block,
-                    values: props.block.values.filter((_, i) => i !== index),
+                    items: props.block.items.filter((_, i) => i !== index),
                 }),
             );
 
-            if (index === props.block.values.length - 1) {
-                // The selection would point past the last value.
+            if (index === props.block.items.length - 1) {
+                // The selection would point past the last item.
                 objectSelection.selectPreviousSibling();
             }
             // Otherwise the selection keeps its index, which now refers to the
-            // next value.
+            // next item.
         } else {
             props.setObject(
                 nodeToObject({
                     ...props.block,
-                    values: props.block.values.map((value, i) =>
-                        i === index ? newObject : value,
+                    items: props.block.items.map((item, i) =>
+                        i === index ? newObject : item,
                     ),
                 }),
             );
@@ -99,25 +99,25 @@ export default (props: {
                 <HammerIcon />
                 <BraceIcon side="left" />
             </div>
-            <Index each={props.block.values}>
-                {(value, i) => (
+            <Index each={props.block.items}>
+                {(item, i) => (
                     <span class="flex items-center">
                         <ObjectView
                             indentLeft={layoutMode() === LayoutMode.Column}
                             parentObjectLayoutMode={layoutMode()}
                             replaceParentWithThis={
-                                props.setObject && (() => replaceWith(value()))
+                                props.setObject && (() => replaceWith(item()))
                             }
-                            siblingCount={props.block.values.length}
-                            object={value()}
+                            siblingCount={props.block.items.length}
+                            object={item()}
                             setObject={
                                 props.setObject
-                                && (newObject => changeValue(i, newObject))
+                                && (newObject => changeItem(i, newObject))
                             }
                             path={[...props.path, i]}
-                            widthBudgetInPixels={valueWidthBudgetInPixels(i)}
+                            widthBudgetInPixels={itemWidthBudgetInPixels(i)}
                         />
-                        {i < props.block.values.length - 1 ? "," : ""}
+                        {i < props.block.items.length - 1 ? "," : ""}
                     </span>
                 )}
             </Index>

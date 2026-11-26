@@ -1,7 +1,7 @@
 import SquarePlayIcon from "lucide-solid/icons/square-play";
 
 import {defaultObject, type EverythingObject} from "@/model";
-import {nodeToObject, type FoldNode} from "@/model/nodes";
+import {nodeToObject, type SetFoldNode} from "@/model/nodes";
 
 import FoldIcon from "../icons/query/FoldIcon";
 import {useLayoutOptions} from "./atomNames";
@@ -13,7 +13,7 @@ import ObjectView from "./ObjectView";
 import {useObjectSelection, type ObjectSelectionPath} from "./selection";
 
 export default (props: {
-    block: FoldNode;
+    block: SetFoldNode;
     path: ObjectSelectionPath;
     wholeWidthBudgetInPixels: number;
     setObject?: ((newObject: EverythingObject | undefined) => void) | undefined;

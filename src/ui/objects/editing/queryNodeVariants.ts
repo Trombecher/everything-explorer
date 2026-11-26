@@ -49,7 +49,7 @@ const queryNodeChildren = (
         case NodeType.QueryConstructions:
             return [node.constructor, defaultObject];
         case NodeType.QueryConstructionValues:
-            return [node.set, node.propertyConstructor];
+            return [node.object, node.propertyConstructor];
     }
 };
 
@@ -74,7 +74,7 @@ export const retypeQueryNode = (
         case NodeType.QueryConstructionValues:
             return {
                 type: variant,
-                set: first,
+                object: first,
                 propertyConstructor: second,
                 rest: node.rest,
             };
