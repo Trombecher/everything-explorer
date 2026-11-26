@@ -529,6 +529,26 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                 ],
                 options,
             );
+        case NodeType.NewComposite:
+            return rowLayoutWidth(
+                [
+                    blockIconWidthInPixels.hammer
+                        + options.block.itemGapInPixels
+                        + blockIconWidthInPixels.angleBracket,
+                    ...block.properties.map(
+                        (property, index) =>
+                            calculateRowLayoutWidthOfBlock(
+                                objectToBlock(property),
+                                options,
+                            )
+                            + (index < block.properties.length - 1
+                                ? measureStaticText(",")
+                                : 0),
+                    ),
+                    blockIconWidthInPixels.angleBracket,
+                ],
+                options,
+            );
         case NodeType.Parameter:
             return rowLayoutWidth(
                 [blockIconWidthInPixels.x, 192 + options.block.itemGapInPixels],

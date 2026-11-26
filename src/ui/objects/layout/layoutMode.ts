@@ -38,12 +38,14 @@ export const calculateLayoutModeOfBlock = (
     }
 
     if (
-        // Collections and new-set nodes have delimiters in addition to their
-        // children, and a function has its parameter and arrow next to its
-        // body. Column mode can reduce their width even with a single child.
+        // Collections and new-set / new-composite nodes have delimiters in
+        // addition to their children, and a function has its parameter and
+        // arrow next to its body. Column mode can reduce their width even
+        // with a single child.
         (childCountOfBlock(block) >= 2
             || block.type === NodeType.Function
             || block.type === NodeType.NewSet
+            || block.type === NodeType.NewComposite
             || block.type === ObjectType.Composite
             || block.type === ObjectType.Set)
         && calculateRowLayoutWidthOfBlock(block, layoutOptions)

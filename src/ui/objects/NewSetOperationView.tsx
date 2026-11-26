@@ -8,7 +8,7 @@ import BraceIcon from "../icons/sets/BraceIcon";
 import {useLayoutOptions} from "./atomNames";
 import {
     calculateLayoutModeOfBlock,
-    calculateNewSetItemWidthBudgetInPixels,
+    calculateNewCollectionChildWidthBudgetInPixels,
     LayoutMode,
 } from "./layout";
 import ObjectView from "./ObjectView";
@@ -31,7 +31,7 @@ export default (props: {
         );
 
     const itemWidthBudgetInPixels = (index: number) =>
-        calculateNewSetItemWidthBudgetInPixels(
+        calculateNewCollectionChildWidthBudgetInPixels(
             props.wholeWidthBudgetInPixels,
             layoutMode(),
             layoutOptions,

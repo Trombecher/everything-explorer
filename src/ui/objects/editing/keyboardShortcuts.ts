@@ -44,6 +44,7 @@ const isHandledKey = (key: string): boolean =>
     || key === "u"
     || key === "n"
     || key === "N"
+    || key === "O"
     || key === "i"
     || key === "!"
     || key === "q"
@@ -142,6 +143,15 @@ export const handleKeyDown = (props: {
             );
 
             props.objectSelection.selectChild(node.items.length);
+        } else if (node !== NotANode && node.type === NodeType.NewComposite) {
+            props.setObject(
+                nodeToObject({
+                    ...node,
+                    properties: [...node.properties, defaultObject],
+                }),
+            );
+
+            props.objectSelection.selectChild(node.properties.length);
         } else if (
             props.object.type === ObjectType.Composite
             || props.object.type === ObjectType.Set
@@ -362,6 +372,12 @@ export const handleKeyDown = (props: {
                     props.setObject(node.items[0] ?? defaultObject);
                     break;
                 }
+                case NodeType.NewComposite: {
+                    // Retain first property.
+
+                    props.setObject(node.properties[0] ?? defaultObject);
+                    break;
+                }
                 case NodeType.If: {
                     // Retain condition.
 
@@ -499,6 +515,18 @@ export const handleKeyDown = (props: {
             nodeToObject({
                 type: NodeType.NewSet,
                 items: [props.object],
+                rest: [],
+            }),
+        );
+
+        props.objectSelection.selectChild(0);
+    } else if (props.event.key === "O") {
+        if (!props.setObject) return;
+
+        props.setObject(
+            nodeToObject({
+                type: NodeType.NewComposite,
+                properties: [props.object],
                 rest: [],
             }),
         );

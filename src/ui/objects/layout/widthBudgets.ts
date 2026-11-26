@@ -344,13 +344,13 @@ export const calculateLiteralNodeInnerObjectWidthBudgetInPixels = (
             - layoutOptions.block.itemGapInPixels,
     );
 
-export const calculateNewSetItemWidthBudgetInPixels = (
+export const calculateNewCollectionChildWidthBudgetInPixels = (
     widthBudgetInPixels: number,
-    layoutModeOfNewSet: LayoutMode,
+    layoutModeOfNewCollection: LayoutMode,
     layoutOptions: LayoutOptions,
-    isNotLastItem: boolean,
+    isNotLastChild: boolean,
 ): number =>
-    layoutModeOfNewSet === LayoutMode.Row
+    layoutModeOfNewCollection === LayoutMode.Row
         ? Infinity
         : Math.max(
               0,
@@ -359,5 +359,5 @@ export const calculateNewSetItemWidthBudgetInPixels = (
                   - layoutOptions.block.blockPaddingLeftInPixels
                   - layoutOptions.block.blockPaddingRightInPixels
                   - layoutOptions.block.setElementIndentInPixels
-                  - (isNotLastItem ? measureStaticText(",") : 0),
+                  - (isNotLastChild ? measureStaticText(",") : 0),
           );

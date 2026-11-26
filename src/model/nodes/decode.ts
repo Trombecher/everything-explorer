@@ -376,6 +376,22 @@ const objectToNodeWithoutCache = (
         };
     }
 
+    const properties = atomPropertyValues(
+        object,
+        Atom.NodeNewCompositeProperty.value,
+    );
+    if (properties.length > 0) {
+        if (finalNode) return NotANode;
+
+        finalNode = {
+            type: NodeType.NewComposite,
+            properties,
+            rest: withoutAtomConstructors(object.properties, [
+                Atom.NodeNewCompositeProperty.value,
+            ]),
+        };
+    }
+
     some = singleAtomPropertyValue(object, Atom.NodeAtomsWithProperty.value);
     if (some) {
         if (finalNode) return NotANode;

@@ -22,6 +22,7 @@ export namespace NodeType {
     export const SetEvery = Symbol("NodeType.SetEvery");
     export const SetAny = Symbol("NodeType.SetAny");
     export const NewSet = Symbol("NodeType.NewSet");
+    export const NewComposite = Symbol("NodeType.NewComposite");
     export const QueryAtomsWithProperty = Symbol(
         "NodeType.QueryAtomsWithProperty",
     );
@@ -193,6 +194,12 @@ export type NewSetNode = {
     readonly rest: readonly EverythingObject[];
 };
 
+export type NewCompositeNode = {
+    readonly type: typeof NodeType.NewComposite;
+    readonly properties: readonly EverythingObject[];
+    readonly rest: readonly EverythingObject[];
+};
+
 export type QueryAtomsWithPropertyNode = {
     readonly type: typeof NodeType.QueryAtomsWithProperty;
     readonly property: EverythingObject;
@@ -316,6 +323,7 @@ export type Node =
     | SetEveryNode
     | SetAnyNode
     | NewSetNode
+    | NewCompositeNode
     | QueryAtomsWithPropertyNode
     | QueryAtomsWithConstructorNode
     | PropertiesOfNode

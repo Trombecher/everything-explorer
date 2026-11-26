@@ -190,6 +190,16 @@ export const nodeToObject = (node: Node): EverythingObject => {
                     ...node.rest,
                 ],
             };
+        case NodeType.NewComposite:
+            return {
+                type: ObjectType.Composite,
+                properties: [
+                    ...node.properties.map(property =>
+                        construction(Atom.NodeNewCompositeProperty, property),
+                    ),
+                    ...node.rest,
+                ],
+            };
         case NodeType.QueryAtomsWithProperty:
             return {
                 type: ObjectType.Composite,

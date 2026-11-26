@@ -17,6 +17,7 @@ import FoldOperationView from "../FoldOperationView";
 import IfOperationView from "../IfOperationView";
 import IntegerView from "../IntegerView";
 import type {LayoutMode} from "../layout";
+import NewCompositeOperationView from "../NewCompositeOperationView";
 import NewSetOperationView from "../NewSetOperationView";
 import type {ObjectSelectionPath} from "../selection";
 import SetObjectView from "../SetObjectView";
@@ -251,6 +252,16 @@ export default (props: {
                 {newSetNode => (
                     <NewSetOperationView
                         block={newSetNode()}
+                        path={props.path}
+                        wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                        setObject={props.setObject}
+                    />
+                )}
+            </Match>
+            <Match when={variant(props.block, NodeType.NewComposite)}>
+                {newCompositeNode => (
+                    <NewCompositeOperationView
+                        block={newCompositeNode()}
                         path={props.path}
                         wholeWidthBudgetInPixels={props.widthBudgetInPixels}
                         setObject={props.setObject}
