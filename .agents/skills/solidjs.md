@@ -154,7 +154,8 @@ is reported as `EFFECT_RELAY_TEAR` and `createComputed` no longer exists.
   sent back over the network. The adoption is an async boundary and the network
   sync is I/O; both stay effects. Keep the `syncedObjects` diff logic inside the
   sync loop, not in render.
-- **Domain caches** (`src/ui/objects/atomNames.ts`, `AtomView.tsx`): atom
+- **Domain caches** (`src/ui/objects/atomNames.ts`,
+  `src/ui/objects/views/scalars/AtomView.tsx`): atom
   display names are produced by an async request and consumed by layout
   (`src/ui/objects/layout/rowWidth.ts`). The write is an observation, not a
   derivation; `AtomView` writes it from a `createComputed`. The cache is a

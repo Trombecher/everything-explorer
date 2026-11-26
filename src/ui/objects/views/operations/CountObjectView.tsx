@@ -1,14 +1,14 @@
 import {defaultObject, type EverythingObject} from "@/model";
 import {nodeToObject, type SetCountNode} from "@/model/nodes";
 
-import {useLayoutOptions} from "./atomNames";
+import {useLayoutOptions} from "../../atomNames";
 import {
     calculateSetCountNodeOperandWidthBudgetInPixels,
     calculateLayoutModeOfBlock,
-} from "./layout";
-import {blockIconWidthInPixels} from "./layout/iconWidths";
-import ObjectView from "./ObjectView";
-import {useObjectSelection, type ObjectSelectionPath} from "./selection";
+} from "../../layout";
+import {blockIconWidthInPixels} from "../../layout/iconWidths";
+import ObjectView from "../../ObjectView";
+import {useObjectSelection, type ObjectSelectionPath} from "../../selection";
 
 export default (props: {
     block: SetCountNode;

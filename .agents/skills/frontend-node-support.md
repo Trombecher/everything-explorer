@@ -153,23 +153,28 @@ Special cases to preserve:
 ## 3. Render the node
 
 Add or update a dispatch branch in
-`src/ui/objects/blocks/ObjectViewContent.tsx`. Prefer reusing an existing view
-when the node has a conventional shape:
+`src/ui/objects/views/ObjectViewContent.tsx`. Put new views next to their peers
+under `src/ui/objects/views`: `scalars`, `operations`, `collections`, or
+`functions`. Prefer reusing an existing view when the node has a conventional
+shape:
 
-- One child: `UnaryOperationView`. Extend its `UnaryOperationBlock` union,
-  `BlockIcon` map, `operandOf`, `withOperand`, and operand width-budget switch.
-- Two children: `BinaryOperationView` through
+- One child: `views/operations/UnaryOperationView.tsx`. Extend its
+  `UnaryOperationBlock` union, `BlockIcon` map, `operandOf`, `withOperand`, and
+  operand width-budget switch.
+- Two children: `views/operations/BinaryOperationView.tsx` through
   `src/ui/objects/blocks/binaryOperationAccessors.ts`. Extend
   `BinaryOperationBlock`, `BlockIcon`, `getFirst`, `getSecond`,
   `changeBlockFirst`, and `changeBlockSecond`.
-- Three or more children, or a graph-like layout: create a dedicated view
-  modelled on `FoldOperationView.tsx` or `IfOperationView.tsx`. It should place
-  child `ObjectView`s with paths `[...props.path, index]`, reconstruct the node
-  with `nodeToObject` whenever a child changes, handle deletion of required
-  children, and hand `setObject` down so editing works.
+- Three or more children, or a graph-like layout: create a dedicated view in
+  `views/operations` modelled on `FoldOperationView.tsx` or
+  `IfOperationView.tsx`. It should place child `ObjectView`s with paths
+  `[...props.path, index]`, reconstruct the node with `nodeToObject` whenever a
+  child changes, handle deletion of required children, and hand `setObject`
+  down so editing works.
 - Function-like nodes and depth references use the existing
-  `FunctionObjectView` / `FunctionSelfObjectView` / `ParameterObjectView`
-  patterns, including `EnclosingFunctionsContext` and the parameter-name field.
+  `views/functions/FunctionObjectView.tsx` /
+  `FunctionSelfObjectView.tsx` / `ParameterObjectView.tsx` patterns, including
+  `EnclosingFunctionsContext` and the parameter-name field.
 
 The view is responsible for selection paths, parent replacement, deletion
 semantics, and width budgets, not only appearance.
@@ -199,8 +204,10 @@ Several switches are deliberately exhaustive and must be updated together:
   widths, gaps, delimiters, commas, and every child width. This drives automatic
   row/column switching.
 - `src/ui/objects/layout/iconWidths.ts`: add or rename a width entry if needed.
-- `src/ui/objects/layout/widthBudgets.ts`: add or rename the child-budget helper
-  and use it when passing widths down.
+- `src/ui/objects/layout/widthBudgets.ts` and
+  `src/ui/objects/layout/operandWidthBudgets.ts`: add or rename the child-budget
+  helper and use it when passing widths down. Operand budgets for icon-prefixed
+  unary nodes live in the latter.
 - `src/ui/objects/objectViewAppearance.ts`: assign a color category and decide
   whether the node is centered in column mode. A genuinely new visual category
   also requires extending `ObjectViewColorCategory`, its union, and
@@ -215,15 +222,17 @@ color-management skill.
 
 ## 6. Editing and discoverability
 
-In `src/ui/objects/editing/keyboardShortcuts.ts`, add the creation hotkey to
-`isHandledKey` and the corresponding branch if the node should be creatable,
-selecting the relevant child afterwards. Check for key conflicts before choosing
-a shortcut.
+In `src/ui/objects/editing/insertObject.ts`, add the creation hotkey to the
+insertion table if the node should be creatable, selecting the relevant child
+afterwards. The table also feeds `isHandledKey` in
+`src/ui/objects/editing/keyboardShortcuts.ts`. Check for key conflicts before
+choosing a shortcut.
 
 Keep the deletion operations distinct:
 
 - Shift+Backspace collapses a node and retains its most meaningful child
-  (usually the first operand, set, queried object, or body).
+  (usually the first operand, set, queried object, or body). Add the retained
+  child to `src/ui/objects/editing/replaceWithRetainedChild.ts`.
 - DEL passes `undefined` to the parent. Collection parents drop the child;
   ordinary node/root parents replace it with `defaultObject`, which is the empty
   composite. Deleting the last `NewSet` item removes the now-invalid new-set

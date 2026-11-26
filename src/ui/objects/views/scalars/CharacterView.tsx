@@ -1,24 +1,27 @@
 import {TextField} from "@kobalte/core/text-field";
 import {createComputed, createSignal} from "solid-js";
 
-import {ObjectType, type ByteObject} from "@/model";
+import {ObjectType, type CharacterObject} from "@/model";
 
-import {formatByteValue, parseByteText} from "./scalarFormatting";
+import {
+    escapeCharacterForDisplay,
+    parseCharacterText,
+} from "../../scalarFormatting";
 
 export default (props: {
-    byte: ByteObject;
-    setByte: ((newByte: ByteObject) => void) | undefined;
+    character: CharacterObject;
+    setCharacter: ((newCharacter: CharacterObject) => void) | undefined;
 }) => {
     const [text, setText] = createSignal("");
     const [editing, setEditing] = createSignal(false);
     const [invalid, setInvalid] = createSignal(false);
 
     const displayedText = () =>
-        editing() ? text() : formatByteValue(props.byte.value);
+        editing() ? text() : escapeCharacterForDisplay(props.character.value);
 
     createComputed(() => {
         if (!editing()) {
-            setText(formatByteValue(props.byte.value));
+            setText(escapeCharacterForDisplay(props.character.value));
             setInvalid(false);
         }
     });
@@ -29,20 +32,20 @@ export default (props: {
             value={displayedText()}
             onChange={newText => {
                 setText(newText);
-                setInvalid(parseByteText(newText) === undefined);
+                setInvalid(parseCharacterText(newText) === undefined);
             }}
             validationState={invalid() ? "invalid" : undefined}
-            readOnly={!props.setByte}
+            readOnly={!props.setCharacter}
             class="flex items-center"
         >
-            <span>x</span>
+            <span>'</span>
             <TextField.Input
                 spellcheck={false}
                 autocomplete="off"
                 onFocus={event => {
-                    if (!props.setByte) return;
+                    if (!props.setCharacter) return;
 
-                    setText(formatByteValue(props.byte.value));
+                    setText(escapeCharacterForDisplay(props.character.value));
                     setInvalid(false);
                     setEditing(true);
                     event.currentTarget.select();
@@ -53,27 +56,33 @@ export default (props: {
                     if (event.key === "Enter") {
                         event.currentTarget.blur();
                     } else if (event.key === "Escape") {
-                        setText(formatByteValue(props.byte.value));
+                        setText(
+                            escapeCharacterForDisplay(props.character.value),
+                        );
                         setInvalid(false);
                         event.currentTarget.blur();
                     }
                 }}
                 onBlur={() => {
-                    const byte = parseByteText(text());
+                    const character = parseCharacterText(text());
 
                     if (
-                        byte !== undefined
-                        && props.setByte
-                        && byte !== props.byte.value
+                        character !== undefined
+                        && props.setCharacter
+                        && character !== props.character.value
                     ) {
-                        props.setByte({type: ObjectType.Byte, value: byte});
+                        props.setCharacter({
+                            type: ObjectType.Character,
+                            value: character,
+                        });
                     }
 
                     setEditing(false);
                     setInvalid(false);
                 }}
-                class="block field-sizing-content pr-2 text-center focus:min-w-10 data-invalid:outline-2 data-invalid:outline-danger"
+                class="block field-sizing-content text-center focus:min-w-16 data-invalid:outline-2 data-invalid:outline-danger"
             />
+            <span>'</span>
         </TextField>
     );
 };

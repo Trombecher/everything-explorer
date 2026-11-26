@@ -3,7 +3,7 @@ import {Dynamic} from "solid-js/web";
 
 import {defaultObject, type EverythingObject} from "@/model";
 
-import {useLayoutOptions} from "./atomNames";
+import {useLayoutOptions} from "../../atomNames";
 import {
     BinaryOperationBlock,
     BlockIcon,
@@ -12,13 +12,13 @@ import {
     getFirst,
     getSecond,
     prefixIconOf,
-} from "./blocks/binaryOperationAccessors";
+} from "../../blocks/binaryOperationAccessors";
 import {
     binaryBlockSlotWidthBudgetInPixels,
     calculateLayoutModeOfBlock,
-} from "./layout";
-import ObjectView from "./ObjectView";
-import {useObjectSelection, type ObjectSelectionPath} from "./selection";
+} from "../../layout";
+import ObjectView from "../../ObjectView";
+import {useObjectSelection, type ObjectSelectionPath} from "../../selection";
 
 export default (props: {
     block: BinaryOperationBlock;

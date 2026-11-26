@@ -1,8 +1,8 @@
 import type {EverythingObject, EverythingSet} from "@/model";
 import type {DeepReadonly} from "@/util";
 
+import type {ObjectSelectionPath} from "../../selection";
 import CollectionObjectView from "./CollectionObjectView";
-import type {ObjectSelectionPath} from "./selection";
 
 export default (props: {
     set: EverythingSet;

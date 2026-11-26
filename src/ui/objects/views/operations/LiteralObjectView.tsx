@@ -4,13 +4,13 @@ import {defaultObject, type EverythingObject} from "@/model";
 import {nodeToObject, type LiteralNode} from "@/model/nodes";
 import type {DeepReadonly} from "@/util";
 
-import {useLayoutOptions} from "../atomNames";
+import {useLayoutOptions} from "../../atomNames";
 import {
     calculateLiteralNodeInnerObjectWidthBudgetInPixels,
     LayoutMode,
-} from "../layout";
-import ObjectView from "../ObjectView";
-import {useObjectSelection, type ObjectSelectionPath} from "../selection";
+} from "../../layout";
+import ObjectView from "../../ObjectView";
+import {useObjectSelection, type ObjectSelectionPath} from "../../selection";
 
 export default (props: {
     node: LiteralNode;

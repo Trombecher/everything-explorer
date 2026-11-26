@@ -8,17 +8,17 @@ import {
 } from "@/model";
 import type {DeepReadonly} from "@/util";
 
-import AngleBracketIcon from "../icons/sets/AngleBracketIcon";
-import BraceIcon from "../icons/sets/BraceIcon";
-import {useLayoutOptions} from "./atomNames";
+import AngleBracketIcon from "../../../icons/sets/AngleBracketIcon";
+import BraceIcon from "../../../icons/sets/BraceIcon";
+import {useLayoutOptions} from "../../atomNames";
 import {
     calculateCollectionElementWidthBudgetInPixels,
     calculateLayoutModeOfBlock,
     LayoutMode,
-} from "./layout";
-import ObjectView from "./ObjectView";
-import type {ObjectSelectionPath} from "./selection";
-import {useObjectSelection} from "./selection";
+} from "../../layout";
+import ObjectView from "../../ObjectView";
+import type {ObjectSelectionPath} from "../../selection";
+import {useObjectSelection} from "../../selection";
 
 export default (props: {
     collection: EverythingComposite | EverythingSet;

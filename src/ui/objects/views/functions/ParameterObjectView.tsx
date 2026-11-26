@@ -1,16 +1,16 @@
-import RotateCcwIcon from "lucide-solid/icons/rotate-ccw";
 import {Show} from "solid-js";
 
 import {usePreferences} from "@/context";
 import {Phrase} from "@/i18n/phrases";
 import type {EverythingObject} from "@/model";
-import {nodeToObject, type FunctionSelfNode} from "@/model/nodes";
+import {nodeToObject, type ParameterNode} from "@/model/nodes";
 
-import Select from "../../reuse/Select";
-import {useEnclosingFunctions} from "../enclosingFunctions";
+import ItalicXIcon from "../../../icons/functions/ItalicXIcon";
+import Select from "../../../reuse/Select";
+import {useEnclosingFunctions} from "../../enclosingFunctions";
 
 export default (props: {
-    node: FunctionSelfNode;
+    node: ParameterNode;
     setObject: ((newObject: EverythingObject | undefined) => void) | undefined;
 }) => {
     const preferences = usePreferences();
@@ -32,7 +32,6 @@ export default (props: {
     };
 
     const labelOf = (depth: bigint) => {
-        const self = preferences.translate(Phrase.Self, undefined);
         const functionDepth = preferences.translate(Phrase.FunctionDepth, {
             depth: String(depth),
         });
@@ -40,15 +39,19 @@ export default (props: {
         const enclosingFunction = enclosingFunctions()[Number(depth)];
 
         if (!enclosingFunction) {
-            return `${self} (${functionDepth} (${preferences.translate(Phrase.OutOfRange, undefined)}))`;
+            return `${functionDepth} (${preferences.translate(Phrase.OutOfRange, undefined)})`;
         }
 
-        return `${self} (${functionDepth})`;
+        if (enclosingFunction.parameterName) {
+            return `${enclosingFunction.parameterName} (${functionDepth})`;
+        }
+
+        return functionDepth;
     };
 
     return (
         <>
-            <RotateCcwIcon />
+            <ItalicXIcon />
             <Show
                 when={enclosingFunctions().length > 0}
                 fallback={

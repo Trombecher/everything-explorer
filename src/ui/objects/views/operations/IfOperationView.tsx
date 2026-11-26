@@ -4,15 +4,15 @@ import XIcon from "lucide-solid/icons/x";
 import {defaultObject, type EverythingObject} from "@/model";
 import {nodeToObject, type IfNode} from "@/model/nodes";
 
-import {useLayoutOptions} from "./atomNames";
+import {useLayoutOptions} from "../../atomNames";
 import {
     calculateIfBranchChildWidthBudgetInPixels,
     calculateIfConditionWidthBudgetInPixels,
     calculateLayoutModeOfBlock,
     LayoutMode,
-} from "./layout";
-import ObjectView from "./ObjectView";
-import {useObjectSelection, type ObjectSelectionPath} from "./selection";
+} from "../../layout";
+import ObjectView from "../../ObjectView";
+import {useObjectSelection, type ObjectSelectionPath} from "../../selection";
 
 const IfBranchRow = (props: {
     icon: "check" | "x";

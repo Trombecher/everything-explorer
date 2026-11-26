@@ -9,16 +9,16 @@ import {
     nodeToObject,
 } from "@/model/nodes";
 
-import AngleBracketIcon from "../icons/sets/AngleBracketIcon";
-import BraceIcon from "../icons/sets/BraceIcon";
-import {useLayoutOptions} from "./atomNames";
+import AngleBracketIcon from "../../../icons/sets/AngleBracketIcon";
+import BraceIcon from "../../../icons/sets/BraceIcon";
+import {useLayoutOptions} from "../../atomNames";
 import {
     calculateLayoutModeOfBlock,
     calculateNewCollectionChildWidthBudgetInPixels,
     LayoutMode,
-} from "./layout";
-import ObjectView from "./ObjectView";
-import {useObjectSelection, type ObjectSelectionPath} from "./selection";
+} from "../../layout";
+import ObjectView from "../../ObjectView";
+import {useObjectSelection, type ObjectSelectionPath} from "../../selection";
 
 /**
  * The shared view for nodes that construct a collection from their children:

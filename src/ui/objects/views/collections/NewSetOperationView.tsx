@@ -1,8 +1,8 @@
 import type {EverythingObject} from "@/model";
 import type {NewSetNode} from "@/model/nodes";
 
+import type {ObjectSelectionPath} from "../../selection";
 import NewCollectionOperationView from "./NewCollectionOperationView";
-import type {ObjectSelectionPath} from "./selection";
 
 export default (props: {
     block: NewSetNode;

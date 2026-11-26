@@ -2,16 +2,19 @@ import {defaultObject, type EverythingObject} from "@/model";
 import {nodeToObject, type FunctionNode} from "@/model/nodes";
 import type {DeepReadonly} from "@/util";
 
-import MapsToIcon from "../../icons/math/MapsToIcon";
-import {useLayoutOptions} from "../atomNames";
+import MapsToIcon from "../../../icons/math/MapsToIcon";
+import {useLayoutOptions} from "../../atomNames";
 import {
     useEnclosingFunctions,
     EnclosingFunctionsContext,
-} from "../enclosingFunctions";
-import {calculateFunctionBodyWidthBudgetInPixels, LayoutMode} from "../layout";
-import ObjectView from "../ObjectView";
-import ParameterNameField from "../ParameterNameField";
-import {useObjectSelection, type ObjectSelectionPath} from "../selection";
+} from "../../enclosingFunctions";
+import {
+    calculateFunctionBodyWidthBudgetInPixels,
+    LayoutMode,
+} from "../../layout";
+import ObjectView from "../../ObjectView";
+import {useObjectSelection, type ObjectSelectionPath} from "../../selection";
+import ParameterNameField from "./ParameterNameField";
 
 export default (props: {
     node: FunctionNode;

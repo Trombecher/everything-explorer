@@ -6,7 +6,6 @@ import type {DeepReadonly} from "@/util";
 
 import {useLayoutOptions} from "./atomNames";
 import {canonicalizeForDisplay, objectToBlock} from "./blocks";
-import ObjectViewContent from "./blocks/ObjectViewContent";
 import {handleClipboardKeyDown} from "./editing/clipboardShortcuts";
 import {handleKeyDown} from "./editing/keyboardShortcuts";
 import {objectPathKey} from "./focus";
@@ -17,6 +16,7 @@ import {
 } from "./objectViewAppearance";
 import type {ObjectSelectionPath} from "./selection";
 import {useObjectSelection} from "./selection";
+import ObjectViewContent from "./views/ObjectViewContent";
 
 export const ObjectView = (props: {
     object: EverythingObject;

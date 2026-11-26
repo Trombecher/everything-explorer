@@ -18,19 +18,19 @@ import {
     type PropertiesOfNode,
 } from "@/model/nodes";
 
-import AtomsWithConstructorIcon from "../icons/atoms/AtomsWithConstructorIcon";
-import AtomsWithPropertyIcon from "../icons/atoms/AtomsWithPropertyIcon";
-import IsAtomIcon from "../icons/atoms/IsAtomIcon";
-import ConstructionConstructorIcon from "../icons/constructions/ConstructionConstructorIcon";
-import ConstructionValueIcon from "../icons/constructions/ConstructionValueIcon";
-import IsConstructionIcon from "../icons/constructions/IsConstructionIcon";
-import NotIcon from "../icons/math/NotIcon";
-import HasValueIcon from "../icons/query/HasValueIcon";
-import QueryConstructionsIcon from "../icons/query/QueryConstructionsIcon";
-import SearchValuesIcon from "../icons/query/SearchValuesIcon";
-import IsCompositeIcon from "../icons/sets/IsCompositeIcon";
-import UnwrapIcon from "../icons/sets/UnwrapIcon";
-import {useLayoutOptions} from "./atomNames";
+import AtomsWithConstructorIcon from "../../../icons/atoms/AtomsWithConstructorIcon";
+import AtomsWithPropertyIcon from "../../../icons/atoms/AtomsWithPropertyIcon";
+import IsAtomIcon from "../../../icons/atoms/IsAtomIcon";
+import ConstructionConstructorIcon from "../../../icons/constructions/ConstructionConstructorIcon";
+import ConstructionValueIcon from "../../../icons/constructions/ConstructionValueIcon";
+import IsConstructionIcon from "../../../icons/constructions/IsConstructionIcon";
+import NotIcon from "../../../icons/math/NotIcon";
+import HasValueIcon from "../../../icons/query/HasValueIcon";
+import QueryConstructionsIcon from "../../../icons/query/QueryConstructionsIcon";
+import SearchValuesIcon from "../../../icons/query/SearchValuesIcon";
+import IsCompositeIcon from "../../../icons/sets/IsCompositeIcon";
+import UnwrapIcon from "../../../icons/sets/UnwrapIcon";
+import {useLayoutOptions} from "../../atomNames";
 import {
     calculateLayoutModeOfBlock,
     calculateConstructionConstructorNodeOperandWidthBudgetInPixels,
@@ -45,9 +45,9 @@ import {
     calculateQueryConstructionsNodeOperandWidthBudgetInPixels,
     calculateSetUnwrapNodeOperandWidthBudgetInPixels,
     calculatePropertiesOfNodeOperandWidthBudgetInPixels,
-} from "./layout";
-import ObjectView from "./ObjectView";
-import {useObjectSelection, type ObjectSelectionPath} from "./selection";
+} from "../../layout";
+import ObjectView from "../../ObjectView";
+import {useObjectSelection, type ObjectSelectionPath} from "../../selection";
 
 export type UnaryOperationBlock =
     | ConstructionConstructorNode

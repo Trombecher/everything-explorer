@@ -1,8 +1,8 @@
 import type {EverythingComposite, EverythingObject} from "@/model";
 import type {DeepReadonly} from "@/util";
 
+import type {ObjectSelectionPath} from "../../selection";
 import CollectionObjectView from "./CollectionObjectView";
-import type {ObjectSelectionPath} from "./selection";
 
 export default (props: {
     composite: EverythingComposite;

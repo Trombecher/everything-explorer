@@ -5,8 +5,8 @@ import {ObjectType} from "@/model";
 import type {Atom} from "@/model/atoms";
 import BigIntTextField from "@/ui/reuse/BigIntTextField";
 
-import {useAtomNames} from "./atomNames";
-import {createAtomName} from "./createAtomName";
+import {useAtomNames} from "../../atomNames";
+import {createAtomName} from "../../createAtomName";
 
 const MAX_ATOM_VALUE = (1n << 128n) - 1n;
 
