@@ -225,6 +225,15 @@ export const nodeToObject = (node: Node): EverythingObject => {
                     ...node.rest,
                 ],
             };
+        case NodeType.HasProperty:
+            return {
+                type: ObjectType.Composite,
+                properties: [
+                    construction(Atom.NodeHasPropertySubject, node.subject),
+                    construction(Atom.NodeHasPropertyProperty, node.property),
+                    ...node.rest,
+                ],
+            };
         case NodeType.SetUnwrap:
             return {
                 type: ObjectType.Composite,

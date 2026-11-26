@@ -35,6 +35,7 @@ export const childCountOfBlock = (block: Block): number => {
         case NodeType.Equal:
         case NodeType.Less:
         case NodeType.SetContains:
+        case NodeType.HasProperty:
         case NodeType.And:
         case NodeType.Or:
         case NodeType.Xor:

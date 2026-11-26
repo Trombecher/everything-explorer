@@ -24,6 +24,7 @@ export const blockIconWidthInPixels = {
     unwrap: 80,
     propertiesOf: 32,
     hasValue: 24,
+    hasProperty: 36,
     isAtom: 48,
     isConstruction: 48,
     isComposite: 48,

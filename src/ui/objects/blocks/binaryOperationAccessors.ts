@@ -10,6 +10,7 @@ import {
     type AndNode,
     type SetAnyNode,
     type CallNode,
+    type HasPropertyNode,
     type SetContainsNode,
     type EqualNode,
     type SetEveryNode,
@@ -37,6 +38,7 @@ import VeeIcon from "../../icons/math/VeeIcon";
 import WedgeIcon from "../../icons/math/WedgeIcon";
 import XorIcon from "../../icons/math/XorIcon";
 import FilterIcon from "../../icons/query/FilterIcon";
+import HasPropertyIcon from "../../icons/query/HasPropertyIcon";
 import QueryConstructionValuesIcon from "../../icons/query/QueryConstructionValuesIcon";
 import SetMapIcon from "../../icons/query/SetMapIcon";
 import ColonIcon from "../../icons/syntax/ColonIcon";
@@ -47,6 +49,7 @@ export type BinaryOperationBlock =
     | EqualNode
     | LessNode
     | SetContainsNode
+    | HasPropertyNode
     | AndNode
     | OrNode
     | XorNode
@@ -66,6 +69,7 @@ export const BlockIcon = {
     [NodeType.Equal]: EqualIcon,
     [NodeType.Less]: LessThanIcon,
     [NodeType.SetContains]: ElementOfIcon,
+    [NodeType.HasProperty]: HasPropertyIcon,
     [NodeType.And]: WedgeIcon,
     [NodeType.Or]: VeeIcon,
     [NodeType.Xor]: XorIcon,
@@ -107,6 +111,8 @@ export const getFirst = (block: BinaryOperationBlock) => {
             return block.first;
         case NodeType.SetContains:
             return block.element;
+        case NodeType.HasProperty:
+            return block.subject;
         case NodeType.SetFilter:
         case NodeType.SetMap:
         case NodeType.SetEvery:
@@ -135,6 +141,8 @@ export const getSecond = (block: BinaryOperationBlock) => {
             return block.second;
         case NodeType.SetContains:
             return block.set;
+        case NodeType.HasProperty:
+            return block.property;
         case NodeType.SetFilter:
             return block.filterFunction;
         case NodeType.SetMap:
@@ -169,6 +177,8 @@ export const changeBlockFirst = (
             return nodeToObject({...block, first: newFirst});
         case NodeType.SetContains:
             return nodeToObject({...block, element: newFirst});
+        case NodeType.HasProperty:
+            return nodeToObject({...block, subject: newFirst});
         case NodeType.SetFilter:
         case NodeType.SetMap:
         case NodeType.SetEvery:
@@ -200,6 +210,8 @@ export const changeBlockSecond = (
             return nodeToObject({...block, second: newSecond});
         case NodeType.SetContains:
             return nodeToObject({...block, set: newSecond});
+        case NodeType.HasProperty:
+            return nodeToObject({...block, property: newSecond});
         case NodeType.SetFilter:
             return nodeToObject({...block, filterFunction: newSecond});
         case NodeType.SetMap:

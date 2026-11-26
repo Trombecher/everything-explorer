@@ -428,6 +428,28 @@ const objectToNodeWithoutCache = (
         };
     }
 
+    some = singleAtomPropertyValue(object, Atom.NodeHasPropertySubject.value);
+    if (some) {
+        const property = singleAtomPropertyValue(
+            object,
+            Atom.NodeHasPropertyProperty.value,
+        );
+
+        if (property) {
+            if (finalNode) return NotANode;
+
+            finalNode = {
+                type: NodeType.HasProperty,
+                subject: some,
+                property,
+                rest: withoutAtomConstructors(object.properties, [
+                    Atom.NodeHasPropertySubject.value,
+                    Atom.NodeHasPropertyProperty.value,
+                ]),
+            };
+        }
+    }
+
     some = singleAtomPropertyValue(object, Atom.NodeSetUnwrapSet.value);
     if (some) {
         if (finalNode) return NotANode;

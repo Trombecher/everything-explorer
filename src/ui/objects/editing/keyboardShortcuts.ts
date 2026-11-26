@@ -49,6 +49,7 @@ const isHandledKey = (key: string): boolean =>
     || key === "q"
     || isQueryVariantKey(key)
     || key === "h"
+    || key === "H"
     || key === "v"
     || key === "U"
     || key === "I"
@@ -278,6 +279,12 @@ export const handleKeyDown = (props: {
                     // Retain inner object.
 
                     props.setObject(node.inner);
+                    break;
+                }
+                case NodeType.HasProperty: {
+                    // Retain subject.
+
+                    props.setObject(node.subject);
                     break;
                 }
                 case NodeType.SetUnwrap: {
@@ -565,6 +572,19 @@ export const handleKeyDown = (props: {
         );
 
         props.objectSelection.selectChild(0);
+    } else if (props.event.key === "H") {
+        if (!props.setObject) return;
+
+        props.setObject(
+            nodeToObject({
+                type: NodeType.HasProperty,
+                subject: props.object,
+                property: defaultObject,
+                rest: [],
+            }),
+        );
+
+        props.objectSelection.selectChild(1);
     } else if (props.event.key === "U") {
         if (!props.setObject) return;
 

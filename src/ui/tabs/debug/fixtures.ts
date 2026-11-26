@@ -117,6 +117,12 @@ export const createInitialObject2 = (): EverythingObject => ({
             rest: [],
         }),
         nodeToObject({
+            type: NodeType.HasProperty,
+            subject: {type: ObjectType.Atom, value: 1n},
+            property: {type: ObjectType.Atom, value: 2n},
+            rest: [],
+        }),
+        nodeToObject({
             type: NodeType.SetContains,
             element: {type: ObjectType.Atom, value: 2n},
             set: {
