@@ -18,7 +18,7 @@
         "@kobalte/core": "^0.13.14",
         "@tauri-apps/api": "^2.12.5",
         "@tauri-apps/plugin-opener": "^2.7.3",
-        "lucide-solid": "^1.78.0",
+        "lucide-solid": "^1.80.0",
         "solid-js": "^1.9.19",
         "zod": "^4.6.7"
     },
