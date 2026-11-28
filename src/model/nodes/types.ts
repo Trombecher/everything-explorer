@@ -32,6 +32,7 @@ export namespace NodeType {
         "NodeType.QueryAtomsWithConstructor",
     );
     export const PropertiesOf = Symbol("NodeType.PropertiesOf");
+    export const CompositeFromSet = Symbol("NodeType.CompositeFromSet");
     export const HasASetItem = Symbol("NodeType.HasASetItem");
     export const HasProperty = Symbol("NodeType.HasProperty");
     export const SetUnwrap = Symbol("NodeType.SetUnwrap");
@@ -235,6 +236,12 @@ export type PropertiesOfNode = {
     readonly rest: readonly EverythingObject[];
 };
 
+export type CompositeFromSetNode = {
+    readonly type: typeof NodeType.CompositeFromSet;
+    readonly set: EverythingObject;
+    readonly rest: readonly EverythingObject[];
+};
+
 export type HasASetItemNode = {
     readonly type: typeof NodeType.HasASetItem;
     readonly inner: EverythingObject;
@@ -352,6 +359,7 @@ export type Node =
     | QueryAtomsWithPropertyNode
     | QueryAtomsWithConstructorNode
     | PropertiesOfNode
+    | CompositeFromSetNode
     | HasASetItemNode
     | HasPropertyNode
     | SetUnwrapNode

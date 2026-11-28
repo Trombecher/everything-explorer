@@ -270,6 +270,17 @@ export const createInitialObject2 = (): EverythingObject => ({
             ],
             rest: [],
         }),
+        nodeToObject({
+            type: NodeType.CompositeFromSet,
+            set: {
+                type: ObjectType.Set,
+                items: [
+                    {type: ObjectType.Integer, value: 1n},
+                    {type: ObjectType.Integer, value: 2n},
+                ],
+            },
+            rest: [],
+        }),
         nodeToObject({type: NodeType.SetUnwrap, set: defaultObject, rest: []}),
 
         // Literal

@@ -345,6 +345,17 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                 ],
                 options,
             );
+        case NodeType.CompositeFromSet:
+            return rowLayoutWidth(
+                [
+                    blockIconWidthInPixels.compositeFromSet,
+                    calculateRowLayoutWidthOfBlock(
+                        objectToBlock(block.set),
+                        options,
+                    ),
+                ],
+                options,
+            );
         case NodeType.HasASetItem:
             return rowLayoutWidth(
                 [

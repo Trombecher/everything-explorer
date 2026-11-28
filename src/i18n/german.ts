@@ -141,6 +141,7 @@ export const german = {
     [Phrase.KeybindInsertFold]: () => "Falten",
     [Phrase.KeybindInsertHasASetItem]: () => "Hat ein Mengenelement",
     [Phrase.KeybindInsertUnwrap]: () => "Auspacken",
+    [Phrase.KeybindInsertCompositeFromSet]: () => "Zusammengesetztes aus Menge",
     [Phrase.KeybindInsertSet]: () => "Menge",
     [Phrase.KeybindInsertNewSet]: () => "Neue Menge",
     [Phrase.KeybindInsertNewComposite]: () => "Neues Zusammengesetztes",

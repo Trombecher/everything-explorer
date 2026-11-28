@@ -4,6 +4,7 @@ import {defaultObject, type EverythingObject} from "@/model";
 import {
     nodeToObject,
     NodeType,
+    type CompositeFromSetNode,
     type ConstructionConstructorNode,
     type ConstructionValueNode,
     type HasASetItemNode,
@@ -29,11 +30,13 @@ import NotIcon from "../../../icons/math/NotIcon";
 import HasASetItemIcon from "../../../icons/query/HasASetItemIcon";
 import QueryConstructionsIcon from "../../../icons/query/QueryConstructionsIcon";
 import SearchValuesIcon from "../../../icons/query/SearchValuesIcon";
+import CompositeFromSetIcon from "../../../icons/sets/CompositeFromSetIcon";
 import IsCompositeIcon from "../../../icons/sets/IsCompositeIcon";
 import IsNodeIcon from "../../../icons/sets/IsNodeIcon";
 import UnwrapIcon from "../../../icons/sets/UnwrapIcon";
 import {useLayoutOptions} from "../../atomNames";
 import {
+    calculateCompositeFromSetNodeOperandWidthBudgetInPixels,
     calculateLayoutModeOfBlock,
     calculateConstructionConstructorNodeOperandWidthBudgetInPixels,
     calculateConstructionValueNodeOperandWidthBudgetInPixels,
@@ -53,6 +56,7 @@ import ObjectView from "../../ObjectView";
 import {useObjectSelection, type ObjectSelectionPath} from "../../selection";
 
 export type UnaryOperationBlock =
+    | CompositeFromSetNode
     | ConstructionConstructorNode
     | ConstructionValueNode
     | HasASetItemNode
@@ -68,6 +72,7 @@ export type UnaryOperationBlock =
     | SetUnwrapNode;
 
 const BlockIcon = {
+    [NodeType.CompositeFromSet]: CompositeFromSetIcon,
     [NodeType.ConstructionConstructor]: ConstructionConstructorIcon,
     [NodeType.ConstructionValue]: ConstructionValueIcon,
     [NodeType.HasASetItem]: HasASetItemIcon,
@@ -85,6 +90,8 @@ const BlockIcon = {
 
 const operandOf = (block: UnaryOperationBlock): EverythingObject => {
     switch (block.type) {
+        case NodeType.CompositeFromSet:
+            return block.set;
         case NodeType.ConstructionConstructor:
             return block.construction;
         case NodeType.ConstructionValue:
@@ -119,6 +126,8 @@ const withOperand = (
     operand: EverythingObject,
 ): EverythingObject => {
     switch (block.type) {
+        case NodeType.CompositeFromSet:
+            return nodeToObject({...block, set: operand});
         case NodeType.ConstructionConstructor:
             return nodeToObject({...block, construction: operand});
         case NodeType.ConstructionValue:
@@ -168,6 +177,11 @@ export default (props: {
 
     const operandWidthBudgetInPixels = () => {
         switch (props.block.type) {
+            case NodeType.CompositeFromSet:
+                return calculateCompositeFromSetNodeOperandWidthBudgetInPixels(
+                    props.wholeWidthBudgetInPixels,
+                    layoutOptions,
+                );
             case NodeType.ConstructionConstructor:
                 return calculateConstructionConstructorNodeOperandWidthBudgetInPixels(
                     props.wholeWidthBudgetInPixels,

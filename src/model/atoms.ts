@@ -371,6 +371,14 @@ export namespace Atom {
     } as const satisfies Atom;
 
     /**
+     * The node that builds a composite from the items of its operand set.
+     */
+    export const NodeCompositeFromSet = {
+        type: ObjectType.Atom,
+        value: 2171081097952192872480462959190472491n,
+    } as const satisfies Atom;
+
+    /**
      * The node that tests whether its operand has at least one set item.
      */
     export const NodeHasASetItem = {

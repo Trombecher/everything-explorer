@@ -136,6 +136,7 @@ export const english = {
     [Phrase.KeybindInsertFold]: () => "Fold",
     [Phrase.KeybindInsertHasASetItem]: () => "Has a set item",
     [Phrase.KeybindInsertUnwrap]: () => "Unwrap",
+    [Phrase.KeybindInsertCompositeFromSet]: () => "Composite from set",
     [Phrase.KeybindInsertSet]: () => "Set",
     [Phrase.KeybindInsertNewSet]: () => "New Set",
     [Phrase.KeybindInsertNewComposite]: () => "New Composite",

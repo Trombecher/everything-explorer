@@ -2,6 +2,7 @@ export const blockIconWidthInPixels = {
     atom: 24,
     atomsWithConstructor: 56,
     atomsWithProperty: 56,
+    compositeFromSet: 72,
     construction: 24,
     countBar: 2,
     dot: 24,

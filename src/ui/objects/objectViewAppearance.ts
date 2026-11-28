@@ -95,6 +95,7 @@ export const objectViewColorCategory = (
         case NodeType.SetFold:
         case NodeType.NewSet:
         case NodeType.NewComposite:
+        case NodeType.CompositeFromSet:
         case ObjectType.Composite:
         case ObjectType.Set:
             return ObjectViewColorCategory.Set;

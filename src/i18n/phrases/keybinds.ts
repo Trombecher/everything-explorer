@@ -46,6 +46,7 @@ const KeybindInsertMap = Symbol();
 const KeybindInsertFold = Symbol();
 const KeybindInsertHasASetItem = Symbol();
 const KeybindInsertUnwrap = Symbol();
+const KeybindInsertCompositeFromSet = Symbol();
 const KeybindInsertSet = Symbol();
 const KeybindInsertNewSet = Symbol();
 const KeybindInsertNewComposite = Symbol();
@@ -118,6 +119,7 @@ export const keybindPhrases = {
     KeybindInsertFold,
     KeybindInsertHasASetItem,
     KeybindInsertUnwrap,
+    KeybindInsertCompositeFromSet,
     KeybindInsertSet,
     KeybindInsertNewSet,
     KeybindInsertNewComposite,
@@ -191,6 +193,7 @@ export type KeybindTranslationArguments = {
     [KeybindInsertFold]: undefined;
     [KeybindInsertHasASetItem]: undefined;
     [KeybindInsertUnwrap]: undefined;
+    [KeybindInsertCompositeFromSet]: undefined;
     [KeybindInsertSet]: undefined;
     [KeybindInsertNewSet]: undefined;
     [KeybindInsertNewComposite]: undefined;

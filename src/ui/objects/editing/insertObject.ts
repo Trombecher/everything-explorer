@@ -176,6 +176,11 @@ const insertions: Readonly<Record<string, Inserter | undefined>> = {
     })),
     h: unary(object => ({type: NodeType.HasASetItem, inner: object, rest: []})),
     U: unary(object => ({type: NodeType.SetUnwrap, set: object, rest: []})),
+    G: unary(object => ({
+        type: NodeType.CompositeFromSet,
+        set: object,
+        rest: [],
+    })),
     I: unary(object => ({type: NodeType.IsComposite, inner: object, rest: []})),
     J: unary(object => ({type: NodeType.IsNode, inner: object, rest: []})),
     P: unary(object => ({type: NodeType.IsAtom, inner: object, rest: []})),

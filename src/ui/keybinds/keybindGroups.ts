@@ -100,6 +100,7 @@ export const keybindGroups: readonly KeybindGroup[] = [
             {chords: [["r"]], label: Phrase.KeybindInsertFold},
             {chords: [["h"]], label: Phrase.KeybindInsertHasASetItem},
             {chords: [["U"]], label: Phrase.KeybindInsertUnwrap},
+            {chords: [["G"]], label: Phrase.KeybindInsertCompositeFromSet},
             {chords: [["S"]], label: Phrase.KeybindInsertSet},
             {chords: [["N"]], label: Phrase.KeybindInsertNewSet},
             {chords: [["O"]], label: Phrase.KeybindInsertNewComposite},

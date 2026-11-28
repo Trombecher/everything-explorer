@@ -248,6 +248,14 @@ export const nodeToObject = (node: Node): EverythingObject => {
                     ...node.rest,
                 ],
             };
+        case NodeType.CompositeFromSet:
+            return {
+                type: ObjectType.Composite,
+                properties: [
+                    construction(Atom.NodeCompositeFromSet, node.set),
+                    ...node.rest,
+                ],
+            };
         case NodeType.HasASetItem:
             return {
                 type: ObjectType.Composite,

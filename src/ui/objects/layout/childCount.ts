@@ -22,6 +22,7 @@ export const childCountOfBlock = (block: Block): number => {
         case NodeType.QueryAtomsWithProperty:
         case NodeType.QueryConstructions:
         case NodeType.PropertiesOf:
+        case NodeType.CompositeFromSet:
         case NodeType.SetUnwrap:
         case NodeType.IsAtom:
         case NodeType.IsConstruction:

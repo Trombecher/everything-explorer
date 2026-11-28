@@ -51,6 +51,8 @@ export const replaceWithRetainedChild = (
             return node.constructor;
         case NodeType.PropertiesOf:
             return node.inner;
+        case NodeType.CompositeFromSet:
+            return node.set;
         case NodeType.HasASetItem:
             return node.inner;
         case NodeType.HasProperty:

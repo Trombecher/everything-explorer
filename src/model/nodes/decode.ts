@@ -478,6 +478,19 @@ const objectToNodeWithoutCache = (
         };
     }
 
+    some = singleAtomPropertyValue(object, Atom.NodeCompositeFromSet.value);
+    if (some) {
+        if (finalNode) return NotANode;
+
+        finalNode = {
+            type: NodeType.CompositeFromSet,
+            set: some,
+            rest: withoutAtomConstructors(object.properties, [
+                Atom.NodeCompositeFromSet.value,
+            ]),
+        };
+    }
+
     some = singleAtomPropertyValue(object, Atom.NodeHasASetItem.value);
     if (some) {
         if (finalNode) return NotANode;

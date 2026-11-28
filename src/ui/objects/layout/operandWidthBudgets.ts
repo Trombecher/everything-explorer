@@ -61,6 +61,16 @@ export const calculateQueryConstructionsNodeOperandWidthBudgetInPixels = (
         blockIconWidthInPixels.queryConstructions,
     );
 
+export const calculateCompositeFromSetNodeOperandWidthBudgetInPixels = (
+    widthBudgetInPixels: number,
+    layoutOptions: LayoutOptions,
+): number =>
+    iconOperandWidthBudgetInPixels(
+        widthBudgetInPixels,
+        layoutOptions,
+        blockIconWidthInPixels.compositeFromSet,
+    );
+
 export const calculateConstructionConstructorNodeOperandWidthBudgetInPixels = (
     widthBudgetInPixels: number,
     layoutOptions: LayoutOptions,
