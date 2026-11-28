@@ -100,8 +100,9 @@ export const keybindGroups: readonly KeybindGroup[] = [
             {chords: [["r"]], label: Phrase.KeybindInsertFold},
             {chords: [["h"]], label: Phrase.KeybindInsertHasASetItem},
             {chords: [["U"]], label: Phrase.KeybindInsertUnwrap},
-            {chords: [["N"]], label: Phrase.KeybindInsertSet},
-            {chords: [["O"]], label: Phrase.KeybindInsertComposite},
+            {chords: [["S"]], label: Phrase.KeybindInsertSet},
+            {chords: [["N"]], label: Phrase.KeybindInsertNewSet},
+            {chords: [["O"]], label: Phrase.KeybindInsertNewComposite},
         ],
     },
     {
@@ -119,7 +120,7 @@ export const keybindGroups: readonly KeybindGroup[] = [
         title: Phrase.KeybindsConstructions,
         rows: [
             {chords: [["Space"]], label: Phrase.KeybindInsertConstruction},
-            {chords: [["b"]], label: Phrase.KeybindInsertConstructionPair},
+            {chords: [["b"]], label: Phrase.KeybindInsertNewConstruction},
             {chords: [["k"]], label: Phrase.KeybindInsertConstructor},
             {chords: [["V"]], label: Phrase.KeybindInsertConstructionValue},
         ],

@@ -47,7 +47,8 @@ const KeybindInsertFold = Symbol();
 const KeybindInsertHasASetItem = Symbol();
 const KeybindInsertUnwrap = Symbol();
 const KeybindInsertSet = Symbol();
-const KeybindInsertComposite = Symbol();
+const KeybindInsertNewSet = Symbol();
+const KeybindInsertNewComposite = Symbol();
 const KeybindInsertAtomsWithProperty = Symbol();
 const KeybindInsertPropertiesOf = Symbol();
 const KeybindInsertIsComposite = Symbol();
@@ -55,7 +56,7 @@ const KeybindInsertIsNode = Symbol();
 const KeybindInsertIsAtom = Symbol();
 const KeybindInsertIsConstruction = Symbol();
 const KeybindInsertConstruction = Symbol();
-const KeybindInsertConstructionPair = Symbol();
+const KeybindInsertNewConstruction = Symbol();
 const KeybindInsertConstructor = Symbol();
 const KeybindInsertConstructionValue = Symbol();
 const KeybindInsertFunction = Symbol();
@@ -118,7 +119,8 @@ export const keybindPhrases = {
     KeybindInsertHasASetItem,
     KeybindInsertUnwrap,
     KeybindInsertSet,
-    KeybindInsertComposite,
+    KeybindInsertNewSet,
+    KeybindInsertNewComposite,
     KeybindInsertAtomsWithProperty,
     KeybindInsertPropertiesOf,
     KeybindInsertIsComposite,
@@ -126,7 +128,7 @@ export const keybindPhrases = {
     KeybindInsertIsAtom,
     KeybindInsertIsConstruction,
     KeybindInsertConstruction,
-    KeybindInsertConstructionPair,
+    KeybindInsertNewConstruction,
     KeybindInsertConstructor,
     KeybindInsertConstructionValue,
     KeybindInsertFunction,
@@ -190,7 +192,8 @@ export type KeybindTranslationArguments = {
     [KeybindInsertHasASetItem]: undefined;
     [KeybindInsertUnwrap]: undefined;
     [KeybindInsertSet]: undefined;
-    [KeybindInsertComposite]: undefined;
+    [KeybindInsertNewSet]: undefined;
+    [KeybindInsertNewComposite]: undefined;
     [KeybindInsertAtomsWithProperty]: undefined;
     [KeybindInsertPropertiesOf]: undefined;
     [KeybindInsertIsComposite]: undefined;
@@ -198,7 +201,7 @@ export type KeybindTranslationArguments = {
     [KeybindInsertIsAtom]: undefined;
     [KeybindInsertIsConstruction]: undefined;
     [KeybindInsertConstruction]: undefined;
-    [KeybindInsertConstructionPair]: undefined;
+    [KeybindInsertNewConstruction]: undefined;
     [KeybindInsertConstructor]: undefined;
     [KeybindInsertConstructionValue]: undefined;
     [KeybindInsertFunction]: undefined;

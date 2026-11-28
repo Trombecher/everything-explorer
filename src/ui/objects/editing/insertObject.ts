@@ -201,6 +201,10 @@ const insertions: Readonly<Record<string, Inserter | undefined>> = {
         parameterName: undefined,
         rest: [],
     })),
+    S: object => ({
+        object: {type: ObjectType.Set, items: [object]},
+        selectChild: 0,
+    }),
     N: object => ({
         object: nodeToObject({
             type: NodeType.NewSet,
