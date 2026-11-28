@@ -1,5 +1,7 @@
 const Keybinds = Symbol();
 const KeybindsHint = Symbol();
+const SearchKeybinds = Symbol();
+const NoKeybindsFound = Symbol();
 const KeybindsSelection = Symbol();
 const KeybindsEditing = Symbol();
 const KeybindsOperators = Symbol();
@@ -71,6 +73,8 @@ const KeybindInsertByte = Symbol();
 export const keybindPhrases = {
     Keybinds,
     KeybindsHint,
+    SearchKeybinds,
+    NoKeybindsFound,
     KeybindsSelection,
     KeybindsEditing,
     KeybindsOperators,
@@ -141,6 +145,8 @@ export const keybindPhrases = {
 export type KeybindTranslationArguments = {
     [Keybinds]: undefined;
     [KeybindsHint]: undefined;
+    [SearchKeybinds]: undefined;
+    [NoKeybindsFound]: undefined;
     [KeybindsSelection]: undefined;
     [KeybindsEditing]: undefined;
     [KeybindsOperators]: undefined;

@@ -97,6 +97,8 @@ export const german = {
     [Phrase.Keybinds]: () => "Tastenkürzel",
     [Phrase.KeybindsHint]: () =>
         "Diese Tasten gelten, während ein Objekt fokussiert ist.",
+    [Phrase.SearchKeybinds]: () => "Tastenkürzel durchsuchen...",
+    [Phrase.NoKeybindsFound]: () => "Keine passenden Tastenkürzel.",
     [Phrase.KeybindsSelection]: () => "Auswahl",
     [Phrase.KeybindsEditing]: () => "Bearbeiten",
     [Phrase.KeybindsOperators]: () => "Operatoren & Wahrheitswerte",

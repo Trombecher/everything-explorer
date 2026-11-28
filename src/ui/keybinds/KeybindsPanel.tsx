@@ -1,11 +1,19 @@
+import Fuse from "fuse.js";
 import KeyboardIcon from "lucide-solid/icons/keyboard";
-import {For, Index, Show} from "solid-js";
+import SearchIcon from "lucide-solid/icons/search";
+import {createMemo, createSignal, For, Index, Show} from "solid-js";
 
 import {usePreferences} from "@/context";
 import {Phrase} from "@/i18n/phrases";
 import Kbd from "@/ui/reuse/Kbd";
 
 import {keybindGroups, type KeybindRow} from "./keybindGroups";
+
+type SearchEntry = {
+    readonly row: KeybindRow;
+    readonly label: string;
+    readonly groupTitle: string;
+};
 
 const KeybindRowView = (props: {row: KeybindRow}) => {
     const preferences = usePreferences();
@@ -37,6 +45,48 @@ const KeybindRowView = (props: {row: KeybindRow}) => {
 
 export default () => {
     const preferences = usePreferences();
+    const [searchQuery, setSearchQuery] = createSignal("");
+
+    const searchEntries = createMemo<readonly SearchEntry[]>(() =>
+        keybindGroups.flatMap(group => {
+            const groupTitle = preferences.translate(group.title, undefined);
+
+            return group.rows.map(row => ({
+                row,
+                label: preferences.translate(row.label, undefined),
+                groupTitle,
+            }));
+        }),
+    );
+
+    const fuse = createMemo(
+        () =>
+            new Fuse(searchEntries(), {
+                keys: ["label", "groupTitle"],
+                threshold: 0.35,
+                ignoreLocation: true,
+            }),
+    );
+
+    const visibleGroups = createMemo(() => {
+        const query = searchQuery().trim();
+
+        if (query.length === 0)
+            return keybindGroups.map(group => ({group, rows: group.rows}));
+
+        const matchingRows = new Set(
+            fuse()
+                .search(query)
+                .map(result => result.item.row),
+        );
+
+        return keybindGroups
+            .map(group => ({
+                group,
+                rows: group.rows.filter(row => matchingRows.has(row)),
+            }))
+            .filter(group => group.rows.length > 0);
+    });
 
     return (
         <div class="flex size-full min-h-0 flex-col rounded-4xl border border-line-subtle bg-surface-panel p-2">
@@ -51,21 +101,59 @@ export default () => {
                 {preferences.translate(Phrase.KeybindsHint, undefined)}
             </p>
 
-            <div class="min-h-0 flex-1 overflow-y-auto px-2 pb-1">
-                <For each={keybindGroups}>
-                    {group => (
-                        <section class="mb-3 last:mb-0">
-                            <h3 class="mb-1 text-[11px] font-semibold tracking-wide text-fg-muted uppercase">
-                                {preferences.translate(group.title, undefined)}
-                            </h3>
-                            <div class="flex flex-col">
-                                <For each={group.rows}>
-                                    {row => <KeybindRowView row={row} />}
-                                </For>
-                            </div>
-                        </section>
+            <label class="mb-2 flex items-center gap-2 rounded-2xl border border-line-subtle bg-surface-sunken px-2 focus-within:outline-2">
+                <SearchIcon class="shrink-0" />
+                <input
+                    type="search"
+                    placeholder={preferences.translate(
+                        Phrase.SearchKeybinds,
+                        undefined,
                     )}
-                </For>
+                    aria-label={preferences.translate(
+                        Phrase.SearchKeybinds,
+                        undefined,
+                    )}
+                    value={searchQuery()}
+                    onInput={event => {
+                        setSearchQuery(event.currentTarget.value);
+                    }}
+                    onKeyDown={event => {
+                        if (event.key === "Escape") setSearchQuery("");
+                    }}
+                    class="block w-0 grow py-1.5 text-sm outline-none"
+                />
+            </label>
+
+            <div class="min-h-0 flex-1 overflow-y-auto px-2 pb-1">
+                <Show
+                    when={visibleGroups().length > 0}
+                    fallback={
+                        <p class="mt-2 text-center text-sm text-fg-muted italic">
+                            {preferences.translate(
+                                Phrase.NoKeybindsFound,
+                                undefined,
+                            )}
+                        </p>
+                    }
+                >
+                    <For each={visibleGroups()}>
+                        {group => (
+                            <section class="mb-3 last:mb-0">
+                                <h3 class="mb-1 text-[11px] font-semibold tracking-wide text-fg-muted uppercase">
+                                    {preferences.translate(
+                                        group.group.title,
+                                        undefined,
+                                    )}
+                                </h3>
+                                <div class="flex flex-col">
+                                    <For each={group.rows}>
+                                        {row => <KeybindRowView row={row} />}
+                                    </For>
+                                </div>
+                            </section>
+                        )}
+                    </For>
+                </Show>
             </div>
         </div>
     );
