@@ -4,6 +4,7 @@ import {useClipboard, usePreferences} from "@/context";
 import {Phrase} from "@/i18n/phrases";
 import type {ClipboardSlot} from "@/state/app";
 import DeleteButton from "@/ui/reuse/DeleteButton";
+import Kbd from "@/ui/reuse/Kbd";
 import type {DeepReadonly} from "@/util";
 
 import ObjectPreview from "./ObjectPreview";
@@ -30,14 +31,11 @@ export default (props: {
             role="listitem"
         >
             <div class="flex items-center gap-2">
-                <span
-                    class="shrink-0 rounded-md bg-surface-control px-1.5 py-0.5 font-mono text-xs text-fg-muted"
-                    title={shortcutHint()}
-                >
+                <Kbd title={shortcutHint()}>
                     {props.index() < 10
                         ? keyLabel(props.index())
                         : String(props.index() + 1)}
-                </span>
+                </Kbd>
                 <input
                     class="min-w-0 grow rounded-lg bg-transparent px-1 py-0.5 font-medium text-fg-strong outline-none hover:bg-surface-hover focus:bg-surface-control"
                     value={props.slot.name}

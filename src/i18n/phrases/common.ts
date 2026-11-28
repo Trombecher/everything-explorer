@@ -12,6 +12,7 @@ const Debug = Symbol();
 const Loading = Symbol();
 const Reload = Symbol();
 const Views = Symbol();
+const SidePanel = Symbol();
 
 export const commonPhrases = {
     AppSettings,
@@ -28,6 +29,7 @@ export const commonPhrases = {
     Loading,
     Reload,
     Views,
+    SidePanel,
 } as const;
 
 export type CommonTranslationArguments = {
@@ -45,4 +47,5 @@ export type CommonTranslationArguments = {
     [Loading]: undefined;
     [Reload]: undefined;
     [Views]: undefined;
+    [SidePanel]: undefined;
 };

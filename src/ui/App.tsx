@@ -17,6 +17,7 @@ import {
     MIN_CLIPBOARD_PANEL_WIDTH,
     createClipboardPanelResize,
 } from "./clipboard/createClipboardPanelResize";
+import KeybindsPanel from "./keybinds/KeybindsPanel";
 import ResizeSeparator from "./reuse/ResizeSeparator";
 import SideBar from "./sidebar/SideBar";
 import ConnectionsView from "./tabs/connections/ConnectionsView";
@@ -127,14 +128,19 @@ export default () => {
                 />
 
                 <aside
-                    class="sticky top-0 h-screen shrink-0 py-2"
+                    class="sticky top-0 flex h-screen shrink-0 flex-col gap-2 py-2"
                     aria-label={preferences.translate(
-                        Phrase.Clipboard,
+                        Phrase.SidePanel,
                         undefined,
                     )}
                     style={{width: `${appState.clipboardPanelWidth()}px`}}
                 >
-                    <ClipboardPanel />
+                    <div class="min-h-0 flex-1">
+                        <ClipboardPanel />
+                    </div>
+                    <div class="min-h-0 flex-1">
+                        <KeybindsPanel />
+                    </div>
                 </aside>
             </div>
         </>
