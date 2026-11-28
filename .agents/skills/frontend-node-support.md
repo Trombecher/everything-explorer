@@ -44,9 +44,9 @@ The frontend distinguishes these representations in `src/model/index.ts`:
 
 - `ObjectType.Composite` has `properties`. Use it for nodes and arbitrary
   property collections.
-- `ObjectType.Set` has `items` and is the canonical set specialization. Each item
-  is encoded as a `contains ·· item` property. It does not mean that other atoms
-  or composites are not sets in the open-set model.
+- `ObjectType.Set` has `items` and is the canonical set specialization. Each
+  item is encoded as a `contains ·· item` property. It does not mean that other
+  atoms or composites are not sets in the open-set model.
 - A composite with both `contains` properties and other properties is an open
   set. Keep it as a `Composite` so no properties are hidden.
 - `Atom.Contains` identifies the set-item constructor. Helpers in
@@ -71,8 +71,8 @@ the backend atom values.
 When the object model itself changes, keep these representations synchronized:
 
 - HTTP (`src/connect/wire.ts` and `src-tauri/src/server/wire/object.rs`):
-  - `"composite"` with `properties` for arbitrary properties;
-  - `"set"` with `items` for canonical sets.
+    - `"composite"` with `properties` for arbitrary properties;
+    - `"set"` with `items` for canonical sets.
 - Stored state (`src/state/stored/object.ts`) uses the same conceptual split,
   but has its own compatibility requirements. Legacy stored
   `{type: "set", elements: [...]}` values decode as `Composite.properties`, not
@@ -85,8 +85,8 @@ lazy evaluation results are displayed with `ObjectType.Set.items`.
 
 The frontend's node model in `src/model/nodes` is a non-wire abstraction layered
 on top of `EverythingObject`. `objectToNode` recognizes node-shaped composites
-and returns a discriminated `Node`; `nodeToObject` converts it back. The UI works
-with `Node` blocks where possible and falls back to raw objects.
+and returns a discriminated `Node`; `nodeToObject` converts it back. The UI
+works with `Node` blocks where possible and falls back to raw objects.
 
 Backend node recognition also supports atom-defined nodes and recursively checks
 that every child is a node. The frontend projection currently has no knowledge
@@ -113,8 +113,8 @@ Atom IDs are persistent identities:
 
 ## 2. Extend or migrate the node model
 
-In `src/model/nodes/types.ts`, add or rename the `NodeType` symbol, define a node
-type with a `readonly type`, one field per semantic child, and
+In `src/model/nodes/types.ts`, add or rename the `NodeType` symbol, define a
+node type with a `readonly type`, one field per semantic child, and
 `readonly rest: readonly EverythingObject[]`, then add it to the `Node` union.
 Use `bigint` for depth-like fields.
 
@@ -152,11 +152,10 @@ Special cases to preserve:
 
 ## 3. Render the node
 
-Add or update a dispatch branch in
-`src/ui/objects/views/ObjectViewContent.tsx`. Put new views next to their peers
-under `src/ui/objects/views`: `scalars`, `operations`, `collections`, or
-`functions`. Prefer reusing an existing view when the node has a conventional
-shape:
+Add or update a dispatch branch in `src/ui/objects/views/ObjectViewContent.tsx`.
+Put new views next to their peers under `src/ui/objects/views`: `scalars`,
+`operations`, `collections`, or `functions`. Prefer reusing an existing view
+when the node has a conventional shape:
 
 - One child: `views/operations/UnaryOperationView.tsx`. Extend its
   `UnaryOperationBlock` union, `BlockIcon` map, `operandOf`, `withOperand`, and
@@ -169,12 +168,12 @@ shape:
   `views/operations` modelled on `FoldOperationView.tsx` or
   `IfOperationView.tsx`. It should place child `ObjectView`s with paths
   `[...props.path, index]`, reconstruct the node with `nodeToObject` whenever a
-  child changes, handle deletion of required children, and hand `setObject`
-  down so editing works.
+  child changes, handle deletion of required children, and hand `setObject` down
+  so editing works.
 - Function-like nodes and depth references use the existing
-  `views/functions/FunctionObjectView.tsx` /
-  `FunctionSelfObjectView.tsx` / `ParameterObjectView.tsx` patterns, including
-  `EnclosingFunctionsContext` and the parameter-name field.
+  `views/functions/FunctionObjectView.tsx` / `FunctionSelfObjectView.tsx` /
+  `ParameterObjectView.tsx` patterns, including `EnclosingFunctionsContext` and
+  the parameter-name field.
 
 The view is responsible for selection paths, parent replacement, deletion
 semantics, and width budgets, not only appearance.
@@ -192,8 +191,8 @@ Delimiter syntax is semantic:
 - `AngleBracketIcon` (`⟨` / `⟩`) is for generic composites and `IsComposite`.
 - `BraceIcon` (`{` / `}`) is for canonical sets, `NewSet`, and set-specific
   operations such as `SetUnwrap`.
-- Do not replace braces globally; only generic composite presentation changed
-  to angle brackets.
+- Do not replace braces globally; only generic composite presentation changed to
+  angle brackets.
 
 ## 5. Update layout and appearance
 
@@ -216,8 +215,8 @@ Several switches are deliberately exhaustive and must be updated together:
   column mode from arity and row width. Composite and Set collections both need
   delimiter-aware layout.
 
-Prefer existing icon-width constants and category assignments over inventing
-new visual conventions. Colors must use the semantic tokens described in the
+Prefer existing icon-width constants and category assignments over inventing new
+visual conventions. Colors must use the semantic tokens described in the
 color-management skill.
 
 ## 6. Editing and discoverability
@@ -270,17 +269,18 @@ surface in one pass:
 
 When migrating pre-composite frontend code, the current names are:
 
-| Old frontend name | Current name |
-| --- | --- |
-| `Count` | `SetCount` |
-| `ValuesOf` | `PropertiesOf` |
-| `Contains` | `SetContains` |
-| `Union` / `Intersection` | `SetUnion` / `SetIntersection` |
-| `Filter` / `Map` / `Fold` | `SetFilter` / `SetMap` / `SetFold` |
-| `Every` / `Any` | `SetEvery` / `SetAny` |
-| `Unwrap` | `SetUnwrap` |
-| `IsSet` | `IsComposite` |
-| `NewSetNode.values` | `NewSetNode.items` |
+| Old frontend name                 | Current name                         |
+| --------------------------------- | ------------------------------------ |
+| `Count`                           | `SetCount`                           |
+| `ValuesOf`                        | `PropertiesOf`                       |
+| `Contains`                        | `SetContains`                        |
+| `Union` / `Intersection`          | `SetUnion` / `SetIntersection`       |
+| `Filter` / `Map` / `Fold`         | `SetFilter` / `SetMap` / `SetFold`   |
+| `Every` / `Any`                   | `SetEvery` / `SetAny`                |
+| `Unwrap`                          | `SetUnwrap`                          |
+| `IsSet`                           | `IsComposite`                        |
+| `HasValue`                        | `HasASetItem`                        |
+| `NewSetNode.values`               | `NewSetNode.items`                   |
 | `QueryConstructionValuesNode.set` | `QueryConstructionValuesNode.object` |
 
 Apply the corresponding `Node*` atom-alias rename without changing numeric IDs.

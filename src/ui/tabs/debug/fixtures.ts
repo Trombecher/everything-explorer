@@ -2,9 +2,19 @@ import type {EverythingObject} from "@/model";
 import {defaultObject, ObjectType} from "@/model";
 import {nodeToObject, NodeType} from "@/model/nodes";
 
+/**
+ * The fixture objects of the debug tab, grouped by object view color category:
+ * functional, computation, boolean, set, literal, query, control,
+ * constructions, and values.
+ *
+ * When adding a fixture for a new node, sort it into the group matching its
+ * category in `objectViewColorCategory` (`objectViewAppearance.ts`) instead of
+ * appending it to the end. Keep the groups in the order above.
+ */
 export const createInitialObject2 = (): EverythingObject => ({
     type: ObjectType.Composite,
     properties: [
+        // Functional
         nodeToObject({
             type: NodeType.Function,
             body: nodeToObject({
@@ -41,6 +51,8 @@ export const createInitialObject2 = (): EverythingObject => ({
             rest: [],
         }),
         nodeToObject({type: NodeType.Parameter, depth: 0n, rest: []}),
+
+        // Computation
         nodeToObject({
             type: NodeType.Plus,
             first: {type: ObjectType.Atom, value: 34534598n},
@@ -82,6 +94,8 @@ export const createInitialObject2 = (): EverythingObject => ({
             },
             rest: [],
         }),
+
+        // Boolean
         nodeToObject({
             type: NodeType.And,
             first: {type: ObjectType.Integer, value: 1n},
@@ -116,6 +130,12 @@ export const createInitialObject2 = (): EverythingObject => ({
             inner: defaultObject,
             rest: [],
         }),
+        nodeToObject({type: NodeType.IsNode, inner: defaultObject, rest: []}),
+        nodeToObject({
+            type: NodeType.HasASetItem,
+            inner: {type: ObjectType.Atom, value: 1n},
+            rest: [],
+        }),
         nodeToObject({
             type: NodeType.HasProperty,
             subject: {type: ObjectType.Atom, value: 1n},
@@ -131,6 +151,8 @@ export const createInitialObject2 = (): EverythingObject => ({
             },
             rest: [],
         }),
+
+        // Set
         nodeToObject({
             type: NodeType.SetUnion,
             first: defaultObject,
@@ -139,6 +161,12 @@ export const createInitialObject2 = (): EverythingObject => ({
         }),
         nodeToObject({
             type: NodeType.SetIntersection,
+            first: defaultObject,
+            second: defaultObject,
+            rest: [],
+        }),
+        nodeToObject({
+            type: NodeType.SetDifference,
             first: defaultObject,
             second: defaultObject,
             rest: [],
@@ -243,11 +271,15 @@ export const createInitialObject2 = (): EverythingObject => ({
             rest: [],
         }),
         nodeToObject({type: NodeType.SetUnwrap, set: defaultObject, rest: []}),
+
+        // Literal
         nodeToObject({
             type: NodeType.Literal,
             object: {type: ObjectType.Text, text: "literal"},
             rest: [],
         }),
+
+        // Query
         nodeToObject({
             type: NodeType.QueryAtomsWithProperty,
             property: {type: ObjectType.Atom, value: 1n},
@@ -264,11 +296,6 @@ export const createInitialObject2 = (): EverythingObject => ({
             rest: [],
         }),
         nodeToObject({
-            type: NodeType.HasValue,
-            inner: {type: ObjectType.Atom, value: 1n},
-            rest: [],
-        }),
-        nodeToObject({
             type: NodeType.QueryConstructionValues,
             object: defaultObject,
             propertyConstructor: defaultObject,
@@ -279,6 +306,8 @@ export const createInitialObject2 = (): EverythingObject => ({
             constructor: defaultObject,
             rest: [],
         }),
+
+        // Control
         nodeToObject({
             type: NodeType.If,
             condition: {type: ObjectType.Integer, value: 1n},
@@ -286,6 +315,8 @@ export const createInitialObject2 = (): EverythingObject => ({
             otherwiseBranch: {type: ObjectType.Integer, value: 0n},
             rest: [],
         }),
+
+        // Constructions
         nodeToObject({
             type: NodeType.ConstructionConstructor,
             construction: {
@@ -304,11 +335,19 @@ export const createInitialObject2 = (): EverythingObject => ({
             },
             rest: [],
         }),
+        nodeToObject({
+            type: NodeType.NewConstruction,
+            constructor: {type: ObjectType.Atom, value: 1n},
+            value: defaultObject,
+            rest: [],
+        }),
         {
             type: ObjectType.Construction,
             constructor: {type: ObjectType.Character, value: "a"},
             value: {type: ObjectType.Text, text: "this is some text"},
         },
+
+        // Values
         {type: ObjectType.Character, value: "a"},
         {type: ObjectType.Character, value: "\n"},
         {type: ObjectType.Byte, value: 0xa5},

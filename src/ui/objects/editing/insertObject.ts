@@ -86,6 +86,12 @@ const insertions: Readonly<Record<string, Inserter | undefined>> = {
         second: defaultObject,
         rest: [],
     })),
+    d: binary(object => ({
+        type: NodeType.SetDifference,
+        first: object,
+        second: defaultObject,
+        rest: [],
+    })),
     "*": binary(object => ({
         type: NodeType.Times,
         first: object,
@@ -168,9 +174,10 @@ const insertions: Readonly<Record<string, Inserter | undefined>> = {
         inner: object,
         rest: [],
     })),
-    h: unary(object => ({type: NodeType.HasValue, inner: object, rest: []})),
+    h: unary(object => ({type: NodeType.HasASetItem, inner: object, rest: []})),
     U: unary(object => ({type: NodeType.SetUnwrap, set: object, rest: []})),
     I: unary(object => ({type: NodeType.IsComposite, inner: object, rest: []})),
+    J: unary(object => ({type: NodeType.IsNode, inner: object, rest: []})),
     P: unary(object => ({type: NodeType.IsAtom, inner: object, rest: []})),
     K: unary(object => ({
         type: NodeType.IsConstruction,
@@ -210,6 +217,12 @@ const insertions: Readonly<Record<string, Inserter | undefined>> = {
         }),
         selectChild: 0,
     }),
+    b: binary(object => ({
+        type: NodeType.NewConstruction,
+        constructor: object,
+        value: defaultObject,
+        rest: [],
+    })),
     p: () => ({
         object: nodeToObject({type: NodeType.Parameter, depth: 0n, rest: []}),
     }),

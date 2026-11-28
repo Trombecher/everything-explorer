@@ -198,6 +198,16 @@ export default (props: {
                     />
                 )}
             </Match>
+            <Match when={variant(props.block, NodeType.SetDifference)}>
+                {differenceNode => (
+                    <BinaryOperationView
+                        block={differenceNode()}
+                        path={props.path}
+                        wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                        setObject={props.setObject}
+                    />
+                )}
+            </Match>
             <Match when={variant(props.block, NodeType.SetFilter)}>
                 {filterNode => (
                     <BinaryOperationView
@@ -268,6 +278,16 @@ export default (props: {
                     />
                 )}
             </Match>
+            <Match when={variant(props.block, NodeType.NewConstruction)}>
+                {newConstructionNode => (
+                    <BinaryOperationView
+                        block={newConstructionNode()}
+                        path={props.path}
+                        wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                        setObject={props.setObject}
+                    />
+                )}
+            </Match>
             <Match when={variant(props.block, NodeType.QueryAtomsWithProperty)}>
                 {queryAtomsWithPropertyNode => (
                     <UnaryOperationView
@@ -300,10 +320,10 @@ export default (props: {
                     />
                 )}
             </Match>
-            <Match when={variant(props.block, NodeType.HasValue)}>
-                {hasValueNode => (
+            <Match when={variant(props.block, NodeType.HasASetItem)}>
+                {hasASetItemNode => (
                     <UnaryOperationView
-                        block={hasValueNode()}
+                        block={hasASetItemNode()}
                         path={props.path}
                         wholeWidthBudgetInPixels={props.widthBudgetInPixels}
                         setObject={props.setObject}
@@ -354,6 +374,16 @@ export default (props: {
                 {isCompositeNode => (
                     <UnaryOperationView
                         block={isCompositeNode()}
+                        path={props.path}
+                        wholeWidthBudgetInPixels={props.widthBudgetInPixels}
+                        setObject={props.setObject}
+                    />
+                )}
+            </Match>
+            <Match when={variant(props.block, NodeType.IsNode)}>
+                {isNodeNode => (
+                    <UnaryOperationView
+                        block={isNodeNode()}
                         path={props.path}
                         wholeWidthBudgetInPixels={props.widthBudgetInPixels}
                         setObject={props.setObject}

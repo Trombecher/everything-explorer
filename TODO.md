@@ -14,7 +14,7 @@ other items stay valid.
     - `QueryConstructionsIcon`
     - `QueryConstructionValuesIcon`
     - `SetMapIcon`
-    - `HasValueIcon`
+    - `HasASetItemIcon`
     - `UnwrapIcon`
     - `AtomsWithConstructorIcon`
     - `SetMapIcon` (is it really that intuitive?)

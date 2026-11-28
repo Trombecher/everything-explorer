@@ -51,7 +51,7 @@ export const replaceWithRetainedChild = (
             return node.constructor;
         case NodeType.PropertiesOf:
             return node.inner;
-        case NodeType.HasValue:
+        case NodeType.HasASetItem:
             return node.inner;
         case NodeType.HasProperty:
             return node.subject;
@@ -63,6 +63,8 @@ export const replaceWithRetainedChild = (
             return node.inner;
         case NodeType.IsComposite:
             return node.inner;
+        case NodeType.IsNode:
+            return node.inner;
         case NodeType.ConstructionConstructor:
             return node.construction;
         case NodeType.ConstructionValue:
@@ -71,6 +73,10 @@ export const replaceWithRetainedChild = (
             return node.first;
         case NodeType.SetIntersection:
             return node.first;
+        case NodeType.SetDifference:
+            return node.first;
+        case NodeType.NewConstruction:
+            return node.constructor;
         case NodeType.SetFilter:
         case NodeType.SetMap:
         case NodeType.SetEvery:

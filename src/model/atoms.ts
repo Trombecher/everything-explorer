@@ -260,6 +260,16 @@ export namespace Atom {
         value: 294371887698077017665747245360098400935n,
     } as const satisfies Atom;
 
+    export const NodeSetDifferenceFirst = {
+        type: ObjectType.Atom,
+        value: 90127457068241635743380726879163284651n,
+    } as const satisfies Atom;
+
+    export const NodeSetDifferenceSecond = {
+        type: ObjectType.Atom,
+        value: 316434225730040209152190202706977983551n,
+    } as const satisfies Atom;
+
     export const NodeSetFilterSet = {
         type: ObjectType.Atom,
         value: 2150755714608308122129968313720999578n,
@@ -360,7 +370,10 @@ export namespace Atom {
         value: 2169866792562131836262938477060325203n,
     } as const satisfies Atom;
 
-    export const NodeHasValue = {
+    /**
+     * The node that tests whether its operand has at least one set item.
+     */
+    export const NodeHasASetItem = {
         type: ObjectType.Atom,
         value: 2169868497815503720673833180838489269n,
     } as const satisfies Atom;
@@ -395,6 +408,11 @@ export namespace Atom {
         value: 2166944102907011869965838540132997515n,
     } as const satisfies Atom;
 
+    export const NodeIsNode = {
+        type: ObjectType.Atom,
+        value: 2171028566323798747218439132407824159n,
+    } as const satisfies Atom;
+
     export const NodeConstructorOfConstruction = {
         type: ObjectType.Atom,
         value: 2166944102906855387534895944602332938n,
@@ -413,6 +431,16 @@ export namespace Atom {
     export const NodeNewCompositeProperty = {
         type: ObjectType.Atom,
         value: 2170872929671533249185501082459026776n,
+    } as const satisfies Atom;
+
+    export const NodeNewConstructionConstructor = {
+        type: ObjectType.Atom,
+        value: 2166944102907028846001820613799425787n,
+    } as const satisfies Atom;
+
+    export const NodeNewConstructionValue = {
+        type: ObjectType.Atom,
+        value: 2166944102906836737095248839738218859n,
     } as const satisfies Atom;
 
     export const NodeConstructionValuesObject = {

@@ -1,5 +1,6 @@
 import DotIcon from "lucide-solid/icons/dot";
 import EqualIcon from "lucide-solid/icons/equal";
+import HammerIcon from "lucide-solid/icons/hammer";
 import PlusIcon from "lucide-solid/icons/plus";
 import type {Component} from "solid-js";
 
@@ -16,11 +17,13 @@ import {
     type SetEveryNode,
     type SetFilterNode,
     type SetIntersectionNode,
+    type NewConstructionNode,
     type LessNode,
     type SetMapNode,
     type OrNode,
     type PlusNode,
     type QueryConstructionValuesNode,
+    type SetDifferenceNode,
     type TimesNode,
     type SetUnionNode,
     type XorNode,
@@ -33,6 +36,7 @@ import ExistsIcon from "../../icons/math/ExistsIcon";
 import ForAllIcon from "../../icons/math/ForAllIcon";
 import IntersectionIcon from "../../icons/math/IntersectionIcon";
 import LessThanIcon from "../../icons/math/LessThanIcon";
+import SetDifferenceIcon from "../../icons/math/SetDifferenceIcon";
 import UnionIcon from "../../icons/math/UnionIcon";
 import VeeIcon from "../../icons/math/VeeIcon";
 import WedgeIcon from "../../icons/math/WedgeIcon";
@@ -55,10 +59,12 @@ export type BinaryOperationBlock =
     | XorNode
     | SetUnionNode
     | SetIntersectionNode
+    | SetDifferenceNode
     | SetFilterNode
     | SetMapNode
     | SetEveryNode
     | SetAnyNode
+    | NewConstructionNode
     | QueryConstructionValuesNode
     | CallNode
     | Construction;
@@ -75,10 +81,12 @@ export const BlockIcon = {
     [NodeType.Xor]: XorIcon,
     [NodeType.SetUnion]: UnionIcon,
     [NodeType.SetIntersection]: IntersectionIcon,
+    [NodeType.SetDifference]: SetDifferenceIcon,
     [NodeType.SetFilter]: FilterIcon,
     [NodeType.SetMap]: SetMapIcon,
     [NodeType.SetEvery]: ColonIcon,
     [NodeType.SetAny]: ColonIcon,
+    [NodeType.NewConstruction]: ConstructionIcon,
     [NodeType.QueryConstructionValues]: QueryConstructionValuesIcon,
     [NodeType.Call]: CallIcon,
     [ObjectType.Construction]: ConstructionIcon,
@@ -92,7 +100,11 @@ export const BlockIcon = {
  */
 const BlockPrefixIcon: Partial<
     Record<BinaryOperationBlock["type"], Component<{class?: string}>>
-> = {[NodeType.SetEvery]: ForAllIcon, [NodeType.SetAny]: ExistsIcon};
+> = {
+    [NodeType.SetEvery]: ForAllIcon,
+    [NodeType.SetAny]: ExistsIcon,
+    [NodeType.NewConstruction]: HammerIcon,
+};
 
 export const prefixIconOf = (block: BinaryOperationBlock) =>
     BlockPrefixIcon[block.type];
@@ -108,9 +120,12 @@ export const getFirst = (block: BinaryOperationBlock) => {
         case NodeType.Xor:
         case NodeType.SetUnion:
         case NodeType.SetIntersection:
+        case NodeType.SetDifference:
             return block.first;
         case NodeType.SetContains:
             return block.element;
+        case NodeType.NewConstruction:
+            return block.constructor;
         case NodeType.HasProperty:
             return block.subject;
         case NodeType.SetFilter:
@@ -138,9 +153,12 @@ export const getSecond = (block: BinaryOperationBlock) => {
         case NodeType.Xor:
         case NodeType.SetUnion:
         case NodeType.SetIntersection:
+        case NodeType.SetDifference:
             return block.second;
         case NodeType.SetContains:
             return block.set;
+        case NodeType.NewConstruction:
+            return block.value;
         case NodeType.HasProperty:
             return block.property;
         case NodeType.SetFilter:
@@ -174,9 +192,12 @@ export const changeBlockFirst = (
         case NodeType.Xor:
         case NodeType.SetUnion:
         case NodeType.SetIntersection:
+        case NodeType.SetDifference:
             return nodeToObject({...block, first: newFirst});
         case NodeType.SetContains:
             return nodeToObject({...block, element: newFirst});
+        case NodeType.NewConstruction:
+            return nodeToObject({...block, constructor: newFirst});
         case NodeType.HasProperty:
             return nodeToObject({...block, subject: newFirst});
         case NodeType.SetFilter:
@@ -207,9 +228,12 @@ export const changeBlockSecond = (
         case NodeType.Xor:
         case NodeType.SetUnion:
         case NodeType.SetIntersection:
+        case NodeType.SetDifference:
             return nodeToObject({...block, second: newSecond});
         case NodeType.SetContains:
             return nodeToObject({...block, set: newSecond});
+        case NodeType.NewConstruction:
+            return nodeToObject({...block, value: newSecond});
         case NodeType.HasProperty:
             return nodeToObject({...block, property: newSecond});
         case NodeType.SetFilter:

@@ -230,6 +230,21 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                 ],
                 options,
             );
+        case NodeType.SetDifference:
+            return rowLayoutWidth(
+                [
+                    calculateRowLayoutWidthOfBlock(
+                        objectToBlock(block.first),
+                        options,
+                    ),
+                    blockIconWidthInPixels.difference,
+                    calculateRowLayoutWidthOfBlock(
+                        objectToBlock(block.second),
+                        options,
+                    ),
+                ],
+                options,
+            );
         case NodeType.SetFilter:
             return rowLayoutWidth(
                 [
@@ -330,10 +345,10 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                 ],
                 options,
             );
-        case NodeType.HasValue:
+        case NodeType.HasASetItem:
             return rowLayoutWidth(
                 [
-                    blockIconWidthInPixels.hasValue,
+                    blockIconWidthInPixels.hasASetItem,
                     calculateRowLayoutWidthOfBlock(
                         objectToBlock(block.inner),
                         options,
@@ -378,6 +393,17 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
             return rowLayoutWidth(
                 [
                     blockIconWidthInPixels.isComposite,
+                    calculateRowLayoutWidthOfBlock(
+                        objectToBlock(block.inner),
+                        options,
+                    ),
+                ],
+                options,
+            );
+        case NodeType.IsNode:
+            return rowLayoutWidth(
+                [
+                    blockIconWidthInPixels.isNode,
                     calculateRowLayoutWidthOfBlock(
                         objectToBlock(block.inner),
                         options,
@@ -546,6 +572,22 @@ const calculateRowLayoutWidthOfBlockWithoutCache = (
                                 : 0),
                     ),
                     blockIconWidthInPixels.angleBracket,
+                ],
+                options,
+            );
+        case NodeType.NewConstruction:
+            return rowLayoutWidth(
+                [
+                    blockIconWidthInPixels.hammer,
+                    calculateRowLayoutWidthOfBlock(
+                        objectToBlock(block.constructor),
+                        options,
+                    ),
+                    blockIconWidthInPixels.construction,
+                    calculateRowLayoutWidthOfBlock(
+                        objectToBlock(block.value),
+                        options,
+                    ),
                 ],
                 options,
             );

@@ -6,10 +6,11 @@ import {
     NodeType,
     type ConstructionConstructorNode,
     type ConstructionValueNode,
-    type HasValueNode,
+    type HasASetItemNode,
     type IsAtomNode,
     type IsConstructionNode,
     type IsCompositeNode,
+    type IsNodeNode,
     type NotNode,
     type QueryAtomsWithConstructorNode,
     type QueryAtomsWithPropertyNode,
@@ -25,20 +26,22 @@ import ConstructionConstructorIcon from "../../../icons/constructions/Constructi
 import ConstructionValueIcon from "../../../icons/constructions/ConstructionValueIcon";
 import IsConstructionIcon from "../../../icons/constructions/IsConstructionIcon";
 import NotIcon from "../../../icons/math/NotIcon";
-import HasValueIcon from "../../../icons/query/HasValueIcon";
+import HasASetItemIcon from "../../../icons/query/HasASetItemIcon";
 import QueryConstructionsIcon from "../../../icons/query/QueryConstructionsIcon";
 import SearchValuesIcon from "../../../icons/query/SearchValuesIcon";
 import IsCompositeIcon from "../../../icons/sets/IsCompositeIcon";
+import IsNodeIcon from "../../../icons/sets/IsNodeIcon";
 import UnwrapIcon from "../../../icons/sets/UnwrapIcon";
 import {useLayoutOptions} from "../../atomNames";
 import {
     calculateLayoutModeOfBlock,
     calculateConstructionConstructorNodeOperandWidthBudgetInPixels,
     calculateConstructionValueNodeOperandWidthBudgetInPixels,
-    calculateHasValueNodeOperandWidthBudgetInPixels,
+    calculateHasASetItemNodeOperandWidthBudgetInPixels,
     calculateIsAtomNodeOperandWidthBudgetInPixels,
     calculateIsConstructionNodeOperandWidthBudgetInPixels,
     calculateIsCompositeNodeOperandWidthBudgetInPixels,
+    calculateIsNodeNodeOperandWidthBudgetInPixels,
     calculateNotNodeOperandWidthBudgetInPixels,
     calculateQueryAtomsWithConstructorNodeOperandWidthBudgetInPixels,
     calculateQueryAtomsWithPropertyNodeOperandWidthBudgetInPixels,
@@ -52,10 +55,11 @@ import {useObjectSelection, type ObjectSelectionPath} from "../../selection";
 export type UnaryOperationBlock =
     | ConstructionConstructorNode
     | ConstructionValueNode
-    | HasValueNode
+    | HasASetItemNode
     | IsAtomNode
     | IsConstructionNode
     | IsCompositeNode
+    | IsNodeNode
     | NotNode
     | QueryAtomsWithConstructorNode
     | QueryAtomsWithPropertyNode
@@ -66,10 +70,11 @@ export type UnaryOperationBlock =
 const BlockIcon = {
     [NodeType.ConstructionConstructor]: ConstructionConstructorIcon,
     [NodeType.ConstructionValue]: ConstructionValueIcon,
-    [NodeType.HasValue]: HasValueIcon,
+    [NodeType.HasASetItem]: HasASetItemIcon,
     [NodeType.IsAtom]: IsAtomIcon,
     [NodeType.IsConstruction]: IsConstructionIcon,
     [NodeType.IsComposite]: IsCompositeIcon,
+    [NodeType.IsNode]: IsNodeIcon,
     [NodeType.Not]: NotIcon,
     [NodeType.QueryAtomsWithConstructor]: AtomsWithConstructorIcon,
     [NodeType.QueryAtomsWithProperty]: AtomsWithPropertyIcon,
@@ -84,13 +89,15 @@ const operandOf = (block: UnaryOperationBlock): EverythingObject => {
             return block.construction;
         case NodeType.ConstructionValue:
             return block.construction;
-        case NodeType.HasValue:
+        case NodeType.HasASetItem:
             return block.inner;
         case NodeType.IsAtom:
             return block.inner;
         case NodeType.IsConstruction:
             return block.inner;
         case NodeType.IsComposite:
+            return block.inner;
+        case NodeType.IsNode:
             return block.inner;
         case NodeType.Not:
             return block.operand;
@@ -116,13 +123,15 @@ const withOperand = (
             return nodeToObject({...block, construction: operand});
         case NodeType.ConstructionValue:
             return nodeToObject({...block, construction: operand});
-        case NodeType.HasValue:
+        case NodeType.HasASetItem:
             return nodeToObject({...block, inner: operand});
         case NodeType.IsAtom:
             return nodeToObject({...block, inner: operand});
         case NodeType.IsConstruction:
             return nodeToObject({...block, inner: operand});
         case NodeType.IsComposite:
+            return nodeToObject({...block, inner: operand});
+        case NodeType.IsNode:
             return nodeToObject({...block, inner: operand});
         case NodeType.Not:
             return nodeToObject({...block, operand});
@@ -169,8 +178,8 @@ export default (props: {
                     props.wholeWidthBudgetInPixels,
                     layoutOptions,
                 );
-            case NodeType.HasValue:
-                return calculateHasValueNodeOperandWidthBudgetInPixels(
+            case NodeType.HasASetItem:
+                return calculateHasASetItemNodeOperandWidthBudgetInPixels(
                     props.wholeWidthBudgetInPixels,
                     layoutOptions,
                 );
@@ -186,6 +195,11 @@ export default (props: {
                 );
             case NodeType.IsComposite:
                 return calculateIsCompositeNodeOperandWidthBudgetInPixels(
+                    props.wholeWidthBudgetInPixels,
+                    layoutOptions,
+                );
+            case NodeType.IsNode:
+                return calculateIsNodeNodeOperandWidthBudgetInPixels(
                     props.wholeWidthBudgetInPixels,
                     layoutOptions,
                 );

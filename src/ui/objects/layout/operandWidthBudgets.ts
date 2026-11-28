@@ -99,14 +99,14 @@ export const calculatePropertiesOfNodeOperandWidthBudgetInPixels = (
         blockIconWidthInPixels.propertiesOf,
     );
 
-export const calculateHasValueNodeOperandWidthBudgetInPixels = (
+export const calculateHasASetItemNodeOperandWidthBudgetInPixels = (
     widthBudgetInPixels: number,
     layoutOptions: LayoutOptions,
 ): number =>
     iconOperandWidthBudgetInPixels(
         widthBudgetInPixels,
         layoutOptions,
-        blockIconWidthInPixels.hasValue,
+        blockIconWidthInPixels.hasASetItem,
     );
 
 export const calculateSetUnwrapNodeOperandWidthBudgetInPixels = (
@@ -147,6 +147,16 @@ export const calculateIsCompositeNodeOperandWidthBudgetInPixels = (
         widthBudgetInPixels,
         layoutOptions,
         blockIconWidthInPixels.isComposite,
+    );
+
+export const calculateIsNodeNodeOperandWidthBudgetInPixels = (
+    widthBudgetInPixels: number,
+    layoutOptions: LayoutOptions,
+): number =>
+    iconOperandWidthBudgetInPixels(
+        widthBudgetInPixels,
+        layoutOptions,
+        blockIconWidthInPixels.isNode,
     );
 
 export const calculateSetCountNodeOperandWidthBudgetInPixels = (

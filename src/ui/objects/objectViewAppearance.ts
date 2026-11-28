@@ -79,12 +79,15 @@ export const objectViewColorCategory = (
         case NodeType.IsAtom:
         case NodeType.IsConstruction:
         case NodeType.IsComposite:
+        case NodeType.IsNode:
+        case NodeType.HasASetItem:
         case NodeType.HasProperty:
             return ObjectViewColorCategory.Boolean;
 
         case NodeType.SetUnwrap:
         case NodeType.SetUnion:
         case NodeType.SetIntersection:
+        case NodeType.SetDifference:
         case NodeType.SetFilter:
         case NodeType.SetMap:
         case NodeType.SetEvery:
@@ -100,7 +103,6 @@ export const objectViewColorCategory = (
             return ObjectViewColorCategory.Literal;
 
         case NodeType.PropertiesOf:
-        case NodeType.HasValue:
         case NodeType.QueryAtomsWithProperty:
         case NodeType.QueryAtomsWithConstructor:
         case NodeType.QueryConstructionValues:
@@ -113,6 +115,7 @@ export const objectViewColorCategory = (
         case ObjectType.Construction:
         case NodeType.ConstructionConstructor:
         case NodeType.ConstructionValue:
+        case NodeType.NewConstruction:
             return ObjectViewColorCategory.Constructions;
 
         case ObjectType.Atom:
@@ -145,11 +148,13 @@ export const blockInColumnModeIsItemsCenter = (blockType: Block["type"]) => {
         case NodeType.Xor:
         case NodeType.SetUnion:
         case NodeType.SetIntersection:
+        case NodeType.SetDifference:
         case NodeType.SetFilter:
         case NodeType.SetMap:
         case NodeType.SetEvery:
         case NodeType.SetAny:
         case NodeType.SetFold:
+        case NodeType.NewConstruction:
         case NodeType.QueryConstructionValues:
         case NodeType.Call:
         case ObjectType.Construction:

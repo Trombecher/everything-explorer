@@ -134,6 +134,15 @@ export const nodeToObject = (node: Node): EverythingObject => {
                     ...node.rest,
                 ],
             };
+        case NodeType.SetDifference:
+            return {
+                type: ObjectType.Composite,
+                properties: [
+                    construction(Atom.NodeSetDifferenceFirst, node.first),
+                    construction(Atom.NodeSetDifferenceSecond, node.second),
+                    ...node.rest,
+                ],
+            };
         case NodeType.SetFilter:
             return {
                 type: ObjectType.Composite,
@@ -200,6 +209,18 @@ export const nodeToObject = (node: Node): EverythingObject => {
                     ...node.rest,
                 ],
             };
+        case NodeType.NewConstruction:
+            return {
+                type: ObjectType.Composite,
+                properties: [
+                    construction(
+                        Atom.NodeNewConstructionConstructor,
+                        node.constructor,
+                    ),
+                    construction(Atom.NodeNewConstructionValue, node.value),
+                    ...node.rest,
+                ],
+            };
         case NodeType.QueryAtomsWithProperty:
             return {
                 type: ObjectType.Composite,
@@ -227,11 +248,11 @@ export const nodeToObject = (node: Node): EverythingObject => {
                     ...node.rest,
                 ],
             };
-        case NodeType.HasValue:
+        case NodeType.HasASetItem:
             return {
                 type: ObjectType.Composite,
                 properties: [
-                    construction(Atom.NodeHasValue, node.inner),
+                    construction(Atom.NodeHasASetItem, node.inner),
                     ...node.rest,
                 ],
             };
@@ -273,6 +294,14 @@ export const nodeToObject = (node: Node): EverythingObject => {
                 type: ObjectType.Composite,
                 properties: [
                     construction(Atom.NodeIsComposite, node.inner),
+                    ...node.rest,
+                ],
+            };
+        case NodeType.IsNode:
+            return {
+                type: ObjectType.Composite,
+                properties: [
+                    construction(Atom.NodeIsNode, node.inner),
                     ...node.rest,
                 ],
             };

@@ -16,6 +16,7 @@ export namespace NodeType {
     export const SetCount = Symbol("NodeType.SetCount");
     export const SetUnion = Symbol("NodeType.SetUnion");
     export const SetIntersection = Symbol("NodeType.SetIntersection");
+    export const SetDifference = Symbol("NodeType.SetDifference");
     export const SetFilter = Symbol("NodeType.SetFilter");
     export const SetMap = Symbol("NodeType.SetMap");
     export const SetFold = Symbol("NodeType.SetFold");
@@ -23,6 +24,7 @@ export namespace NodeType {
     export const SetAny = Symbol("NodeType.SetAny");
     export const NewSet = Symbol("NodeType.NewSet");
     export const NewComposite = Symbol("NodeType.NewComposite");
+    export const NewConstruction = Symbol("NodeType.NewConstruction");
     export const QueryAtomsWithProperty = Symbol(
         "NodeType.QueryAtomsWithProperty",
     );
@@ -30,12 +32,13 @@ export namespace NodeType {
         "NodeType.QueryAtomsWithConstructor",
     );
     export const PropertiesOf = Symbol("NodeType.PropertiesOf");
-    export const HasValue = Symbol("NodeType.HasValue");
+    export const HasASetItem = Symbol("NodeType.HasASetItem");
     export const HasProperty = Symbol("NodeType.HasProperty");
     export const SetUnwrap = Symbol("NodeType.SetUnwrap");
     export const IsAtom = Symbol("NodeType.IsAtom");
     export const IsConstruction = Symbol("NodeType.IsConstruction");
     export const IsComposite = Symbol("NodeType.IsComposite");
+    export const IsNode = Symbol("NodeType.IsNode");
     export const QueryConstructionValues = Symbol(
         "NodeType.QueryConstructionValues",
     );
@@ -152,6 +155,13 @@ export type SetIntersectionNode = {
     readonly rest: readonly EverythingObject[];
 };
 
+export type SetDifferenceNode = {
+    readonly type: typeof NodeType.SetDifference;
+    readonly first: EverythingObject;
+    readonly second: EverythingObject;
+    readonly rest: readonly EverythingObject[];
+};
+
 export type SetFilterNode = {
     readonly type: typeof NodeType.SetFilter;
     readonly set: EverythingObject;
@@ -200,6 +210,13 @@ export type NewCompositeNode = {
     readonly rest: readonly EverythingObject[];
 };
 
+export type NewConstructionNode = {
+    readonly type: typeof NodeType.NewConstruction;
+    readonly constructor: EverythingObject;
+    readonly value: EverythingObject;
+    readonly rest: readonly EverythingObject[];
+};
+
 export type QueryAtomsWithPropertyNode = {
     readonly type: typeof NodeType.QueryAtomsWithProperty;
     readonly property: EverythingObject;
@@ -218,8 +235,8 @@ export type PropertiesOfNode = {
     readonly rest: readonly EverythingObject[];
 };
 
-export type HasValueNode = {
-    readonly type: typeof NodeType.HasValue;
+export type HasASetItemNode = {
+    readonly type: typeof NodeType.HasASetItem;
     readonly inner: EverythingObject;
     readonly rest: readonly EverythingObject[];
 };
@@ -251,6 +268,12 @@ export type IsConstructionNode = {
 
 export type IsCompositeNode = {
     readonly type: typeof NodeType.IsComposite;
+    readonly inner: EverythingObject;
+    readonly rest: readonly EverythingObject[];
+};
+
+export type IsNodeNode = {
+    readonly type: typeof NodeType.IsNode;
     readonly inner: EverythingObject;
     readonly rest: readonly EverythingObject[];
 };
@@ -317,6 +340,7 @@ export type Node =
     | SetCountNode
     | SetUnionNode
     | SetIntersectionNode
+    | SetDifferenceNode
     | SetFilterNode
     | SetMapNode
     | SetFoldNode
@@ -324,15 +348,17 @@ export type Node =
     | SetAnyNode
     | NewSetNode
     | NewCompositeNode
+    | NewConstructionNode
     | QueryAtomsWithPropertyNode
     | QueryAtomsWithConstructorNode
     | PropertiesOfNode
-    | HasValueNode
+    | HasASetItemNode
     | HasPropertyNode
     | SetUnwrapNode
     | IsAtomNode
     | IsConstructionNode
     | IsCompositeNode
+    | IsNodeNode
     | QueryConstructionValuesNode
     | QueryConstructionsNode
     | ConstructionConstructorNode
