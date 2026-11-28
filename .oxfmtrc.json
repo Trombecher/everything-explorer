@@ -4,7 +4,7 @@
     "printWidth": 80,
     "tabWidth": 4,
     "sortImports": true,
-    "sortTailwindcss": true,
+    "sortTailwindcss": {"stylesheet": "src/global.css"},
     "arrowParens": "avoid",
     "experimentalOperatorPosition": "start",
     "jsdoc": {"commentLineStrategy": "multiline", "preferCodeFences": true},

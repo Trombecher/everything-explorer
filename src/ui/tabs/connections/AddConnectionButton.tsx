@@ -93,7 +93,7 @@ export default () => {
                                           )
                                         : undefined
                                 }
-                                class={`flex gap-1 rounded-xl py-1 pr-3 pl-1 ${disabled ? "text-fg-subtle cursor-not-allowed" : "hover:bg-primary hover:text-on-primary active:scale-97"}`}
+                                class={`flex gap-1 rounded-xl py-1 pr-3 pl-1 ${disabled ? "cursor-not-allowed text-fg-subtle" : "hover:bg-primary hover:text-on-primary active:scale-97"}`}
                             >
                                 <PlusIcon /> {name}
                             </DropdownMenu.Item>

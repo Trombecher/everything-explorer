@@ -31,7 +31,7 @@ export default (props: {tab: Tab; icon: JSXElement; compact?: boolean}) => {
 
     return (
         <Button
-            class={`flex w-full touch-manipulation gap-2 rounded-3xl p-2 text-left transition-transform duration-75 ease-in-out select-none active:scale-97 ${props.tab === Tab.InstanceProperties ? "mt-auto" : ""} ${props.compact ? "justify-center" : ""} ${isActive() ? "bg-primary-subtle text-primary-fg font-medium" : "hover:bg-surface-hover"}`}
+            class={`flex w-full touch-manipulation gap-2 rounded-3xl p-2 text-left transition-transform duration-75 ease-in-out select-none active:scale-97 ${props.tab === Tab.InstanceProperties ? "mt-auto" : ""} ${props.compact ? "justify-center" : ""} ${isActive() ? "bg-primary-subtle font-medium text-primary-fg" : "hover:bg-surface-hover"}`}
             title={props.compact ? label() : undefined}
             aria-label={label()}
             aria-current={isActive() ? "page" : undefined}

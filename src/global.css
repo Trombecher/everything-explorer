@@ -148,7 +148,7 @@ html[data-theme="dark"] {
 @layer base {
     * {
         corner-shape: superellipse(1.6);
-        @apply outline-primary outline-offset-2 focus-visible:outline-2;
+        @apply outline-offset-2 outline-primary focus-visible:outline-2;
     }
 }
 
