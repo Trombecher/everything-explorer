@@ -1,22 +1,11 @@
 @import "tailwindcss";
 
 @utility bg-flare {
-    background-image:
-        radial-gradient(
-            46rem 46rem at 100% 0%,
-            oklch(60% 0.25 300 / 20%),
-            transparent 70%
-        ),
-        radial-gradient(
-            70rem 70rem at 100% 0%,
-            oklch(50% 0.24 280 / 20%),
-            transparent 74%
-        ),
-        radial-gradient(
-            44rem 44rem at 0% 100%,
-            oklch(40% 0.2 260 / 25%),
-            transparent 72%
-        );
+    background-image: radial-gradient(
+        70rem 45rem at 50% 100%,
+        oklch(55% 0.24 260 / 30%),
+        transparent 70%
+    );
     background-repeat: no-repeat;
     background-attachment: fixed;
 }
